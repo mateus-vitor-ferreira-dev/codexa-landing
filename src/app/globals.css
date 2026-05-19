@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:              #080810;
+  --bg-card:         #0e0e1e;
+  --bg-section:      #0a0a18;
+  --magenta:         #e8006d;
+  --magenta-dim:     #8b0042;
+  --magenta-glow:    rgba(232, 0, 109, 0.18);
+  --magenta-border:  rgba(232, 0, 109, 0.2);
+  --text:            #eeeef5;
+  --text-muted:      #7777a0;
+  --text-faint:      #44445a;
+  --font-display:    var(--font-display, 'Syne', sans-serif);
+  --font-body:       var(--font-body, 'DM Sans', sans-serif);
+  --font-mono:       var(--font-mono, 'JetBrains Mono', monospace);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body { overflow-x: hidden; }
+
+/* ── Noise overlay ──────────────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Custom cursor ──────────────────────────────────────── */
+html { cursor: none; }
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 4px; }
+::-webkit-scrollbar-track        { background: var(--bg); }
+::-webkit-scrollbar-thumb        { background: var(--magenta-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--magenta); }
+
+/* ── Selection ──────────────────────────────────────────── */
+::selection { background: var(--magenta); color: #fff; }
+
+/* ── Layout container ───────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 4vw, 5rem);
+  padding-right: clamp(1.25rem, 4vw, 5rem);
 }
+
+/* ── Keyframes ──────────────────────────────────────────── */
+@keyframes grow {
+  0%, 100% { transform: scaleY(0); opacity: 0; }
+  50%       { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.3333%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-33.3333%); }
+  to   { transform: translateX(0); }
+}
+
+.marquee-track          { animation: marquee         28s linear infinite; }
+.marquee-track-reverse  { animation: marquee-reverse 32s linear infinite; }
+.marquee-track:hover,
+.marquee-track-reverse:hover { animation-play-state: paused; }
+
+/* ── Preloader ──────────────────────────────────────────── */
+.pre-letter,
+.pre-bar,
+.pre-tag { will-change: transform; }
+
+/* ── Hero specific ──────────────────────────────────────── */
+.hero-word-wrap { overflow: hidden; display: inline-block; }
+
+.gradient-mesh {
+  background:
+    radial-gradient(ellipse 60% 60% at 5% 90%, rgba(232, 0, 109, 0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 95% 10%, rgba(232, 0, 109, 0.06) 0%, transparent 60%),
+    var(--bg);
+}
+
+.code-glow {
+  box-shadow:
+    0 0 0 1px var(--magenta-border),
+    0 0 40px 0 rgba(232, 0, 109, 0.12),
+    0 24px 48px 0 rgba(0, 0, 0, 0.6);
+}
+
+.btn-primary {
+  background: var(--magenta);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: 6px;
+  padding: 14px 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(232, 0, 109, 0.35);
+}
+
+.btn-ghost {
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s, gap 0.2s;
+  cursor: none;
+}
+
+.btn-ghost:hover { color: var(--text); gap: 12px; }
+
+/* ── Code window syntax ─────────────────────────────────── */
+.token-keyword  { color: #ff79c6; }
+.token-string   { color: #f1fa8c; }
+.token-comment  { color: #6272a4; }
+.token-property { color: #8be9fd; }
+.token-value    { color: #bd93f9; }
+.token-bracket  { color: var(--text-muted); }
