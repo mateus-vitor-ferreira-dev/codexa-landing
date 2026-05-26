@@ -1,118 +1,182 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const LINE1 = ['Tem', 'uma', 'ideia?']
+const LINE2 = ['Vamos', 'transformar', 'em', 'realidade.']
+const ALL_WORDS = [...LINE1, ...LINE2]
+
 export function CtaFinal() {
-  const sectionRef  = useRef<HTMLElement>(null)
-  const bgGlowRef   = useRef<HTMLDivElement>(null)
+  const pinnedRef = useRef<HTMLElement>(null)
+  const ctaRef    = useRef<HTMLElement>(null)
+  const bgGlowRef = useRef<HTMLDivElement>(null)
+  const ctaBtnRef = useRef<HTMLAnchorElement>(null)
+  const shineRef  = useRef<HTMLDivElement>(null)
+  const wordsRef  = useRef<(HTMLSpanElement | null)[]>(Array(ALL_WORDS.length).fill(null))
+
+  /* Gradiente animado contínuo no glow de fundo */
+  useEffect(() => {
+    const el = bgGlowRef.current
+    if (!el) return
+    const tween = gsap.to(el, {
+      opacity: 0.65, scale: 1.15,
+      duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1,
+    })
+    return () => { tween.kill() }
+  }, [])
 
   useGSAP(() => {
-    // Texto entra de baixo
-    gsap.from('.cta-word', {
-      opacity: 0, y: 48,
-      duration: 0.75, stagger: 0.12,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
-    })
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+    if (reduced) {
+      gsap.set(wordsRef.current.filter(Boolean), { opacity: 1 })
+      gsap.set(['.cta-sub', '.cta-buttons'], { opacity: 1 })
+      return
+    }
+
+    const words = wordsRef.current.filter((el): el is HTMLSpanElement => el !== null)
+
+    // Palavras acendem word-by-word conforme o scroll (pin)
+    gsap.fromTo(
+      words,
+      { opacity: 0.07 },
+      {
+        opacity: 1,
+        stagger: { each: 0.3 },
+        scrollTrigger: {
+          trigger: pinnedRef.current,
+          pin: true,
+          start: 'top top',
+          end: `+=${ALL_WORDS.length * 210}px`,
+          scrub: 0.7,
+        },
+      }
+    )
+
+    // Subtext e botões entram depois do pin
     gsap.from('.cta-sub', {
-      opacity: 0, y: 24,
-      duration: 0.6, ease: 'power2.out', delay: 0.4,
-      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+      opacity: 0, y: 18,
+      duration: 0.65, ease: 'power2.out',
+      scrollTrigger: { trigger: ctaRef.current, start: 'top 78%' },
     })
 
     gsap.from('.cta-buttons', {
-      opacity: 0, y: 20,
-      duration: 0.55, ease: 'power2.out', delay: 0.6,
-      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+      opacity: 0, y: 16,
+      duration: 0.55, ease: 'power2.out',
+      scrollTrigger: { trigger: ctaRef.current, start: 'top 72%' },
     })
 
     // Parallax no glow de fundo
     gsap.to(bgGlowRef.current, {
-      y: -60,
-      ease: 'none',
+      y: -60, ease: 'none',
       scrollTrigger: {
-        trigger: sectionRef.current,
+        trigger: ctaRef.current,
         start: 'top bottom',
-        end:   'bottom top',
+        end: 'bottom top',
         scrub: 1.5,
       },
     })
-  }, { scope: sectionRef })
+  })
 
   return (
     <>
-      {/* CTA Section */}
+      {/* SEÇÃO PINADA — headline reveal word-by-word */}
       <section
-        ref={sectionRef}
+        ref={pinnedRef}
         id="contato"
-        className="relative py-32 overflow-hidden"
+        className="relative overflow-hidden"
         style={{
-          background: 'linear-gradient(160deg, #1a0014 0%, #2a0022 35%, #1a0020 65%, #0e000e 100%)',
+          background: '#0d0d0f',
+          minHeight: '100svh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        {/* Glow com parallax */}
-        <div
-          ref={bgGlowRef}
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232,0,109,0.3) 0%, transparent 65%),
-              radial-gradient(ellipse 40% 40% at 20% 20%, rgba(232,0,109,0.08) 0%, transparent 60%)
-            `,
-          }}
-        />
-
         {/* Grid decorativo */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(232,0,109,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(232,0,109,0.04) 1px, transparent 1px)',
+              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
             backgroundSize: '80px 80px',
-            maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)',
+            maskImage:
+              'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)',
           }}
         />
 
-        <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center gap-10 text-center">
-
-          {/* Headline */}
-          <div style={{ fontFamily: 'var(--font-display)' }}>
-            <div className="overflow-hidden">
-              <span
-                className="cta-word block text-5xl md:text-7xl xl:text-8xl font-bold leading-none"
-                style={{ color: '#fff' }}
-              >
-                Tem uma ideia?
+        <div
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(2.8rem, 7vw, 8rem)',
+            fontWeight: 'bold',
+            lineHeight: 1.05,
+            textAlign: 'center',
+            userSelect: 'none',
+            maxWidth: '1100px',
+            padding: '0 clamp(1rem, 5vw, 3rem)',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {/* Linha 1 — branca */}
+          <div>
+            {LINE1.map((word, i) => (
+              <span key={i} style={{ display: 'inline-block', margin: '0 0.12em' }}>
+                <span
+                  ref={el => { wordsRef.current[i] = el }}
+                  style={{ opacity: 0.07, color: '#fff', display: 'inline-block' }}
+                >
+                  {word}
+                </span>
               </span>
-            </div>
-            <div className="overflow-hidden mt-2">
-              <span
-                className="cta-word block text-5xl md:text-7xl xl:text-8xl font-bold leading-none"
-                style={{ color: 'rgba(255,255,255,0.25)' }}
-              >
-                Vamos transformar
-              </span>
-            </div>
-            <div className="overflow-hidden mt-2">
-              <span
-                className="cta-word block text-5xl md:text-7xl xl:text-8xl font-bold leading-none"
-                style={{ color: 'rgba(255,255,255,0.25)' }}
-              >
-                em realidade.
-              </span>
-            </div>
+            ))}
           </div>
+          {/* Linha 2 — atenuada */}
+          <div style={{ marginTop: '0.08em' }}>
+            {LINE2.map((word, i) => (
+              <span key={i} style={{ display: 'inline-block', margin: '0 0.12em' }}>
+                <span
+                  ref={el => { wordsRef.current[LINE1.length + i] = el }}
+                  style={{ opacity: 0.07, color: 'rgba(255,255,255,0.55)', display: 'inline-block' }}
+                >
+                  {word}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEÇÃO CTA — subtext + botões */}
+      <section
+        ref={ctaRef}
+        className="relative py-32 overflow-hidden"
+        style={{ background: '#0d0d0f' }}
+      >
+        {/* Glow sutil com parallax */}
+        <div
+          ref={bgGlowRef}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 55% at 50% 100%, rgba(232,0,109,0.12) 0%, transparent 60%)',
+          }}
+        />
+
+        <div className="relative z-10 page-container flex flex-col items-center gap-10 text-center">
 
           {/* Subtext */}
           <p
-            className="cta-sub text-base md:text-lg leading-relaxed max-w-md"
-            style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)' }}
+            className="cta-sub leading-relaxed max-w-md"
+            style={{ fontFamily: 'var(--font-body)', fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)' }}
           >
             Do briefing ao deploy, com metodologia clara,
             comunicação constante e tecnologia que funciona de verdade.
@@ -120,40 +184,38 @@ export function CtaFinal() {
 
           {/* Buttons */}
           <div className="cta-buttons flex flex-col sm:flex-row items-center gap-4">
-            {/* Primary */}
+            {/* Primary — brilho deslizante */}
             <a
-              href="mailto:contato@codexa.dev"
-              className="flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-base transition-all"
+              ref={ctaBtnRef}
+              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-xl font-bold"
               style={{
-                fontFamily: 'var(--font-display)',
-                background: '#fff',
-                color:      '#080810',
+                fontFamily: 'var(--font-display)', fontSize: '1rem',
+                background: '#fff', color: '#080810', cursor: 'none',
               }}
               onMouseEnter={(e) => {
-                gsap.to(e.currentTarget, {
-                  scale: 1.03,
-                  boxShadow: '0 8px 40px rgba(255,255,255,0.2)',
-                  duration: 0.2,
-                })
+                gsap.to(e.currentTarget, { scale: 1.03, boxShadow: '0 10px 48px rgba(255,255,255,0.25)', duration: 0.22 })
+                gsap.fromTo(shineRef.current, { xPercent: -100 }, { xPercent: 160, duration: 0.6, ease: 'power2.out' })
               }}
               onMouseLeave={(e) => {
-                gsap.to(e.currentTarget, {
-                  scale: 1,
-                  boxShadow: 'none',
-                  duration: 0.25,
-                })
+                gsap.to(e.currentTarget, { scale: 1, boxShadow: 'none', duration: 0.28 })
+                gsap.set(shineRef.current, { xPercent: -100 })
               }}
             >
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ background: '#e8006d' }}
-              />
+              {/* Shine overlay */}
+              <div ref={shineRef} className="pointer-events-none absolute inset-0" style={{
+                background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)',
+                transform: 'translateX(-100%)',
+              }} />
+              <span className="w-2 h-2 rounded-full" style={{ background: '#e8006d' }} />
               Iniciar projeto agora
             </a>
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/5535999999999"
+              href="https://w.app/codexa"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-base transition-all"
@@ -163,18 +225,10 @@ export function CtaFinal() {
                 border:     '1px solid rgba(255,255,255,0.15)',
               }}
               onMouseEnter={(e) => {
-                gsap.to(e.currentTarget, {
-                  borderColor: 'rgba(255,255,255,0.4)',
-                  color:       '#fff',
-                  duration:    0.2,
-                })
+                gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.4)', color: '#fff', duration: 0.2 })
               }}
               onMouseLeave={(e) => {
-                gsap.to(e.currentTarget, {
-                  borderColor: 'rgba(255,255,255,0.15)',
-                  color:       'rgba(255,255,255,0.7)',
-                  duration:    0.25,
-                })
+                gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', duration: 0.25 })
               }}
             >
               {/* WhatsApp icon */}
@@ -197,8 +251,7 @@ export function CtaFinal() {
             ].map((item) => (
               <span
                 key={item}
-                className="text-xs"
-                style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)' }}
               >
                 {item}
               </span>
@@ -212,7 +265,7 @@ export function CtaFinal() {
         className="py-14"
         style={{
           background:  'var(--bg)',
-          borderTop:   '1px solid rgba(255,255,255,0.05)',
+          borderTop:   '1px solid rgba(255,255,255,0.06)',
         }}
       >
         <div className="page-container flex flex-col md:flex-row items-start justify-between gap-10">
@@ -229,8 +282,8 @@ export function CtaFinal() {
               <span style={{ fontFamily: 'var(--font-mono)', color: '#e8006d' }}>_</span>
             </div>
             <p
-              className="text-sm max-w-xs leading-relaxed"
-              style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
+              className="max-w-xs leading-relaxed"
+              style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text-muted)' }}
             >
               Soluções digitais sob medida.<br />
               Lavras, MG — Brasil.
@@ -251,8 +304,8 @@ export function CtaFinal() {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm transition-colors"
-                style={{ fontFamily: 'var(--font-body)', color: 'var(--text-muted)' }}
+                className="transition-colors"
+                style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text-muted)' }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               >
