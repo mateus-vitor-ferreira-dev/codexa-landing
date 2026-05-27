@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -12,7 +12,6 @@ const LINE2 = ['Vamos', 'transformar', 'em', 'realidade.']
 const ALL_WORDS = [...LINE1, ...LINE2]
 
 export function CtaFinal() {
-  const [consented, setConsented] = useState(false)
   const pinnedRef = useRef<HTMLElement>(null)
   const ctaRef    = useRef<HTMLElement>(null)
   const bgGlowRef = useRef<HTMLDivElement>(null)
@@ -175,7 +174,7 @@ export function CtaFinal() {
       {/* SEÇÃO CTA — subtext + botões */}
       <section
         ref={ctaRef}
-        className="relative py-32 overflow-hidden"
+        className="relative pt-24 pb-56 overflow-hidden"
         style={{ background: '#0d0d0f' }}
       >
         {/* Glow sutil com parallax */}
@@ -199,60 +198,25 @@ export function CtaFinal() {
             comunicação constante e tecnologia que funciona de verdade.
           </p>
 
-          {/* Consent */}
-          <label className="cta-buttons flex items-start gap-3 cursor-pointer select-none max-w-sm text-left">
-            <div className="relative mt-0.5 shrink-0">
-              <input
-                type="checkbox"
-                checked={consented}
-                onChange={(e) => setConsented(e.target.checked)}
-                className="peer sr-only"
-              />
-              <div
-                className="w-4 h-4 rounded border transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-[#00d6f5]/40"
-                style={{
-                  background:   consented ? '#00d6f5' : 'transparent',
-                  borderColor:  consented ? '#00d6f5' : 'rgba(255,255,255,0.25)',
-                }}
-              >
-                {consented && (
-                  <svg viewBox="0 0 12 12" fill="none" className="w-full h-full p-0.5">
-                    <path d="M2 6l3 3 5-5" stroke="#080810" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )}
-              </div>
-            </div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-faint)', lineHeight: 1.55 }}>
-              Concordo com o tratamento dos meus dados conforme a{' '}
-              <span style={{ color: '#00d6f5' }}>Política de Privacidade</span>{' '}
-              da Codexa (LGPD).
-            </span>
-          </label>
-
           {/* Buttons */}
           <div className="cta-buttons flex flex-col sm:flex-row items-center gap-4">
             {/* Primary — brilho deslizante */}
             <a
               ref={ctaBtnRef}
-              href={consented ? "https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa." : undefined}
+              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
               target="_blank"
               rel="noopener noreferrer"
-              aria-disabled={!consented}
               className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-xl font-bold transition-opacity duration-200"
               style={{
                 fontFamily: 'var(--font-display)', fontSize: '1rem',
                 background: '#fff', color: '#080810',
-                cursor: consented ? 'none' : 'not-allowed',
-                opacity: consented ? 1 : 0.4,
-                pointerEvents: consented ? 'auto' : 'none',
+                cursor: 'none',
               }}
               onMouseEnter={(e) => {
-                if (!consented) return
                 gsap.to(e.currentTarget, { scale: 1.03, boxShadow: '0 10px 48px rgba(255,255,255,0.25)', duration: 0.22 })
                 gsap.fromTo(shineRef.current, { xPercent: -100 }, { xPercent: 160, duration: 0.6, ease: 'power2.out' })
               }}
               onMouseLeave={(e) => {
-                if (!consented) return
                 gsap.to(e.currentTarget, { scale: 1, boxShadow: 'none', duration: 0.28 })
                 gsap.set(shineRef.current, { xPercent: -100 })
               }}
@@ -268,24 +232,20 @@ export function CtaFinal() {
 
             {/* WhatsApp */}
             <a
-              href={consented ? "https://w.app/codexa" : undefined}
+              href="https://w.app/codexa"
               target="_blank"
               rel="noopener noreferrer"
-              aria-disabled={!consented}
               className="flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-base transition-all"
               style={{
                 fontFamily:    'var(--font-display)',
-                color:         consented ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)',
-                border:        `1px solid ${consented ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.07)'}`,
-                cursor:        consented ? 'none' : 'not-allowed',
-                pointerEvents: consented ? 'auto' : 'none',
+                color:         'rgba(255,255,255,0.7)',
+                border:        '1px solid rgba(255,255,255,0.15)',
+                cursor:        'none',
               }}
               onMouseEnter={(e) => {
-                if (!consented) return
                 gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.4)', color: '#fff', duration: 0.2 })
               }}
               onMouseLeave={(e) => {
-                if (!consented) return
                 gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', duration: 0.25 })
               }}
             >
