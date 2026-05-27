@@ -196,7 +196,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       </div>
 
       {/* Text block */}
-      <div className={`flex flex-col justify-center px-6 py-8 sm:px-10 sm:py-9 lg:px-12 lg:py-10 flex-1 ${flip ? 'sm:order-1' : 'sm:order-2'}`}>
+      <div className={`flex flex-col justify-center px-8 py-8 sm:px-12 sm:py-10 lg:px-14 lg:py-12 flex-1 ${flip ? 'sm:order-1' : 'sm:order-2'}`}>
         {/* Category + badge */}
         <div className="flex items-center gap-3 flex-wrap mb-3">
           <span style={{
