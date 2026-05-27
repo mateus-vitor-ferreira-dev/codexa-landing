@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -12,12 +12,14 @@ const LINE2 = ['Vamos', 'transformar', 'em', 'realidade.']
 const ALL_WORDS = [...LINE1, ...LINE2]
 
 export function CtaFinal() {
+  const [consented, setConsented] = useState(false)
   const pinnedRef = useRef<HTMLElement>(null)
   const ctaRef    = useRef<HTMLElement>(null)
   const bgGlowRef = useRef<HTMLDivElement>(null)
   const ctaBtnRef = useRef<HTMLAnchorElement>(null)
   const shineRef  = useRef<HTMLDivElement>(null)
-  const wordsRef  = useRef<(HTMLSpanElement | null)[]>(Array(ALL_WORDS.length).fill(null))
+  const wordsRef      = useRef<(HTMLSpanElement | null)[]>(Array(ALL_WORDS.length).fill(null))
+  const headlineRef   = useRef<HTMLDivElement>(null)
 
   /* Gradiente animado contínuo no glow de fundo */
   useEffect(() => {
@@ -43,6 +45,19 @@ export function CtaFinal() {
 
     const words = wordsRef.current.filter((el): el is HTMLSpanElement => el !== null)
 
+    // Headline container fades in suavemente ao entrar na viewport
+    gsap.fromTo(headlineRef.current,
+      { opacity: 0, y: 32 },
+      {
+        opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+        scrollTrigger: {
+          trigger: pinnedRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      }
+    )
+
     // Palavras acendem word-by-word conforme o scroll (pin)
     gsap.fromTo(
       words,
@@ -53,25 +68,26 @@ export function CtaFinal() {
         scrollTrigger: {
           trigger: pinnedRef.current,
           pin: true,
+          anticipatePin: 1,
           start: 'top top',
-          end: `+=${ALL_WORDS.length * 210}px`,
-          scrub: 0.7,
+          end: `+=${ALL_WORDS.length * 240}px`,
+          scrub: 1.4,
         },
       }
     )
 
     // Subtext e botões entram depois do pin
-    gsap.from('.cta-sub', {
-      opacity: 0, y: 18,
-      duration: 0.65, ease: 'power2.out',
-      scrollTrigger: { trigger: ctaRef.current, start: 'top 78%' },
-    })
+    gsap.fromTo('.cta-sub',
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
+        scrollTrigger: { trigger: ctaRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
+    )
 
-    gsap.from('.cta-buttons', {
-      opacity: 0, y: 16,
-      duration: 0.55, ease: 'power2.out',
-      scrollTrigger: { trigger: ctaRef.current, start: 'top 72%' },
-    })
+    gsap.fromTo('.cta-buttons',
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out',
+        scrollTrigger: { trigger: ctaRef.current, start: 'top 72%', toggleActions: 'play reverse play reverse' } }
+    )
 
     // Parallax no glow de fundo
     gsap.to(bgGlowRef.current, {
@@ -113,6 +129,7 @@ export function CtaFinal() {
         />
 
         <div
+          ref={headlineRef}
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(2.8rem, 7vw, 8rem)',
@@ -167,7 +184,7 @@ export function CtaFinal() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 70% 55% at 50% 100%, rgba(232,0,109,0.12) 0%, transparent 60%)',
+              'radial-gradient(ellipse 70% 55% at 50% 100%, rgba(0,214,245,0.12) 0%, transparent 60%)',
           }}
         />
 
@@ -182,24 +199,60 @@ export function CtaFinal() {
             comunicação constante e tecnologia que funciona de verdade.
           </p>
 
+          {/* Consent */}
+          <label className="cta-buttons flex items-start gap-3 cursor-pointer select-none max-w-sm text-left">
+            <div className="relative mt-0.5 shrink-0">
+              <input
+                type="checkbox"
+                checked={consented}
+                onChange={(e) => setConsented(e.target.checked)}
+                className="peer sr-only"
+              />
+              <div
+                className="w-4 h-4 rounded border transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-[#00d6f5]/40"
+                style={{
+                  background:   consented ? '#00d6f5' : 'transparent',
+                  borderColor:  consented ? '#00d6f5' : 'rgba(255,255,255,0.25)',
+                }}
+              >
+                {consented && (
+                  <svg viewBox="0 0 12 12" fill="none" className="w-full h-full p-0.5">
+                    <path d="M2 6l3 3 5-5" stroke="#080810" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+            </div>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-faint)', lineHeight: 1.55 }}>
+              Concordo com o tratamento dos meus dados conforme a{' '}
+              <span style={{ color: '#00d6f5' }}>Política de Privacidade</span>{' '}
+              da Codexa (LGPD).
+            </span>
+          </label>
+
           {/* Buttons */}
           <div className="cta-buttons flex flex-col sm:flex-row items-center gap-4">
             {/* Primary — brilho deslizante */}
             <a
               ref={ctaBtnRef}
-              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+              href={consented ? "https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa." : undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-xl font-bold"
+              aria-disabled={!consented}
+              className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-xl font-bold transition-opacity duration-200"
               style={{
                 fontFamily: 'var(--font-display)', fontSize: '1rem',
-                background: '#fff', color: '#080810', cursor: 'none',
+                background: '#fff', color: '#080810',
+                cursor: consented ? 'none' : 'not-allowed',
+                opacity: consented ? 1 : 0.4,
+                pointerEvents: consented ? 'auto' : 'none',
               }}
               onMouseEnter={(e) => {
+                if (!consented) return
                 gsap.to(e.currentTarget, { scale: 1.03, boxShadow: '0 10px 48px rgba(255,255,255,0.25)', duration: 0.22 })
                 gsap.fromTo(shineRef.current, { xPercent: -100 }, { xPercent: 160, duration: 0.6, ease: 'power2.out' })
               }}
               onMouseLeave={(e) => {
+                if (!consented) return
                 gsap.to(e.currentTarget, { scale: 1, boxShadow: 'none', duration: 0.28 })
                 gsap.set(shineRef.current, { xPercent: -100 })
               }}
@@ -209,25 +262,30 @@ export function CtaFinal() {
                 background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)',
                 transform: 'translateX(-100%)',
               }} />
-              <span className="w-2 h-2 rounded-full" style={{ background: '#e8006d' }} />
+              <span className="w-2 h-2 rounded-full" style={{ background: '#00d6f5' }} />
               Iniciar projeto agora
             </a>
 
             {/* WhatsApp */}
             <a
-              href="https://w.app/codexa"
+              href={consented ? "https://w.app/codexa" : undefined}
               target="_blank"
               rel="noopener noreferrer"
+              aria-disabled={!consented}
               className="flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-base transition-all"
               style={{
-                fontFamily: 'var(--font-display)',
-                color:      'rgba(255,255,255,0.7)',
-                border:     '1px solid rgba(255,255,255,0.15)',
+                fontFamily:    'var(--font-display)',
+                color:         consented ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)',
+                border:        `1px solid ${consented ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.07)'}`,
+                cursor:        consented ? 'none' : 'not-allowed',
+                pointerEvents: consented ? 'auto' : 'none',
               }}
               onMouseEnter={(e) => {
+                if (!consented) return
                 gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.4)', color: '#fff', duration: 0.2 })
               }}
               onMouseLeave={(e) => {
+                if (!consented) return
                 gsap.to(e.currentTarget, { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)', duration: 0.25 })
               }}
             >
@@ -239,24 +297,6 @@ export function CtaFinal() {
             </a>
           </div>
 
-          {/* Trust indicators */}
-          <div
-            className="cta-sub flex flex-wrap items-center justify-center gap-6 pt-4"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.08)', width: '100%' }}
-          >
-            {[
-              '✓ Resposta em até 24h',
-              '✓ Proposta sem compromisso',
-              '✓ Contrato transparente',
-            ].map((item) => (
-              <span
-                key={item}
-                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)' }}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -279,7 +319,7 @@ export function CtaFinal() {
               >
                 CODEXA
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', color: '#e8006d' }}>_</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: '#00d6f5' }}>_</span>
             </div>
             <p
               className="max-w-xs leading-relaxed"
