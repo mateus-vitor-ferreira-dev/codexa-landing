@@ -178,8 +178,8 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       <div
         className={`relative flex items-center justify-center flex-shrink-0 ${flip ? 'sm:order-2' : 'sm:order-1'}`}
         style={{
-          width:      'clamp(148px, 22%, 200px)',
-          minHeight:  '170px',
+          width:      'clamp(160px, 22%, 220px)',
+          minHeight:  '260px',
           background: `radial-gradient(ellipse at center, ${service.accent}30 0%, ${service.accent}10 65%, transparent 100%)`,
           borderRight: !flip ? `1px solid rgba(255,255,255,0.08)` : 'none',
           borderLeft:   flip ? `1px solid rgba(255,255,255,0.08)` : 'none',
@@ -197,10 +197,12 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
 
       {/* Text block */}
       <div
-        className={`flex flex-col justify-center py-10 flex-1 ${flip ? 'sm:order-1' : 'sm:order-2'}`}
+        className={`flex flex-col justify-center flex-1 ${flip ? 'sm:order-1' : 'sm:order-2'}`}
         style={{
-          paddingLeft:  flip ? '2rem'   : '3.5rem',
-          paddingRight: flip ? '3.5rem' : '2rem',
+          paddingTop:    '3rem',
+          paddingBottom: '3rem',
+          paddingLeft:   flip ? '3rem' : '4rem',
+          paddingRight:  flip ? '4rem' : '3rem',
         }}
       >
         {/* Category + badge */}

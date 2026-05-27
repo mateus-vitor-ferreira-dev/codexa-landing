@@ -75,10 +75,10 @@ function TechChip({ tech }: { tech: Tech }) {
   return (
     <div
       ref={chipRef}
-      className="flex items-center gap-3 px-5 py-3 rounded-lg select-none cursor-default"
+      className="flex items-center gap-3 px-5 py-3 rounded-xl select-none cursor-default"
       style={{
-        border:     '1px solid rgba(255,255,255,0.07)',
-        background: 'rgba(255,255,255,0.03)',
+        border:     '1px solid rgba(255,255,255,0.1)',
+        background: 'var(--bg-elevated)',
         color:      'var(--text-muted)',
         whiteSpace: 'nowrap',
       }}
@@ -92,8 +92,8 @@ function TechChip({ tech }: { tech: Tech }) {
         />
       )}
       <span
-        className="text-sm font-medium"
-        style={{ fontFamily: 'var(--font-mono)' }}
+        className="font-medium"
+        style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
       >
         {tech.name}
       </span>
@@ -138,32 +138,21 @@ export function TechMarquee() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    gsap.from('.tech-header', {
-      opacity: 0,
-      y: 24,
-      duration: 0.7,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-      },
-    })
+    gsap.fromTo('.tech-header',
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
+    )
   }, { scope: sectionRef })
 
   return (
     <section
       ref={sectionRef}
-      className="py-10 overflow-hidden"
+      className="py-16 overflow-hidden"
       style={{ background: 'var(--bg-section)' }}
     >
       {/* Header */}
       <div className="tech-header page-container flex items-center gap-4 mb-6">
-        <span
-          className="text-xs tracking-[0.2em] uppercase"
-          style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}
-        >
-          Stack
-        </span>
         <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
         <span
           className="text-xs tracking-[0.2em] uppercase"
@@ -180,15 +169,6 @@ export function TechMarquee() {
         <MarqueeRow items={ROW_2} reverse />
       </div>
 
-      {/* Counter de tecnologias */}
-      <div className="tech-header flex justify-center mt-6">
-        <span
-          className="text-xs"
-          style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}
-        >
-          {ROW_1.length + ROW_2.length}+ tecnologias no arsenal
-        </span>
-      </div>
     </section>
   )
 }

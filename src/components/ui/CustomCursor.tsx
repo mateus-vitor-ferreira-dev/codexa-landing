@@ -18,12 +18,12 @@ export function CustomCursor() {
     }
 
     const onEnterLink = () => {
-      gsap.to(ring, { scale: 1.6, borderColor: '#e8006d', duration: 0.2 })
+      gsap.to(ring, { scale: 1.6, borderColor: '#00d6f5', duration: 0.2 })
       gsap.to(dot,  { scale: 0,   duration: 0.2 })
     }
 
     const onLeaveLink = () => {
-      gsap.to(ring, { scale: 1, borderColor: 'rgba(232,0,109,0.5)', duration: 0.2 })
+      gsap.to(ring, { scale: 1, borderColor: 'rgba(0,214,245,0.5)', duration: 0.2 })
       gsap.to(dot,  { scale: 1, duration: 0.2 })
     }
 
@@ -49,13 +49,13 @@ export function CustomCursor() {
       <div
         ref={dotRef}
         className="fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none z-[10000]"
-        style={{ background: '#e8006d', transform: 'translate(-50%, -50%)' }}
+        style={{ background: '#00d6f5', transform: 'translate(-50%, -50%)' }}
       />
       <div
         ref={ringRef}
         className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999]"
         style={{
-          border: '1px solid rgba(232,0,109,0.5)',
+          border: '1px solid rgba(0,214,245,0.5)',
           transform: 'translate(-50%, -50%)',
         }}
       />

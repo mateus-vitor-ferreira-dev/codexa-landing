@@ -9,70 +9,17 @@ const LINKS = [
   { label: 'Como funciona', href: '#como-funciona' },
 ]
 
-const HACK_CHARS = '!<>-_\\/[]{}=+*^?#@$%&0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const LOGO_TARGET = 'CODEXA'
-
 export function Navbar() {
-  const [scrolled,    setScrolled]    = useState(false)
-  const [logoVisible, setLogoVisible] = useState(false)
-  const [menuOpen,    setMenuOpen]    = useState(false)
-  const menuRef       = useRef<HTMLDivElement>(null)
-  const linesRef      = useRef<HTMLDivElement>(null)
-  const navRef        = useRef<HTMLElement>(null)
-  const logoTextRef   = useRef<HTMLSpanElement>(null)
-  const logoState     = useRef<'hidden' | 'visible'>('hidden')
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef  = useRef<HTMLDivElement>(null)
+  const linesRef = useRef<HTMLDivElement>(null)
+  const navRef   = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Sincroniza com o Hero: aparece/some junto com o CODEXA grandão
-  useEffect(() => {
-    const FRAMES = 30
-
-    const scrambleIn = () => {
-      if (logoState.current === 'visible') return
-      logoState.current = 'visible'
-      setLogoVisible(true)
-
-      const el = logoTextRef.current
-      if (!el) return
-
-      let frame = 0
-      const id = setInterval(() => {
-        el.textContent = LOGO_TARGET.split('').map((char, i) => {
-          const lockAt = Math.floor((i / LOGO_TARGET.length) * FRAMES * 0.72)
-          if (frame >= lockAt) return char
-          return HACK_CHARS[Math.floor(Math.random() * HACK_CHARS.length)]
-        }).join('')
-
-        if (frame >= FRAMES) {
-          el.textContent = LOGO_TARGET
-          clearInterval(id)
-        }
-        frame++
-      }, 42)
-    }
-
-    const fadeOut = () => {
-      if (logoState.current === 'hidden') return
-      logoState.current = 'hidden'
-      setLogoVisible(false)
-      // Reseta o texto para a próxima entrada
-      setTimeout(() => {
-        const el = logoTextRef.current
-        if (el) el.textContent = LOGO_TARGET
-      }, 400)
-    }
-
-    window.addEventListener('codexa-to-header', scrambleIn)
-    window.addEventListener('codexa-to-hero',   fadeOut)
-    return () => {
-      window.removeEventListener('codexa-to-header', scrambleIn)
-      window.removeEventListener('codexa-to-hero',   fadeOut)
-    }
   }, [])
 
   useEffect(() => {
@@ -128,11 +75,10 @@ export function Navbar() {
 
   return (
     <>
-      {/* Gradiente permanente no topo — garante legibilidade mesmo sem scroll */}
       <div
         className="fixed top-0 left-0 right-0 h-28 pointer-events-none z-40"
         style={{
-          background: 'linear-gradient(to bottom, rgba(8,8,16,0.75) 0%, transparent 100%)',
+          background: 'linear-gradient(to bottom, rgba(9,9,11,0.8) 0%, transparent 100%)',
         }}
       />
 
@@ -140,49 +86,28 @@ export function Navbar() {
         ref={navRef}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
         style={{
-          background: scrolled ? 'rgba(8,8,16,0.92)' : 'transparent',
+          background: scrolled ? 'rgba(9,9,11,0.88)' : 'transparent',
           backdropFilter: scrolled ? 'blur(24px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(24px)' : 'none',
           borderBottom: scrolled
-            ? '1px solid rgba(232,0,109,0.18)'
+            ? '1px solid rgba(255,255,255,0.06)'
             : '1px solid transparent',
-          boxShadow: scrolled
-            ? '0 1px 40px rgba(0,0,0,0.4)'
-            : 'none',
         }}
       >
         <div className="page-container flex items-center justify-between h-20">
 
-          {/* ── Logo ───────────────────────────────────────── */}
-          <a href="#" className="flex items-baseline gap-0.5" onClick={closeMenu}>
-            <span
-              ref={logoTextRef}
-              className="text-xl font-bold tracking-wider transition-opacity duration-150"
-              style={{
-                fontFamily:     'var(--font-display)',
-                color:          '#fff',
-                letterSpacing:  '0.08em',
-                opacity:        logoVisible ? 1 : 0,
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              CODEXA
-            </span>
-            <span
-              className="text-base font-bold animate-pulse transition-opacity duration-300"
-              style={{
-                fontFamily: 'var(--font-mono)',
-                color:      '#e8006d',
-                lineHeight: 1,
-                opacity:    logoVisible ? 1 : 0,
-                transitionDelay: logoVisible ? '0.9s' : '0s',
-              }}
-            >
-              _
-            </span>
+          {/* Logo */}
+          <a href="#" className="flex items-center" onClick={closeMenu}>
+            <img
+              src="/logo-mark.png"
+              alt="Codexa"
+              width={40}
+              height={40}
+              style={{ display: 'block' }}
+            />
           </a>
 
-          {/* ── Desktop links ──────────────────────────────── */}
+          {/* Desktop links */}
           <nav className="hidden md:flex items-center gap-7">
             {LINKS.map((link) => (
               <a
@@ -190,59 +115,59 @@ export function Navbar() {
                 href={link.href}
                 className="relative group py-1"
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize:   '0.9rem',
-                  fontWeight: 450,
-                  color:      'rgba(255,255,255,0.82)',
+                  fontFamily:    'var(--font-body)',
+                  fontSize:      '0.9rem',
+                  fontWeight:    450,
+                  color:         'var(--text-muted)',
                   letterSpacing: '0.01em',
-                  transition: 'color 0.2s',
+                  transition:    'color 0.2s',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.82)')}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               >
                 {link.label}
                 <span
                   className="absolute bottom-0 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
-                  style={{ background: '#e8006d' }}
+                  style={{ background: '#00d6f5' }}
                 />
               </a>
             ))}
           </nav>
 
-          {/* ── Desktop CTA ────────────────────────────────── */}
+          {/* Desktop CTA */}
           <div className="hidden md:block">
             <a
-              href="#contato"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200"
+              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full text-sm font-semibold transition-all duration-250"
               style={{
-                fontFamily:  'var(--font-display)',
-                background:  '#e8006d',
-                color:       '#fff',
-                letterSpacing: '0.01em',
+                fontFamily:      'var(--font-display)',
+                padding:         '10px 24px',
+                background:      'rgba(0,214,245,0.08)',
+                color:           '#ffffff',
+                border:          '1px solid rgba(0,214,245,0.55)',
+                boxShadow:       '0 0 12px rgba(0,214,245,0.18), inset 0 0 0 0 transparent',
+                textShadow:      'none',
+                letterSpacing:   '0.03em',
+                cursor:          'none',
               }}
               onMouseEnter={(e) => {
-                gsap.to(e.currentTarget, {
-                  background: '#ff1a7f',
-                  scale: 1.03,
-                  boxShadow: '0 4px 24px rgba(232,0,109,0.45)',
-                  duration: 0.2,
-                })
+                e.currentTarget.style.background  = 'rgba(0,214,245,0.15)'
+                e.currentTarget.style.borderColor = 'rgba(0,214,245,0.9)'
+                e.currentTarget.style.boxShadow   = '0 0 20px rgba(0,214,245,0.35), 0 0 40px rgba(0,214,245,0.12)'
               }}
               onMouseLeave={(e) => {
-                gsap.to(e.currentTarget, {
-                  background: '#e8006d',
-                  scale: 1,
-                  boxShadow: 'none',
-                  duration: 0.25,
-                })
+                e.currentTarget.style.background  = 'rgba(0,214,245,0.08)'
+                e.currentTarget.style.borderColor = 'rgba(0,214,245,0.55)'
+                e.currentTarget.style.boxShadow   = '0 0 12px rgba(0,214,245,0.18), inset 0 0 0 0 transparent'
               }}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
               Fale conosco
             </a>
           </div>
 
-          {/* ── Mobile hamburger ───────────────────────────── */}
+          {/* Mobile hamburger */}
           <button
             className="md:hidden w-10 h-10 flex items-center justify-center"
             onClick={() => setMenuOpen((v) => !v)}
@@ -253,7 +178,7 @@ export function Navbar() {
                 <span
                   key={i}
                   className="block w-6 h-[1.5px] origin-center"
-                  style={{ background: '#fff' }}
+                  style={{ background: 'var(--text)' }}
                 />
               ))}
             </div>
@@ -261,11 +186,11 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* ── Mobile fullscreen menu ──────────────────────────── */}
+      {/* Mobile fullscreen menu */}
       <div
         ref={menuRef}
         className="fixed inset-0 z-40 flex-col justify-between px-6 pt-28 pb-12"
-        style={{ display: 'none', background: '#080810', clipPath: 'inset(0 0 100% 0)' }}
+        style={{ display: 'none', background: '#09090b', clipPath: 'inset(0 0 100% 0)' }}
       >
         <div className="flex flex-col gap-1">
           {LINKS.map((link) => (
@@ -277,14 +202,14 @@ export function Navbar() {
                 fontFamily:  'var(--font-display)',
                 fontSize:    'clamp(2rem, 8vw, 3.5rem)',
                 fontWeight:  700,
-                color:       '#fff',
-                borderColor: 'rgba(255,255,255,0.07)',
+                color:       'var(--text)',
+                borderColor: 'rgba(255,255,255,0.06)',
                 lineHeight:  1.1,
               }}
               onClick={closeMenu}
             >
               {link.label}
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: '#e8006d', flexShrink: 0 }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: '#00d6f5', flexShrink: 0 }}>
                 <path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
@@ -292,8 +217,13 @@ export function Navbar() {
         </div>
 
         <div className="mobile-link flex flex-col gap-6">
-          <a href="#contato" className="btn-primary self-start" onClick={closeMenu}>
-            <span className="w-2 h-2 rounded-full bg-white/60" />
+          <a
+            href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary self-start"
+            onClick={closeMenu}
+          >
             Iniciar projeto
           </a>
           <div className="flex items-center gap-6">
