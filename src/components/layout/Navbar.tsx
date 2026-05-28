@@ -104,20 +104,21 @@ export function Navbar() {
             style={{ textDecoration: 'none' }}
           >
             <img
-              src="/logo-mark.png"
+              src="/logo-mark.svg"
               alt=""
-              width={36}
-              height={36}
+              width={28}
+              height={28}
               style={{ display: 'block', flexShrink: 0 }}
             />
             <span
               style={{
                 fontFamily:    'var(--font-display)',
-                fontSize:      '1.15rem',
+                fontSize:      '1.1rem',
                 fontWeight:    700,
                 letterSpacing: '-0.02em',
                 color:         'var(--text)',
                 lineHeight:    1,
+                paddingTop:    '1px',
               }}
             >
               Codexa
