@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Syne, DM_Sans, JetBrains_Mono } from 'next/font/google'
+import { Syne, DM_Sans, JetBrains_Mono, Cormorant_Garamond } from 'next/font/google'
 import { SmoothScroll } from '@/components/providers/SmoothScroll'
 import './globals.css'
 
@@ -21,6 +21,14 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   variable: '--font-mono',
+  display: 'swap',
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
   display: 'swap',
 })
 
@@ -50,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="pt-BR"
-      className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
+      className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${cormorant.variable}`}
     >
       <body suppressHydrationWarning>
         <SmoothScroll>{children}</SmoothScroll>

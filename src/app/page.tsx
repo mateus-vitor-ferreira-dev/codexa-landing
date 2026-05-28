@@ -1,7 +1,8 @@
-import { Navbar }        from '@/components/layout/Navbar'
-import { Hero }          from '@/components/sections/Hero'
-import { TechMarquee }   from '@/components/sections/TechMarquee'
-import { Stats }         from '@/components/sections/Stats'
+import { Navbar }          from '@/components/layout/Navbar'
+import { Hero }            from '@/components/sections/Hero'
+import { Manifesto }       from '@/components/sections/Manifesto'
+import { PromisesMarquee } from '@/components/sections/PromisesMarquee'
+import { Stats }           from '@/components/sections/Stats'
 import { Services }      from '@/components/sections/Services'
 import { HowItWorks }    from '@/components/sections/HowItWorks'
 import { Cases }         from '@/components/sections/Cases'
@@ -23,8 +24,8 @@ export default function Home() {
       <Navbar />
       <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />
-        <SectionDivider />
-        <TechMarquee />
+        <Manifesto />
+        <PromisesMarquee />
         <SectionDivider accent />
         <Stats />
         <SectionDivider />
