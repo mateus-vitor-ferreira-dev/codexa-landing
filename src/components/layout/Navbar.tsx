@@ -97,14 +97,31 @@ export function Navbar() {
         <div className="page-container flex items-center justify-between h-20">
 
           {/* Logo */}
-          <a href="#" className="flex items-center" onClick={closeMenu}>
+          <a
+            href="#"
+            className="flex items-center gap-2.5"
+            onClick={closeMenu}
+            style={{ textDecoration: 'none' }}
+          >
             <img
               src="/logo-mark.png"
-              alt="Codexa"
-              width={40}
-              height={40}
-              style={{ display: 'block' }}
+              alt=""
+              width={36}
+              height={36}
+              style={{ display: 'block', flexShrink: 0 }}
             />
+            <span
+              style={{
+                fontFamily:    'var(--font-display)',
+                fontSize:      '1.15rem',
+                fontWeight:    700,
+                letterSpacing: '-0.02em',
+                color:         'var(--text)',
+                lineHeight:    1,
+              }}
+            >
+              Codexa
+            </span>
           </a>
 
           {/* Desktop links */}
