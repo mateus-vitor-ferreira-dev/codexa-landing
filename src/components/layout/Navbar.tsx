@@ -103,13 +103,15 @@ export function Navbar() {
             onClick={closeMenu}
             style={{ textDecoration: 'none' }}
           >
-            <img
-              src="/logo-mark.svg"
-              alt=""
-              width={28}
-              height={28}
-              style={{ display: 'block', flexShrink: 0 }}
-            />
+            <svg
+              width={28} height={28}
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              style={{ display: 'block', flexShrink: 0, fill: 'var(--accent)' }}
+            >
+              <path fillRule="evenodd" d="M50,5 L95,50 L50,95 L5,50 Z M50,8 L79,37 L50,66 L21,37 Z M50,62 L67,79 L50,96 L33,79 Z" />
+            </svg>
             <span
               style={{
                 fontFamily:    'var(--font-display)',
@@ -146,7 +148,7 @@ export function Navbar() {
                 {link.label}
                 <span
                   className="absolute bottom-0 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
-                  style={{ background: '#00d6f5' }}
+                  style={{ background: 'var(--accent)' }}
                 />
               </a>
             ))}
@@ -162,23 +164,23 @@ export function Navbar() {
               style={{
                 fontFamily:      'var(--font-display)',
                 padding:         '10px 24px',
-                background:      'rgba(0,214,245,0.08)',
+                background:      'rgba(var(--accent-rgb),0.08)',
                 color:           '#ffffff',
-                border:          '1px solid rgba(0,214,245,0.55)',
-                boxShadow:       '0 0 12px rgba(0,214,245,0.18), inset 0 0 0 0 transparent',
+                border:          '1px solid rgba(var(--accent-rgb),0.55)',
+                boxShadow:       '0 0 12px rgba(var(--accent-rgb),0.18), inset 0 0 0 0 transparent',
                 textShadow:      'none',
                 letterSpacing:   '0.03em',
                 cursor:          'none',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background  = 'rgba(0,214,245,0.15)'
-                e.currentTarget.style.borderColor = 'rgba(0,214,245,0.9)'
-                e.currentTarget.style.boxShadow   = '0 0 20px rgba(0,214,245,0.35), 0 0 40px rgba(0,214,245,0.12)'
+                e.currentTarget.style.background  = 'rgba(var(--accent-rgb),0.15)'
+                e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),0.9)'
+                e.currentTarget.style.boxShadow   = '0 0 20px rgba(var(--accent-rgb),0.35), 0 0 40px rgba(var(--accent-rgb),0.12)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background  = 'rgba(0,214,245,0.08)'
-                e.currentTarget.style.borderColor = 'rgba(0,214,245,0.55)'
-                e.currentTarget.style.boxShadow   = '0 0 12px rgba(0,214,245,0.18), inset 0 0 0 0 transparent'
+                e.currentTarget.style.background  = 'rgba(var(--accent-rgb),0.08)'
+                e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),0.55)'
+                e.currentTarget.style.boxShadow   = '0 0 12px rgba(var(--accent-rgb),0.18), inset 0 0 0 0 transparent'
               }}
             >
               Fale conosco
@@ -227,7 +229,7 @@ export function Navbar() {
               onClick={closeMenu}
             >
               {link.label}
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: '#00d6f5', flexShrink: 0 }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--accent)', flexShrink: 0 }}>
                 <path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>

@@ -67,7 +67,7 @@ export function SectionDivider({ accent = false }: Props) {
           transform:       'translateY(-50%)',
           transformOrigin: 'left center',
           background:     accent
-            ? 'linear-gradient(to right, transparent 0%, rgba(0,214,245,0.6) 35%, rgba(0,214,245,0.6) 65%, transparent 100%)'
+            ? 'linear-gradient(to right, transparent 0%, rgba(var(--accent-rgb),0.6) 35%, rgba(var(--accent-rgb),0.6) 65%, transparent 100%)'
             : 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.14) 30%, rgba(255,255,255,0.14) 70%, transparent 100%)',
         }}
       />
@@ -82,7 +82,7 @@ export function SectionDivider({ accent = false }: Props) {
             transform: 'translate(-50%, -50%)',
             width:     '320px',
             height:    '64px',
-            background: 'radial-gradient(ellipse at center, rgba(0,214,245,0.18) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(var(--accent-rgb),0.18) 0%, transparent 70%)',
             pointerEvents: 'none',
           }}
         />

@@ -10,8 +10,9 @@ import { Testimonials }  from '@/components/sections/Testimonials'
 import { FAQ }           from '@/components/sections/FAQ'
 import { Guarantees }    from '@/components/sections/Guarantees'
 import { CtaFinal }      from '@/components/sections/CtaFinal'
-import { CustomCursor }  from '@/components/ui/CustomCursor'
-import { Preloader }     from '@/components/ui/Preloader'
+import { CustomCursor }   from '@/components/ui/CustomCursor'
+import { ColorSwitcher }  from '@/components/ui/ColorSwitcher'
+import { Preloader }      from '@/components/ui/Preloader'
 import { SectionDivider }    from '@/components/ui/SectionDivider'
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects'
 
@@ -21,6 +22,7 @@ export default function Home() {
       <BackgroundEffects />
       <Preloader />
       <CustomCursor />
+      <ColorSwitcher />
       <Navbar />
       <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />

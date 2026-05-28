@@ -109,7 +109,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           <span style={{
             fontFamily:    'var(--font-mono)',
             fontSize:      '0.62rem',
-            color:         '#00d6f5',
+            color:         'var(--accent)',
             letterSpacing: '0.06em',
           }}>
             {num}
@@ -142,8 +142,8 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             transform:          'rotateY(180deg)',
-            background:         'linear-gradient(145deg, rgba(0,214,245,0.07) 0%, var(--bg-elevated) 55%)',
-            border:             '1px solid rgba(0,214,245,0.25)',
+            background:         'linear-gradient(145deg, rgba(var(--accent-rgb),0.07) 0%, var(--bg-elevated) 55%)',
+            border:             '1px solid rgba(var(--accent-rgb),0.25)',
             borderRadius:       '16px',
             padding:            '24px',
             display:            'flex',
@@ -155,7 +155,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           <span style={{
             fontFamily:    'var(--font-mono)',
             fontSize:      '0.62rem',
-            color:         '#00d6f5',
+            color:         'var(--accent)',
             letterSpacing: '0.06em',
           }}>
             {num}
@@ -217,14 +217,14 @@ export function FAQ() {
         {/* Left — heading + CTA */}
         <div className="faq-heading flex flex-col gap-6 lg:w-80 flex-shrink-0 self-start">
 
-          <div style={{ width: '32px', height: '2px', background: '#00d6f5', borderRadius: '2px' }} />
+          <div style={{ width: '32px', height: '2px', background: 'var(--accent)', borderRadius: '2px' }} />
 
           <h2
             className="font-bold leading-tight"
             style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text)' }}
           >
             Perguntas<br />
-            <span style={{ color: '#00d6f5' }}>frequentes.</span>
+            <span style={{ color: 'var(--accent)' }}>frequentes.</span>
           </h2>
 
           <p

@@ -130,7 +130,7 @@ export function HowItWorks() {
             >
               Do briefing
               <br />
-              ao <span style={{ color: '#00d6f5' }}>deploy</span>
+              ao <span style={{ color: 'var(--accent)' }}>deploy</span>
             </h2>
           </div>
           <p
@@ -158,9 +158,9 @@ export function HowItWorks() {
               ref={lineRef}
               className="absolute top-5 left-0 right-0 h-px"
               style={{
-                background: 'linear-gradient(to right, #00d6f5, rgba(0,214,245,0.5))',
+                background: 'linear-gradient(to right, var(--accent), rgba(var(--accent-rgb),0.5))',
                 transformOrigin: 'left center',
-                boxShadow: '0 0 12px rgba(0,214,245,0.4)',
+                boxShadow: '0 0 12px rgba(var(--accent-rgb),0.4)',
               }}
             />
 
@@ -176,13 +176,13 @@ export function HowItWorks() {
                     className="w-10 h-10 rounded-full flex items-center justify-center relative"
                     style={{
                       background: 'var(--bg)',
-                      border:     '1px solid rgba(0,214,245,0.5)',
-                      boxShadow:  '0 0 20px rgba(0,214,245,0.15)',
+                      border:     '1px solid rgba(var(--accent-rgb),0.5)',
+                      boxShadow:  '0 0 20px rgba(var(--accent-rgb),0.15)',
                     }}
                   >
                     <span
                       className="text-xs font-bold"
-                      style={{ fontFamily: 'var(--font-mono)', color: '#00d6f5' }}
+                      style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}
                     >
                       {step.number}
                     </span>
@@ -190,7 +190,7 @@ export function HowItWorks() {
                     {step.number === '05' && (
                       <span
                         className="absolute inset-0 rounded-full animate-ping"
-                        style={{ background: 'rgba(0,214,245,0.15)' }}
+                        style={{ background: 'rgba(var(--accent-rgb),0.15)' }}
                       />
                     )}
                   </div>
@@ -222,9 +222,9 @@ export function HowItWorks() {
               ref={lineVRef}
               className="absolute left-4 top-0 bottom-0 w-px"
               style={{
-                background:    'linear-gradient(to bottom, #00d6f5, rgba(0,214,245,0.3))',
+                background:    'linear-gradient(to bottom, var(--accent), rgba(var(--accent-rgb),0.3))',
                 transformOrigin: 'top center',
-                boxShadow:     '0 0 12px rgba(0,214,245,0.3)',
+                boxShadow:     '0 0 12px rgba(var(--accent-rgb),0.3)',
               }}
             />
 
@@ -239,12 +239,12 @@ export function HowItWorks() {
                   className="step-dot absolute -left-[22px] top-0 w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
                     background: 'var(--bg-section)',
-                    border:     '1px solid rgba(0,214,245,0.5)',
+                    border:     '1px solid rgba(var(--accent-rgb),0.5)',
                   }}
                 >
                   <span
                     className="text-[10px] font-bold"
-                    style={{ fontFamily: 'var(--font-mono)', color: '#00d6f5' }}
+                    style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}
                   >
                     {i + 1}
                   </span>
@@ -264,10 +264,10 @@ export function HowItWorks() {
                         display: 'inline-flex', justifyContent: 'center',
                         minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
                         fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-                        color:      '#00d6f5',
-                        background: 'rgba(0,214,245,0.08)',
-                        border:     '1px solid rgba(0,214,245,0.55)',
-                        boxShadow:  '0 0 12px rgba(0,214,245,0.18)',
+                        color:      'var(--accent)',
+                        background: 'rgba(var(--accent-rgb),0.08)',
+                        border:     '1px solid rgba(var(--accent-rgb),0.55)',
+                        boxShadow:  '0 0 12px rgba(var(--accent-rgb),0.18)',
                       }}
                     >
                       {step.badge}
@@ -311,8 +311,8 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
   const onEnter = () => {
     gsap.to(cardRef.current, {
       y: -7,
-      borderColor: 'rgba(0,214,245,0.35)',
-      boxShadow: '0 20px 56px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,214,245,0.15)',
+      borderColor: 'rgba(var(--accent-rgb),0.35)',
+      boxShadow: '0 20px 56px rgba(0,0,0,0.55), 0 0 0 1px rgba(var(--accent-rgb),0.15)',
       duration: 0.28, ease: 'power2.out',
     })
     gsap.fromTo(shineRef.current,
@@ -357,9 +357,9 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
         display: 'inline-flex', justifyContent: 'center',
         minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
         fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-        color: '#00d6f5', background: 'rgba(0,214,245,0.08)',
-        border: '1px solid rgba(0,214,245,0.55)',
-        boxShadow: '0 0 12px rgba(0,214,245,0.18)',
+        color: 'var(--accent)', background: 'rgba(var(--accent-rgb),0.08)',
+        border: '1px solid rgba(var(--accent-rgb),0.55)',
+        boxShadow: '0 0 12px rgba(var(--accent-rgb),0.18)',
       }}>
         {step.badge}
       </span>

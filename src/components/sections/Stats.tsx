@@ -81,7 +81,7 @@ export function Stats() {
             <h2 className="font-bold leading-tight"
               style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', color: 'var(--text)' }}>
               Resultados que<br />
-              <span style={{ color: '#00d6f5' }}>ficam no ar.</span>
+              <span style={{ color: 'var(--accent)' }}>ficam no ar.</span>
             </h2>
           </div>
           <p className="max-w-xs leading-relaxed"
@@ -105,7 +105,7 @@ export function Stats() {
               <div style={{
                 position: 'absolute', top: 0, left: 0,
                 width: '80px', height: '80px',
-                background: 'radial-gradient(circle at top left, rgba(0,214,245,0.12), transparent 70%)',
+                background: 'radial-gradient(circle at top left, rgba(var(--accent-rgb),0.12), transparent 70%)',
                 pointerEvents: 'none',
               }} />
 
@@ -115,7 +115,7 @@ export function Stats() {
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
                   fontWeight: 800,
-                  color: '#00d6f5',
+                  color: 'var(--accent)',
                   lineHeight: 1,
                   letterSpacing: '-0.02em',
                 }}
@@ -146,7 +146,7 @@ export function Stats() {
               <div style={{
                 position: 'absolute', bottom: 0, left: '20%', right: '20%',
                 height: '1px',
-                background: 'linear-gradient(to right, transparent, rgba(0,214,245,0.35), transparent)',
+                background: 'linear-gradient(to right, transparent, rgba(var(--accent-rgb),0.35), transparent)',
               }} />
             </div>
           ))}

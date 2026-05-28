@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const ACCENT     = '#4dd8e0'
-const ACCENT_RGB = '77,216,224'
-
 const COMMANDS = [
   'npm run build',
   'git push origin main',
@@ -47,7 +44,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         const el = document.createElement('div')
         const col = Math.floor(Math.random() * Math.floor(W / 60))
         const row = Math.floor(Math.random() * Math.floor(H / 60))
-        el.style.cssText = `position:absolute;left:${col*60}px;top:${row*60}px;width:60px;height:60px;background:rgba(${ACCENT_RGB},.08);opacity:0;animation:bgCellFlash 4s ease-out forwards;`
+        el.style.cssText = `position:absolute;left:${col*60}px;top:${row*60}px;width:60px;height:60px;background:rgba(var(--accent-rgb),.08);opacity:0;animation:bgCellFlash 4s ease-out forwards;`
         c.appendChild(el)
         setTimeout(() => { try { el.remove() } catch {} }, 4200)
       }, Math.round(1200 / mult)))
@@ -62,7 +59,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         const text = Array.from({ length: len }, () => Math.random() > .5 ? '1' : '0').join('')
         const dur  = 15 + Math.random() * 15
         const el   = document.createElement('div')
-        el.style.cssText = `position:absolute;left:${Math.random() * window.innerWidth}px;top:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(${ACCENT_RGB},.15);writing-mode:vertical-rl;letter-spacing:6px;will-change:transform;animation:bgBinaryDrop ${dur}s linear forwards;`
+        el.style.cssText = `position:absolute;left:${Math.random() * window.innerWidth}px;top:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(var(--accent-rgb),.15);writing-mode:vertical-rl;letter-spacing:6px;will-change:transform;animation:bgBinaryDrop ${dur}s linear forwards;`
         el.textContent = text
         c.appendChild(el)
         setTimeout(() => { try { el.remove() } catch {} }, (dur + 1) * 1000)
@@ -101,7 +98,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
           const line = document.createElementNS(NS, 'line')
           line.setAttribute('x1', String(nodes[i].x)); line.setAttribute('y1', String(nodes[i].y))
           line.setAttribute('x2', String(nodes[j].x)); line.setAttribute('y2', String(nodes[j].y))
-          line.setAttribute('stroke', `rgba(${ACCENT_RGB},.12)`)
+          line.style.stroke = 'rgba(var(--accent-rgb),.12)'
           line.setAttribute('stroke-width', '.5')
           svg.appendChild(line)
         }
@@ -110,7 +107,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
       nodes.forEach((node, i) => {
         const circle = document.createElementNS(NS, 'circle')
         circle.setAttribute('cx', String(node.x)); circle.setAttribute('cy', String(node.y))
-        circle.setAttribute('r', '2'); circle.setAttribute('fill', `rgba(${ACCENT_RGB},.5)`)
+        circle.setAttribute('r', '2'); circle.style.fill = 'rgba(var(--accent-rgb),.5)'
         ;(['r', 'opacity'] as const).forEach((attr, ai) => {
           const anim = document.createElementNS(NS, 'animate')
           anim.setAttribute('attributeName', attr)
@@ -131,8 +128,8 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
       const from = nodes[fi], to = nodes[ti]
       if (!from || !to) return
       const dot = document.createElementNS(NS, 'circle')
-      dot.setAttribute('r', '3'); dot.setAttribute('fill', ACCENT)
-      dot.style.filter = `drop-shadow(0 0 4px ${ACCENT})`
+      dot.setAttribute('r', '3'); dot.style.fill = 'var(--accent)'
+      dot.style.filter = 'drop-shadow(0 0 4px var(--accent))'
       svg.appendChild(dot)
       const dur = 1200 + Math.random() * 800, t0 = performance.now()
       const tick = (now: number) => {
@@ -168,7 +165,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         const el   = document.createElement('div')
         el.setAttribute('style',
           `--rot:${rot}deg;position:absolute;left:${Math.random() * (window.innerWidth - 60)}px;top:0;` +
-          `font-family:'JetBrains Mono',monospace;font-size:${size}px;color:rgba(${ACCENT_RGB},.18);` +
+          `font-family:'JetBrains Mono',monospace;font-size:${size}px;color:rgba(var(--accent-rgb),.18);` +
           `will-change:transform;animation:bgSymbolRise ${dur}s linear forwards;`
         )
         el.textContent = sym
@@ -252,8 +249,8 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: [
-            `linear-gradient(rgba(${ACCENT_RGB},.025) 1px, transparent 1px)`,
-            `linear-gradient(90deg, rgba(${ACCENT_RGB},.025) 1px, transparent 1px)`,
+            `linear-gradient(rgba(var(--accent-rgb),.025) 1px, transparent 1px)`,
+            `linear-gradient(90deg, rgba(var(--accent-rgb),.025) 1px, transparent 1px)`,
           ].join(','),
           backgroundSize: '60px 60px',
         }} />
@@ -300,11 +297,11 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
 
         {/* Body */}
         <div style={{ padding: '10px 14px 14px', display: 'flex', alignItems: 'flex-start', gap: 6, minHeight: 36 }}>
-          <span style={{ color: ACCENT, userSelect: 'none', flexShrink: 0 }}>$</span>
+          <span style={{ color: 'var(--accent)', userSelect: 'none', flexShrink: 0 }}>$</span>
           <span style={{ color: 'rgba(255,255,255,.75)', wordBreak: 'break-all', flex: 1 }}>{termText}</span>
           <span style={{
             display: 'inline-block', width: 7, height: 14,
-            background: ACCENT, flexShrink: 0, alignSelf: 'center',
+            background: 'var(--accent)', flexShrink: 0, alignSelf: 'center',
             animation: 'bgCursorBlink 1s step-end infinite',
           }} />
         </div>

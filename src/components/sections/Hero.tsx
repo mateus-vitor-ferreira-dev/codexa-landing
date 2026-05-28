@@ -99,7 +99,7 @@ export function Hero() {
           <div className="hero-tag inline-flex items-center gap-2 self-start">
             <span
               className="hero-tag-dot w-1.5 h-1.5 rounded-full"
-              style={{ background: '#00d6f5' }}
+              style={{ background: 'var(--accent)' }}
             />
             <span
               className="text-xs tracking-[0.18em] uppercase"
@@ -123,7 +123,7 @@ export function Hero() {
                   <span
                     ref={wordRef}
                     className="hero-word block"
-                    style={{ color: '#00d6f5' }}
+                    style={{ color: 'var(--accent)' }}
                   >
                     {WORDS[0]}
                   </span>

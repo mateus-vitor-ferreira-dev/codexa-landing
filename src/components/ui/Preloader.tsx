@@ -122,7 +122,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 50% 50% at 50% 60%, rgba(0,214,245,0.08) 0%, transparent 70%)',
+            'radial-gradient(ellipse 50% 50% at 50% 60%, rgba(var(--accent-rgb),0.08) 0%, transparent 70%)',
         }}
       />
 
@@ -156,7 +156,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
                 fontFamily: 'var(--font-mono)',
                 fontSize:   'clamp(2.5rem, 7vw, 5rem)',
                 fontWeight: 700,
-                color:      '#00d6f5',
+                color:      'var(--accent)',
               }}
             >
               _
@@ -192,9 +192,9 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
             <div
               className="pre-bar h-full"
               style={{
-                background:      'linear-gradient(to right, #00d6f5, rgba(0,214,245,0.6))',
+                background:      'linear-gradient(to right, var(--accent), rgba(var(--accent-rgb),0.6))',
                 transformOrigin: 'left center',
-                boxShadow:       '0 0 12px rgba(0,214,245,0.6)',
+                boxShadow:       '0 0 12px rgba(var(--accent-rgb),0.6)',
               }}
             />
           </div>
@@ -205,7 +205,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize:   '0.72rem',
-              color:      '#00d6f5',
+              color:      'var(--accent)',
               minWidth:   '3.2ch',
               textAlign:  'right',
               letterSpacing: '0.05em',

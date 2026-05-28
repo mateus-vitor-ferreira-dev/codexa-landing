@@ -49,8 +49,8 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
   const onEnter = () => {
     gsap.to(cardRef.current, {
       y: -6,
-      borderColor: 'rgba(0,214,245,0.3)',
-      boxShadow: '0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,214,245,0.12)',
+      borderColor: 'rgba(var(--accent-rgb),0.3)',
+      boxShadow: '0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(var(--accent-rgb),0.12)',
       duration: 0.25, ease: 'power2.out',
     })
     gsap.fromTo(shineRef.current,
@@ -100,12 +100,12 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
         width:          '52px',
         height:         '52px',
         borderRadius:   '14px',
-        background:     'rgba(0,214,245,0.08)',
-        border:         '1px solid rgba(0,214,245,0.22)',
+        background:     'rgba(var(--accent-rgb),0.08)',
+        border:         '1px solid rgba(var(--accent-rgb),0.22)',
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
-        color:          '#00d6f5',
+        color:          'var(--accent)',
         flexShrink:     0,
         position:       'relative',
         zIndex:         2,

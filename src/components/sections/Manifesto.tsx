@@ -102,7 +102,7 @@ export function Manifesto() {
       {/* Decorative vertical centre line */}
       <div style={{
         position: 'absolute', left: '50%', top: 0, width: '1px', height: '100%',
-        background: 'linear-gradient(180deg, transparent 0%, rgba(77,216,224,0.12) 50%, transparent 100%)',
+        background: 'linear-gradient(180deg, transparent 0%, rgba(var(--accent-rgb),0.12) 50%, transparent 100%)',
         transform: 'translateX(-50%)', pointerEvents: 'none',
       }} />
 
@@ -119,9 +119,9 @@ export function Manifesto() {
             opacity: 0,
           }}
         >
-          <span style={{ width: '40px', height: '1px', background: 'rgba(77,216,224,0.4)', flexShrink: 0 }} />
+          <span style={{ width: '40px', height: '1px', background: 'rgba(var(--accent-rgb),0.4)', flexShrink: 0 }} />
           Nossa filosofia
-          <span style={{ width: '40px', height: '1px', background: 'rgba(77,216,224,0.4)', flexShrink: 0 }} />
+          <span style={{ width: '40px', height: '1px', background: 'rgba(var(--accent-rgb),0.4)', flexShrink: 0 }} />
         </div>
 
         {/* Quote */}
@@ -134,7 +134,7 @@ export function Manifesto() {
         }}>
           <span ref={line1Ref} style={{ display: 'block', opacity: 0 }}>
             Não vendemos{' '}
-            <em style={{ fontStyle: 'italic', color: '#4dd8e0', position: 'relative' }}>
+            <em style={{ fontStyle: 'italic', color: 'var(--accent)', position: 'relative' }}>
               código
               {/* Animated underline */}
               <span
@@ -146,7 +146,7 @@ export function Manifesto() {
                   bottom:          '0.05em',
                   width:           '100%',
                   height:          '1px',
-                  background:      '#4dd8e0',
+                  background:      'var(--accent)',
                   display:         'block',
                   transformOrigin: 'left',
                   transform:       'scaleX(0)',
@@ -180,8 +180,8 @@ export function Manifesto() {
         >
           <span style={{
             width: '6px', height: '6px',
-            background: '#4dd8e0', borderRadius: '50%',
-            boxShadow: '0 0 8px #4dd8e0',
+            background: 'var(--accent)', borderRadius: '50%',
+            boxShadow: '0 0 8px var(--accent)',
             animation: 'manifestoBlink 2s ease-in-out infinite',
             flexShrink: 0,
           }} />

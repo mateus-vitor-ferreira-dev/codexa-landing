@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Syne, DM_Sans, JetBrains_Mono, Cormorant_Garamond } from 'next/font/google'
-import { SmoothScroll } from '@/components/providers/SmoothScroll'
+import { SmoothScroll }  from '@/components/providers/SmoothScroll'
+import { ThemeProvider } from '@/context/ThemeContext'
 import './globals.css'
 
 const syne = Syne({
@@ -62,7 +63,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${cormorant.variable}`}
     >
       <body suppressHydrationWarning>
-        <SmoothScroll>{children}</SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   )

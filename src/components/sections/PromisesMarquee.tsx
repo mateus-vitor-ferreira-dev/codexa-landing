@@ -47,7 +47,7 @@ function Track() {
             <Icon
               size={15}
               strokeWidth={1.5}
-              style={{ color: '#4dd8e0', flexShrink: 0 }}
+              style={{ color: 'var(--accent)', flexShrink: 0 }}
             />
             <span
               style={{
@@ -67,7 +67,7 @@ function Track() {
                 width:       '4px',
                 height:      '4px',
                 borderRadius: '50%',
-                background:  'rgba(77,216,224,0.35)',
+                background:  'rgba(var(--accent-rgb),0.35)',
                 flexShrink:  0,
               }}
             />
@@ -84,8 +84,8 @@ export function PromisesMarquee() {
       aria-label="O que você leva ao trabalhar conosco"
       style={{
         background:  '#0d0614',
-        borderTop:   '1px solid rgba(77,216,224,0.08)',
-        borderBottom:'1px solid rgba(77,216,224,0.08)',
+        borderTop:   '1px solid rgba(var(--accent-rgb),0.08)',
+        borderBottom:'1px solid rgba(var(--accent-rgb),0.08)',
         padding:     'clamp(32px, 5vw, 56px) 0',
         overflow:    'hidden',
       }}
@@ -97,7 +97,7 @@ export function PromisesMarquee() {
           fontSize:      '9px',
           letterSpacing: '4px',
           textTransform: 'uppercase',
-          color:         'rgba(77,216,224,0.35)',
+          color:         'rgba(var(--accent-rgb),0.35)',
           textAlign:     'center',
           marginBottom:  'clamp(20px, 3vw, 32px)',
         }}

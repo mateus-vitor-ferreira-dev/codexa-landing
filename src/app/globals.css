@@ -8,6 +8,7 @@
   --bg-section:      transparent;
   --accent:          #00d6f5;
   --accent-dim:      #007a8c;
+  --accent-rgb:      0, 214, 245;
   --accent-glow:     rgba(0, 214, 245, 0.12);
   --accent-border:   rgba(0, 214, 245, 0.2);
   --text:            #f4f4f5;
@@ -144,8 +145,8 @@ html { cursor: none; }
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(0,214,245,0.5) 35%,
-    rgba(0,214,245,0.5) 65%,
+    rgba(var(--accent-rgb),0.5) 35%,
+    rgba(var(--accent-rgb),0.5) 65%,
     transparent 100%
   );
 }
@@ -154,7 +155,7 @@ html { cursor: none; }
   content: '';
   position: absolute;
   inset: -12px 20% -12px;
-  background: radial-gradient(ellipse at center, rgba(0,214,245,0.2) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(var(--accent-rgb),0.2) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -168,8 +169,8 @@ html { cursor: none; }
 
 .gradient-mesh {
   background:
-    radial-gradient(ellipse 55% 50% at 5% 90%, rgba(0, 214, 245, 0.09) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 40% at 95% 10%, rgba(0, 214, 245, 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 55% 50% at 5% 90%, rgba(var(--accent-rgb), 0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 95% 10%, rgba(var(--accent-rgb), 0.05) 0%, transparent 60%);
 }
 
 .code-glow {
@@ -198,7 +199,7 @@ html { cursor: none; }
 .btn-primary:hover {
   opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 10px 40px rgba(0, 214, 245, 0.4);
+  box-shadow: 0 10px 40px rgba(var(--accent-rgb), 0.4);
 }
 
 .btn-ghost {

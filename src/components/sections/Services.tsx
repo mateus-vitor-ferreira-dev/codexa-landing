@@ -69,7 +69,7 @@ const SERVICES = [
     title: 'Automações com IA',
     desc: 'Processos que rodam sozinhos. Agentes inteligentes que economizam horas por semana do seu time.',
     tags: ['Claude + n8n', 'WhatsApp & email', 'Workflows', 'LLMs'],
-    icon: IconCpu, accent: '#00d6f5', badge: 'Em alta',
+    icon: IconCpu, accent: 'var(--accent)', badge: 'Em alta',
   },
   {
     id: '05', category: 'Backend',
@@ -310,7 +310,7 @@ export function Services() {
                 <span className="services-h2-line block">Soluções digitais</span>
               </span>
               <span className="block overflow-hidden pb-1">
-                <span className="services-h2-line block" style={{ color: '#00d6f5' }}>sob medida.</span>
+                <span className="services-h2-line block" style={{ color: 'var(--accent)' }}>sob medida.</span>
               </span>
             </h2>
           </div>
@@ -335,7 +335,7 @@ export function Services() {
             target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 transition-colors"
             style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#00d6f5')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
             Não encontrou o que precisa? Vamos conversar

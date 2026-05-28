@@ -76,7 +76,7 @@ export function Testimonials() {
             <h2 className="font-bold leading-tight"
               style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
               O que nossos<br />
-              <span style={{ color: '#00d6f5' }}>clientes falam.</span>
+              <span style={{ color: 'var(--accent)' }}>clientes falam.</span>
             </h2>
           </div>
           <p className="leading-relaxed max-w-xs"

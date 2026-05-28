@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { useTheme } from '@/context/ThemeContext'
 
 const CONFIG = {
   POINT_COUNT:         180,
@@ -15,14 +16,14 @@ const CONFIG = {
   IDLE_TIMEOUT_SEC:    2,
 } as const
 
-function makePointTexture(): THREE.CanvasTexture {
+function makePointTexture(r = 77, g = 216, b = 224): THREE.CanvasTexture {
   const c = document.createElement('canvas')
   c.width = c.height = 64
   const ctx = c.getContext('2d')!
   const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
   grad.addColorStop(0,   'rgba(255,255,255,1)')
-  grad.addColorStop(0.4, 'rgba(77,216,224,0.8)')
-  grad.addColorStop(1,   'rgba(77,216,224,0)')
+  grad.addColorStop(0.4, `rgba(${r},${g},${b},0.8)`)
+  grad.addColorStop(1,   `rgba(${r},${g},${b},0)`)
   ctx.fillStyle = grad
   ctx.fillRect(0, 0, 64, 64)
   return new THREE.CanvasTexture(c)
@@ -44,6 +45,12 @@ function buildSpherePoints(): THREE.Vector3[] {
 
 export default function Orb() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { theme } = useTheme()
+  const materialsRef = useRef<{
+    lineMat: THREE.LineBasicMaterial
+    coreMat: THREE.MeshBasicMaterial
+    ptMat:   THREE.PointsMaterial
+  } | null>(null)
 
   useEffect(() => {
     const canvas    = canvasRef.current
@@ -218,6 +225,8 @@ export default function Orb() {
       animate()
     }
 
+    materialsRef.current = { lineMat, coreMat, ptMat }
+
     // ── Cleanup ──────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(raf)
@@ -235,13 +244,23 @@ export default function Orb() {
     }
   }, [])
 
+  useEffect(() => {
+    const m = materialsRef.current
+    if (!m) return
+    m.lineMat.color.setHex(theme.three)
+    m.coreMat.color.setHex(theme.three)
+    const [r, g, b] = theme.rgb.split(',').map(n => parseInt(n.trim()))
+    m.ptMat.map = makePointTexture(r, g, b)
+    m.ptMat.needsUpdate = true
+  }, [theme.id, theme.three, theme.rgb])
+
   return (
     <div className="relative w-full aspect-square max-w-[500px] mx-auto lg:mx-0">
       {/* Glow */}
       <div
         className="absolute inset-[10%] pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(77,216,224,0.18) 0%, transparent 60%)',
+          background: 'radial-gradient(circle, rgba(var(--accent-rgb),0.18) 0%, transparent 60%)',
           filter: 'blur(40px)',
           animation: 'glowPulse 4s ease-in-out infinite',
         }}
@@ -256,7 +275,7 @@ export default function Orb() {
       >
         <span
           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-          style={{ background: '#4dd8e0', boxShadow: '0 0 8px #4dd8e0', animation: 'glowPulse 2s ease-in-out infinite' }}
+          style={{ background: 'var(--accent)', boxShadow: '0 0 8px var(--accent)', animation: 'glowPulse 2s ease-in-out infinite' }}
         />
         Núcleo · processando
       </div>
