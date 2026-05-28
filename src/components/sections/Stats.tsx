@@ -68,7 +68,7 @@ export function Stats() {
   }, { scope: sectionRef })
 
   return (
-    <section ref={sectionRef} className="py-32" style={{ background: 'var(--bg)' }}>
+    <section ref={sectionRef} className="py-36" style={{ background: 'transparent' }}>
       <div className="page-container flex flex-col gap-14">
 
         {/* Heading */}

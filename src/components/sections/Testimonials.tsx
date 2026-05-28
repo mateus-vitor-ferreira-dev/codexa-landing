@@ -10,24 +10,24 @@ gsap.registerPlugin(ScrollTrigger)
 const TESTIMONIALS = [
   {
     quote: 'A Codexa entregou o sistema de reservas no prazo e acima do esperado. A comunicação foi totalmente transparente do início ao fim — sabia exatamente o que estava sendo feito.',
-    name:    'Recanto Vila Rica',
-    role:    'Sistema de Reservas · Lavras, MG',
+    name:    'Cleide Mirin Pereira',
+    role:    'Proprietária · Recanto Vila Rica · Lavras, MG',
     accent:  '#c9a84c',
-    initials:'RVR',
+    initials:'CM',
   },
   {
     quote: 'Nossa landing page ficou exatamente como imaginamos. O sistema de pedidos aumentou nossas vendas logo no primeiro mês. Qualidade técnica e visual muito acima da média.',
-    name:    'M.O.B Burger',
-    role:    'Web App + Landing Page · Lavras, MG',
+    name:    'Murilo Carvalho Campos',
+    role:    'Sócio · M.O.B Burger · Lavras, MG',
     accent:  '#FF4500',
-    initials:'MOB',
+    initials:'MC',
   },
   {
     quote: 'Processo organizado e direto. Cada sprint tinha entregável real, dava pra acompanhar o progresso sem precisar ficar perguntando. Recomendo sem hesitar.',
-    name:    'FutMatch',
-    role:    'Landing Page · Plataforma SaaS',
+    name:    'Johnatan Alves De Oliveira',
+    role:    'CEO · FutMatch · Plataforma SaaS',
     accent:  '#22c55e',
-    initials:'FM',
+    initials:'JA',
   },
 ]
 
@@ -63,7 +63,7 @@ export function Testimonials() {
 
   return (
     <section ref={sectionRef} id="depoimentos" className="py-36"
-      style={{ background: 'var(--bg)', position: 'relative', zIndex: 0 }}>
+      style={{ background: 'transparent', position: 'relative', zIndex: 0 }}>
       <div className="page-container flex flex-col gap-20">
 
         {/* Heading */}

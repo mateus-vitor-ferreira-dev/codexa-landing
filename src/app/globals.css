@@ -2,10 +2,10 @@
 
 /* ── Design tokens ─────────────────────────────────────── */
 :root {
-  --bg:              #09090b;
-  --bg-card:         #111113;
-  --bg-elevated:     #141417;
-  --bg-section:      #0d0d0f;
+  --bg:              #06060a;
+  --bg-card:         rgba(14,14,18,0.92);
+  --bg-elevated:     rgba(18,18,22,0.90);
+  --bg-section:      transparent;
   --accent:          #00d6f5;
   --accent-dim:      #007a8c;
   --accent-glow:     rgba(0, 214, 245, 0.12);
@@ -169,8 +169,7 @@ html { cursor: none; }
 .gradient-mesh {
   background:
     radial-gradient(ellipse 55% 50% at 5% 90%, rgba(0, 214, 245, 0.09) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 40% at 95% 10%, rgba(0, 214, 245, 0.05) 0%, transparent 60%),
-    var(--bg);
+    radial-gradient(ellipse 40% 40% at 95% 10%, rgba(0, 214, 245, 0.05) 0%, transparent 60%);
 }
 
 .code-glow {

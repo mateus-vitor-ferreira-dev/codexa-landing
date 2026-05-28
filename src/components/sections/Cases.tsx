@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -95,8 +96,8 @@ const PROJECTS: Project[] = [
 /* ── Browser Mockup ─────────────────────────────────────── */
 function BrowserMockup({ project }: { project: Project }) {
   const wrapRef    = useRef<HTMLAnchorElement>(null)
-  const img1Ref    = useRef<HTMLImageElement>(null)
-  const img2Ref    = useRef<HTMLImageElement>(null)
+  const img1Ref    = useRef<HTMLDivElement>(null)
+  const img2Ref    = useRef<HTMLDivElement>(null)
   const overRef    = useRef<HTMLDivElement>(null)
   const btnRef     = useRef<HTMLSpanElement>(null)
   const themeRef   = useRef<HTMLSpanElement>(null)
@@ -199,33 +200,32 @@ function BrowserMockup({ project }: { project: Project }) {
       {/* Screenshot */}
       <div className="relative overflow-hidden" style={{ height: '380px' }}>
         {/* Imagem principal */}
-        <img
+        <div
           ref={img1Ref}
-          src={project.preview}
-          alt={`${project.title} — ${project.subtitle}`}
-          draggable={false}
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover', objectPosition: 'top',
-            transformOrigin: 'center top',
-          }}
-        />
+          style={{ position: 'absolute', inset: 0, transformOrigin: 'center top' }}
+        >
+          <Image
+            src={project.preview}
+            alt={`${project.title} — ${project.subtitle}`}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            style={{ objectFit: 'cover', objectPosition: 'top' }}
+          />
+        </div>
         {/* Imagem alternativa (tema escuro / dual) */}
         {project.preview2 && (
-          <img
+          <div
             ref={img2Ref}
-            src={project.preview2}
-            alt={`${project.title} — tema escuro`}
-            draggable={false}
-            style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
-              objectFit: 'cover', objectPosition: 'top',
-              transformOrigin: 'center top',
-              opacity: 0,
-            }}
-          />
+            style={{ position: 'absolute', inset: 0, transformOrigin: 'center top', opacity: 0 }}
+          >
+            <Image
+              src={project.preview2}
+              alt={`${project.title} — tema escuro`}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              style={{ objectFit: 'cover', objectPosition: 'top' }}
+            />
+          </div>
         )}
         {/* Overlay hover */}
         <div ref={overRef} className="absolute inset-0 flex items-center justify-center"
@@ -372,16 +372,10 @@ export function Cases() {
       )
     })
 
-    // Bottom CTA
-    gsap.fromTo('.cases-bottom',
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out',
-        scrollTrigger: { trigger: '.cases-bottom', start: 'top 90%', toggleActions: 'play reverse play reverse' } }
-    )
   }, { scope: sectionRef })
 
   return (
-    <section ref={sectionRef} id="cases" className="py-36" style={{ background: 'var(--bg-section)' }}>
+    <section ref={sectionRef} id="cases" className="py-36" style={{ background: 'transparent' }}>
       <div className="page-container">
 
         {/* Heading */}
@@ -415,29 +409,6 @@ export function Cases() {
               total={PROJECTS.length}
             />
           ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div
-          className="cases-bottom flex flex-col md:flex-row items-center justify-between gap-6 mt-16 px-8 py-7 rounded-2xl"
-          style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-elevated)' }}
-        >
-          <div>
-            <p className="font-semibold" style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', color: 'var(--text)' }}>
-              O próximo case pode ser o seu.
-            </p>
-            <p className="mt-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-faint)' }}>
-              Portfólio em crescimento · mais projetos chegando em breve
-            </p>
-          </div>
-          <a
-            href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
-            target="_blank" rel="noopener noreferrer"
-            className="btn-primary shrink-0"
-            style={{ fontSize: '0.875rem', padding: '12px 24px' }}
-          >
-            Iniciar projeto
-          </a>
         </div>
 
       </div>

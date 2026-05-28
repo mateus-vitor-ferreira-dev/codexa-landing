@@ -148,8 +148,8 @@ export function TechMarquee() {
   return (
     <section
       ref={sectionRef}
-      className="py-16 overflow-hidden"
-      style={{ background: 'var(--bg-section)' }}
+      className="py-28 overflow-hidden"
+      style={{ background: 'transparent' }}
     >
       {/* Header */}
       <div className="tech-header page-container flex items-center gap-4 mb-6">

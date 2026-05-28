@@ -164,7 +164,7 @@ export function Guarantees() {
     <section
       ref={sectionRef}
       style={{
-        background:    'var(--bg-section)',
+        background:    'transparent',
         borderTop:     '1px solid rgba(255,255,255,0.05)',
         paddingTop:    '8rem',
         paddingBottom: '6rem',

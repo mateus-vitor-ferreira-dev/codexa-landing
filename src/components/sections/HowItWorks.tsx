@@ -111,7 +111,7 @@ export function HowItWorks() {
       ref={sectionRef}
       id="como-funciona"
       className="py-36 overflow-hidden"
-      style={{ background: 'var(--bg)' }}
+      style={{ background: 'transparent' }}
     >
       <div className="page-container flex flex-col gap-28">
 
@@ -260,12 +260,14 @@ export function HowItWorks() {
                       {step.title}
                     </span>
                     <span
-                      className="text-xs px-2 py-0.5 rounded-full"
                       style={{
-                        fontFamily: 'var(--font-mono)',
+                        display: 'inline-flex', justifyContent: 'center',
+                        minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
+                        fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
                         color:      '#00d6f5',
-                        background: 'rgba(0,214,245,0.1)',
-                        border:     '1px solid rgba(0,214,245,0.2)',
+                        background: 'rgba(0,214,245,0.08)',
+                        border:     '1px solid rgba(0,214,245,0.55)',
+                        boxShadow:  '0 0 12px rgba(0,214,245,0.18)',
                       }}
                     >
                       {step.badge}
@@ -351,10 +353,13 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
       }} />
 
       {/* Badge de tempo */}
-      <span className="self-start px-3 py-1 rounded-full" style={{
+      <span style={{
+        display: 'inline-flex', justifyContent: 'center',
+        minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
         fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-        color: '#00d6f5', background: 'rgba(0,214,245,0.12)',
-        border: '1px solid rgba(0,214,245,0.28)',
+        color: '#00d6f5', background: 'rgba(0,214,245,0.08)',
+        border: '1px solid rgba(0,214,245,0.55)',
+        boxShadow: '0 0 12px rgba(0,214,245,0.18)',
       }}>
         {step.badge}
       </span>

@@ -11,15 +11,17 @@ import { Guarantees }    from '@/components/sections/Guarantees'
 import { CtaFinal }      from '@/components/sections/CtaFinal'
 import { CustomCursor }  from '@/components/ui/CustomCursor'
 import { Preloader }     from '@/components/ui/Preloader'
-import { SectionDivider } from '@/components/ui/SectionDivider'
+import { SectionDivider }    from '@/components/ui/SectionDivider'
+import { BackgroundEffects } from '@/components/ui/BackgroundEffects'
 
 export default function Home() {
   return (
     <>
+      <BackgroundEffects />
       <Preloader />
       <CustomCursor />
       <Navbar />
-      <main>
+      <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />
         <SectionDivider />
         <TechMarquee />
@@ -35,7 +37,9 @@ export default function Home() {
         <Testimonials />
         <SectionDivider />
         <FAQ />
+        <SectionDivider />
         <Guarantees />
+        <SectionDivider />
         <CtaFinal />
       </main>
     </>

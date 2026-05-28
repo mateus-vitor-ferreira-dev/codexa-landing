@@ -210,7 +210,7 @@ export function FAQ() {
     <section
       ref={sectionRef}
       id="faq"
-      style={{ background: 'var(--bg-section)', position: 'relative', zIndex: 0, paddingTop: '10rem', paddingBottom: '5rem' }}
+      style={{ background: 'transparent', position: 'relative', zIndex: 0, paddingTop: '10rem', paddingBottom: '8rem' }}
     >
       <div className="page-container flex flex-col lg:flex-row gap-20 lg:gap-32">
 

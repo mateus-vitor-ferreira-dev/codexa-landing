@@ -1,49 +1,19 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Orb from '@/components/ui/Orb'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const WORDS = ['sistemas', 'websites', 'apps', 'automações']
 
-const CODE_LINES = [
-  { tokens: [{ type: 'comment', text: '// codexa.config.ts' }] },
-  { tokens: [] },
-  { tokens: [{ type: 'keyword', text: 'import' }, { type: 'default', text: ' { defineProject } ' }, { type: 'keyword', text: 'from' }, { type: 'string', text: " 'codexa'" }] },
-  { tokens: [] },
-  { tokens: [{ type: 'keyword', text: 'export default' }, { type: 'default', text: ' defineProject({' }] },
-  { tokens: [{ type: 'property', text: '  stack' }, { type: 'bracket', text: ': {' }] },
-  { tokens: [{ type: 'property', text: '    frontend' }, { type: 'bracket', text: ': ' }, { type: 'string', text: "'next.js'" }, { type: 'bracket', text: ',' }] },
-  { tokens: [{ type: 'property', text: '    backend' }, { type: 'bracket', text: ':  ' }, { type: 'string', text: "'node.js'" }, { type: 'bracket', text: ',' }] },
-  { tokens: [{ type: 'property', text: '    database' }, { type: 'bracket', text: ': ' }, { type: 'string', text: "'postgresql'" }, { type: 'bracket', text: ',' }] },
-  { tokens: [{ type: 'bracket', text: '  },' }] },
-  { tokens: [{ type: 'property', text: '  ai' }, { type: 'bracket', text: ': {' }] },
-  { tokens: [{ type: 'property', text: '    provider' }, { type: 'bracket', text: ': ' }, { type: 'string', text: "'claude'" }, { type: 'bracket', text: ',' }] },
-  { tokens: [{ type: 'property', text: '    agents' }, { type: 'bracket', text: ':  ' }, { type: 'value', text: 'true' }, { type: 'bracket', text: ',' }] },
-  { tokens: [{ type: 'bracket', text: '  },' }] },
-  { tokens: [{ type: 'property', text: '  deploy' }, { type: 'bracket', text: ': ' }, { type: 'string', text: "'railway'" }] },
-  { tokens: [{ type: 'bracket', text: '})' }] },
-]
-
-function CodeLine({ tokens }: { tokens: { type: string; text: string }[] }) {
-  if (tokens.length === 0) return <div className="h-[1.6em]" />
-  return (
-    <div className="leading-[1.6em]">
-      {tokens.map((t, i) => (
-        <span key={i} className={`token-${t.type}`}>{t.text}</span>
-      ))}
-    </div>
-  )
-}
-
 export function Hero() {
   const sectionRef   = useRef<HTMLElement>(null)
   const wordRef      = useRef<HTMLSpanElement>(null)
   const wordIndexRef = useRef(0)
-  const [visibleLines, setVisibleLines] = useState(0)
 
   useGSAP(() => {
     const tl = gsap.timeline({ delay: 2.6 })
@@ -64,9 +34,9 @@ export function Hero() {
       opacity: 0, y: 12, stagger: 0.08, duration: 0.4, ease: 'power2.out',
     }, '-=0.25')
 
-    tl.from('.hero-code-window', {
-      opacity: 0, x: 32, duration: 0.75, ease: 'power3.out',
-    }, '-=0.6')
+    tl.from('.hero-orb', {
+      opacity: 0, scale: 0.88, duration: 0.9, ease: 'power3.out',
+    }, '-=0.55')
 
     tl.from('.hero-scroll', {
       opacity: 0, duration: 0.45,
@@ -78,7 +48,6 @@ export function Hero() {
     const interval = setInterval(() => {
       const el = wordRef.current
       if (!el) return
-
       gsap.to(el, {
         opacity: 0, y: -14, duration: 0.22, ease: 'power2.in',
         onComplete: () => {
@@ -91,18 +60,7 @@ export function Hero() {
         },
       })
     }, 2600)
-
     return () => clearInterval(interval)
-  }, [])
-
-  // Float contínuo no code window
-  useEffect(() => {
-    const el = document.querySelector<HTMLElement>('.hero-code-window')
-    if (!el) return
-    const tween = gsap.to(el, {
-      y: -12, duration: 3.8, ease: 'sine.inOut', yoyo: true, repeat: -1,
-    })
-    return () => { tween.kill() }
   }, [])
 
   // Pulse no accent dot do tag
@@ -115,26 +73,12 @@ export function Hero() {
     })
   }, [])
 
-  // Code window typing
-  useEffect(() => {
-    let i = 0
-    const timeout = setTimeout(() => {
-      const id = setInterval(() => {
-        i++
-        setVisibleLines(i)
-        if (i >= CODE_LINES.length) clearInterval(id)
-      }, 85)
-    }, 800)
-
-    return () => clearTimeout(timeout)
-  }, [])
-
   return (
     <section
       ref={sectionRef}
       className="gradient-mesh relative min-h-screen flex flex-col justify-center px-5 md:px-12 xl:px-20 pt-24 pb-16 overflow-hidden"
     >
-      {/* Subtle grid — very low opacity */}
+      {/* Subtle grid */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -146,7 +90,7 @@ export function Hero() {
       />
 
       {/* Content grid */}
-      <div className="relative z-10 page-container grid grid-cols-1 lg:grid-cols-[1fr_460px] xl:grid-cols-[1fr_500px] gap-16 lg:gap-24 items-center">
+      <div className="relative z-10 page-container grid grid-cols-1 lg:grid-cols-[1fr_460px] xl:grid-cols-[1fr_500px] gap-12 lg:gap-16 items-center">
 
         {/* LEFT */}
         <div className="flex flex-col gap-8 min-w-0">
@@ -221,9 +165,7 @@ export function Hero() {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-5">
             <a
-              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:mateus.ferreira10profissional@gmail.com?subject=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
               className="btn-primary hero-cta"
             >
               Iniciar projeto
@@ -245,59 +187,9 @@ export function Hero() {
           </p>
         </div>
 
-        {/* RIGHT — Code Window */}
-        <div className="hero-code-window hidden lg:flex w-full">
-          <div
-            className="code-glow rounded-xl overflow-hidden w-full"
-            style={{ background: 'var(--bg-card)' }}
-          >
-            <div
-              className="flex items-center gap-2 px-4 py-3"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-            >
-              <span className="w-3 h-3 rounded-full" style={{ background: '#ff5f57' }} />
-              <span className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
-              <span className="w-3 h-3 rounded-full" style={{ background: '#28c840' }} />
-              <span className="ml-auto text-xs" style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-                codexa.config.ts
-              </span>
-            </div>
-
-            <div className="p-5 text-sm" style={{ fontFamily: 'var(--font-mono)', lineHeight: 1.6 }}>
-              <div className="flex gap-4">
-                <div className="select-none text-right" style={{ color: 'var(--text-faint)', minWidth: '1.5rem' }}>
-                  {CODE_LINES.slice(0, visibleLines).map((_, i) => (
-                    <div key={i} className="leading-[1.6em]">{i + 1}</div>
-                  ))}
-                </div>
-
-                <div className="flex-1 overflow-hidden" style={{ color: 'var(--text-muted)' }}>
-                  {CODE_LINES.slice(0, visibleLines).map((line, i) => (
-                    <CodeLine key={i} tokens={line.tokens} />
-                  ))}
-
-                  {visibleLines < CODE_LINES.length && (
-                    <span
-                      className="inline-block w-2 h-4 animate-pulse"
-                      style={{ background: '#00d6f5', marginLeft: '2px', verticalAlign: 'middle' }}
-                    />
-                  )}
-                </div>
-              </div>
-
-              {visibleLines >= CODE_LINES.length && (
-                <div
-                  className="mt-4 pt-3 flex items-center gap-2"
-                  style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#28c840' }} />
-                  <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                    Projeto configurado · pronto para deploy
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+        {/* RIGHT — Orb */}
+        <div className="hero-orb flex justify-center lg:justify-end">
+          <Orb />
         </div>
       </div>
 

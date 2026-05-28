@@ -294,7 +294,7 @@ export function Services() {
   }, { scope: sectionRef })
 
   return (
-    <section ref={sectionRef} id="servicos" className="py-36" style={{ background: 'var(--bg-section)' }}>
+    <section ref={sectionRef} id="servicos" className="py-36" style={{ background: 'transparent' }}>
       <div className="page-container flex flex-col gap-20">
 
         {/* Header */}

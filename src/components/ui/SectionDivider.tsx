@@ -54,7 +54,7 @@ export function SectionDivider({ accent = false }: Props) {
   }, [])
 
   return (
-    <div ref={ref} className="relative overflow-visible" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+    <div ref={ref} className="relative overflow-visible" style={{ paddingTop: '72px', paddingBottom: '72px' }}>
       {/* Line */}
       <div
         ref={lineRef}

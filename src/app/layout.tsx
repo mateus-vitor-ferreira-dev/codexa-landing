@@ -25,9 +25,25 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://codexa.vercel.app'),
   title: 'Codexa — Soluções digitais sob medida',
   description:
-    'Desenvolvemos sites, aplicativos, sistemas web e automações com IA para empresas que querem crescer com tecnologia.',
+    'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
+  openGraph: {
+    title: 'Codexa — Soluções digitais sob medida',
+    description:
+      'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
+    url: '/',
+    siteName: 'Codexa',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Codexa — Soluções digitais sob medida',
+    description:
+      'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
