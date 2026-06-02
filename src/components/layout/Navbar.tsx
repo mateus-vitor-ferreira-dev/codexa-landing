@@ -7,6 +7,7 @@ const LINKS = [
   { label: 'Serviços',      href: '#servicos' },
   { label: 'Cases',         href: '#cases' },
   { label: 'Como funciona', href: '#como-funciona' },
+  { label: 'Contato',       href: '#contato' },
 ]
 
 export function Navbar() {

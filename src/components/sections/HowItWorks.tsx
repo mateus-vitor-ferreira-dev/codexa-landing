@@ -13,7 +13,7 @@ const STEPS = [
     title:  'Briefing',
     badge:  '30 min',
     desc:   'Uma conversa para entender sua necessidade real — sem enrolação, sem formulário de 40 campos.',
-    detail: 'Você explica o problema. Eu faço as perguntas certas.',
+    detail: 'Você explica o problema. A equipe faz as perguntas certas.',
   },
   {
     number: '02',

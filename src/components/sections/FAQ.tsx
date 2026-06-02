@@ -32,6 +32,10 @@ const FAQS = [
     q: 'Posso solicitar mudanças durante o desenvolvimento?',
     a: 'Sim. Ajustes dentro do escopo são absorvidos naturalmente nas sprints. Mudanças que ampliam o escopo são avaliadas e orçadas separadamente, sempre com sua aprovação antes de executar.',
   },
+  {
+    q: 'Como acompanho o andamento do meu projeto?',
+    a: 'Clientes têm acesso ao Portal Codexa — uma plataforma exclusiva onde você acompanha o status do projeto em tempo real, aprova entregáveis, abre chamados de suporte, acessa faturas e se comunica diretamente com a equipe. Sem precisar esperar e-mail.',
+  },
 ]
 
 /* ── Flip Card ─────────────────────────────────────────────── */

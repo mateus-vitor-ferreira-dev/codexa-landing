@@ -165,7 +165,8 @@ export function Hero() {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-5">
             <a
-              href="mailto:mateus.ferreira10profissional@gmail.com?subject=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+              href="#contato"
+              onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
               className="btn-primary hero-cta"
             >
               Iniciar projeto

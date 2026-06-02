@@ -18,7 +18,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
 
     const runScramble = (onDone?: () => void) => {
       const TARGET = 'CODEXA'
-      const FRAMES = 24
+      const FRAMES = 14
       const els = overlay.querySelectorAll<HTMLElement>('.pre-letter-char')
       let frame = 0
       const id = setInterval(() => {
@@ -51,7 +51,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
 
     // ── 2. Scramble nas letras ───────────────────────────────
     tl.call(() => runScramble())
-    tl.to({}, { duration: 1.1 })   // aguarda o scramble completar (~24 × 42ms)
+    tl.to({}, { duration: 0.65 })   // aguarda o scramble completar (~14 × 42ms)
 
     // ── 3. Tagline aparece ───────────────────────────────────
     tl.from('.pre-tag', {
@@ -65,12 +65,12 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
     tl.fromTo(
       '.pre-bar',
       { scaleX: 0 },
-      { scaleX: 1, duration: 1.05, ease: 'power2.inOut' },
+      { scaleX: 1, duration: 0.65, ease: 'power2.inOut' },
     )
 
     tl.to(counter, {
       value: 100,
-      duration: 1.05,
+      duration: 0.65,
       ease: 'power2.inOut',
       onUpdate: () => {
         if (counterRef.current) {

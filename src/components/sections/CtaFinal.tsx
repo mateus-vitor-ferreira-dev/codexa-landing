@@ -404,6 +404,13 @@ export function CtaFinal() {
                     </>
                   )}
                 </button>
+                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
+                  Ao enviar, você concorda com nossa{' '}
+                  <a href="/privacidade" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}>
+                    Política de Privacidade
+                  </a>
+                  . Seus dados são usados apenas para retorno do contato.
+                </p>
               </form>
             )}
           </div>
@@ -531,7 +538,7 @@ export function CtaFinal() {
             {/* ── Contato ── */}
             <FooterCol title="Contato" links={[
               { label: 'WhatsApp', href: 'https://wa.me/5535998765432' },
-              { label: 'E-mail',   href: 'mailto:mateus.ferreira10profissional@gmail.com' },
+              { label: 'E-mail',   href: 'mailto:contato@digitalcodexa.com' },
               { label: 'LinkedIn', href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
               { label: 'GitHub',   href: 'https://github.com/mateus-vitor-ferreira-dev' },
             ]} />
@@ -546,6 +553,10 @@ export function CtaFinal() {
             fontFamily: 'var(--font-mono)', fontSize: '0.76rem', color: 'var(--text-faint)',
           }}>
             <span>© 2026 Codexa. Todos os direitos reservados.</span>
+            <a href="/privacidade" style={{ color: 'var(--text-faint)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}
+            >Política de Privacidade</a>
             <div style={{ display: 'flex', gap: 22 }}>
               {[
                 { label: 'LinkedIn',  href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },

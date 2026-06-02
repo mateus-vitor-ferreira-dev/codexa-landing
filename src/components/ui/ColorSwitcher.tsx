@@ -11,8 +11,8 @@ export function ColorSwitcher() {
       style={{
         position: 'fixed',
         right: 20,
-        top: '50%',
-        transform: 'translateY(-50%)',
+        bottom: 32,
+
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
