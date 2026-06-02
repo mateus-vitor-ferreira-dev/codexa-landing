@@ -331,8 +331,8 @@ export function Services() {
         {/* CTA */}
         <div className="flex justify-center pt-2">
           <a
-            href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
-            target="_blank" rel="noopener noreferrer"
+            href="#contato"
+            onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
             className="flex items-center gap-2 transition-colors"
             style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}

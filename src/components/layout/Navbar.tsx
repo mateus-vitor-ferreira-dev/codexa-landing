@@ -158,9 +158,8 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:block">
             <a
-              href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#contato"
+              onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
               className="inline-flex items-center gap-2 rounded-full text-sm font-semibold transition-all duration-250"
               style={{
                 fontFamily:      'var(--font-display)',
@@ -239,11 +238,9 @@ export function Navbar() {
 
         <div className="mobile-link flex flex-col gap-6">
           <a
-            href="https://mail.google.com/mail/?view=cm&to=mateus.ferreira10profissional%40gmail.com&su=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#contato"
             className="btn-primary self-start"
-            onClick={closeMenu}
+            onClick={(e) => { e.preventDefault(); closeMenu(); setTimeout(() => document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }), 300) }}
           >
             Iniciar projeto
           </a>
