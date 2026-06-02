@@ -1,10 +1,12 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from '@/context/ThemeContext'
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -40,6 +42,25 @@ const ALL_WORDS = [...LINE1, ...LINE2]
 
 export function CtaFinal() {
   const { theme } = useTheme()
+
+  const [form, setForm]     = useState({ nome: '', email: '', whatsapp: '', mensagem: '' })
+  const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!form.nome.trim() || !form.email.trim()) return
+    setStatus('sending')
+    try {
+      const res = await fetch(`${API}/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      setStatus(res.ok ? 'ok' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
 
   const pinnedRef   = useRef<HTMLElement>(null)
   const ctaRef      = useRef<HTMLElement>(null)
@@ -186,9 +207,9 @@ export function CtaFinal() {
         </div>
 
         {/* Botão — posicionado na base da seção pinada */}
-        <a
+        <button
           className="cta-buttons"
-          href="mailto:mateus.ferreira10profissional@gmail.com?subject=Novo%20Projeto%20%E2%80%94%20Codexa&body=Ol%C3%A1!%20Gostaria%20de%20iniciar%20um%20projeto%20com%20a%20Codexa."
+          onClick={() => document.getElementById('form-contato')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           style={{
             position: 'absolute',
             bottom: 'clamp(48px, 9vh, 88px)',
@@ -198,7 +219,7 @@ export function CtaFinal() {
             padding: '20px 52px', borderRadius: '100px',
             background: theme.accent, color: '#06060c',
             fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 800,
-            letterSpacing: '-0.01em', textDecoration: 'none', whiteSpace: 'nowrap',
+            letterSpacing: '-0.01em', whiteSpace: 'nowrap', border: 'none',
             boxShadow: `0 0 80px rgba(${theme.rgb},0.5), 0 20px 48px rgba(0,0,0,0.4)`,
             cursor: 'none', zIndex: 2,
           }}
@@ -209,12 +230,13 @@ export function CtaFinal() {
           <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
             <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </a>
+        </button>
       </section>
 
-      {/* SEÇÃO CTA — subtext */}
+      {/* SEÇÃO CTA — subtext + formulário */}
       <section
         ref={ctaRef}
+        id="form-contato"
         className="relative overflow-hidden"
         style={{ background: 'transparent', paddingTop: '5rem', paddingBottom: '8rem' }}
       >
@@ -228,7 +250,7 @@ export function CtaFinal() {
           }}
         />
 
-        <div className="relative z-10 page-container flex flex-col items-center text-center">
+        <div className="relative z-10 page-container flex flex-col items-center text-center" style={{ gap: '3rem' }}>
 
           {/* Subtext */}
           <p
@@ -238,6 +260,153 @@ export function CtaFinal() {
             Do briefing ao deploy, com metodologia clara,
             comunicação constante e tecnologia que funciona de verdade.
           </p>
+
+          {/* Formulário de contato */}
+          <div style={{ width: '100%', maxWidth: 480, textAlign: 'left' }}>
+            {status === 'ok' ? (
+              <div style={{
+                background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
+                borderRadius: 16, padding: '40px 32px', textAlign: 'center',
+              }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: '50%', margin: '0 auto 16px',
+                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: '#f4f4f5', marginBottom: 8 }}>
+                  Mensagem enviada!
+                </p>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+                  Entraremos em contato em breve para dar início ao seu projeto.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                      Nome *
+                    </label>
+                    <input
+                      required
+                      value={form.nome}
+                      onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
+                      placeholder="Seu nome"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
+                        fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                        width: '100%', cursor: 'auto',
+                      }}
+                      onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
+                      onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                      E-mail *
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      value={form.email}
+                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                      placeholder="seu@email.com"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
+                        fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                        width: '100%', cursor: 'auto',
+                      }}
+                      onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
+                      onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                    WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.whatsapp}
+                    onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+                    placeholder="(35) 9 9999-9999"
+                    style={{
+                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                      borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                      width: '100%', cursor: 'auto',
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                    Sobre o projeto
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={form.mensagem}
+                    onChange={e => setForm(f => ({ ...f, mensagem: e.target.value }))}
+                    placeholder="Descreva brevemente o que você precisa..."
+                    style={{
+                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                      borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                      resize: 'vertical', width: '100%', cursor: 'auto',
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                  />
+                </div>
+
+                {status === 'error' && (
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#ef4444', textAlign: 'center' }}>
+                    Algo deu errado. Tente novamente ou envie um e-mail diretamente.
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  style={{
+                    marginTop: 4, padding: '14px 32px', borderRadius: 10, border: 'none',
+                    background: theme.accent, color: '#06060c',
+                    fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 800,
+                    letterSpacing: '-0.01em', cursor: status === 'sending' ? 'wait' : 'none',
+                    opacity: status === 'sending' ? 0.7 : 1,
+                    transition: 'opacity 0.2s',
+                    boxShadow: `0 0 40px rgba(${theme.rgb},0.3)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  }}
+                  onMouseEnter={e => status !== 'sending' && gsap.to(e.currentTarget, { scale: 1.02, duration: 0.18 })}
+                  onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.22 })}
+                >
+                  {status === 'sending' ? (
+                    <>
+                      <span style={{ width: 16, height: 16, border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      Enviar mensagem
+                      <svg width="16" height="16" viewBox="0 0 22 22" fill="none">
+                        <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
 
         </div>
       </section>

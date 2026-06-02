@@ -16,7 +16,21 @@ import { Preloader }      from '@/components/ui/Preloader'
 import { SectionDivider }    from '@/components/ui/SectionDivider'
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects'
 
-export default function Home() {
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
+
+async function getStats() {
+  try {
+    const res = await fetch(`${API}/stats`, { next: { revalidate: 3600 } })
+    if (!res.ok) return { projetos_concluidos: 5, clientes: 10 }
+    return res.json() as Promise<{ projetos_concluidos: number; clientes: number }>
+  } catch {
+    return { projetos_concluidos: 5, clientes: 10 }
+  }
+}
+
+export default async function Home() {
+  const stats = await getStats()
+
   return (
     <>
       <BackgroundEffects />
@@ -29,7 +43,7 @@ export default function Home() {
         <Manifesto />
         <PromisesMarquee />
         <SectionDivider accent />
-        <Stats />
+        <Stats projetosConcluidos={stats.projetos_concluidos} clientes={stats.clientes} />
         <SectionDivider />
         <Services />
         <SectionDivider accent />

@@ -7,14 +7,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const STATS = [
-  { value: 5,   suffix: '+',  label: 'Projetos no ar',     sub: 'Todos em produção' },
-  { value: 100, suffix: '%',  label: 'Código é seu',       sub: 'Zero lock-in' },
-  { value: 30,  suffix: 'd',  label: 'Suporte incluso',    sub: 'Pós-entrega' },
-  { value: 24,  suffix: 'h',  label: 'Tempo de resposta',  sub: 'Garantido' },
-]
+export function Stats({ projetosConcluidos = 5, clientes = 10 }: { projetosConcluidos?: number; clientes?: number }) {
+  const STATS = [
+    { value: projetosConcluidos, suffix: '+',  label: 'Projetos entregues', sub: 'Em produção'       },
+    { value: clientes,           suffix: '+',  label: 'Clientes atendidos', sub: 'Em 4 estados'      },
+    { value: 30,                 suffix: 'd',  label: 'Suporte incluso',    sub: 'Pós-entrega'        },
+    { value: 24,                 suffix: 'h',  label: 'Tempo de resposta',  sub: 'Garantido'          },
+  ]
 
-export function Stats() {
   const sectionRef  = useRef<HTMLElement>(null)
   const counterRefs = useRef<(HTMLSpanElement | null)[]>([])
 
