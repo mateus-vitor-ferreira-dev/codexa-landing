@@ -61,8 +61,8 @@ const PROJECTS: Project[] = [
     accent:     '#c9a84c',
     preview:    '/cases/recanto-web/preview-light.png',
     preview2:   '/cases/recanto-web/preview-dark.png',
-    liveUrl:    'https://recanto-vila-rica.vercel.app',
-    displayUrl: 'recanto-vila-rica.vercel.app',
+    liveUrl:    'https://recantovilarica.com.br',
+    displayUrl: 'recantovilarica.com.br',
     status:     'Em produção',
   },
   {
@@ -74,8 +74,8 @@ const PROJECTS: Project[] = [
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
     accent:     '#c9a84c',
     preview:    '/cases/recanto-landing/preview.png',
-    liveUrl:    'https://recanto-vila-rica-landing.vercel.app',
-    displayUrl: 'recanto-vila-rica-landing.vercel.app',
+    liveUrl:    'https://recantovilarica.com.br',
+    displayUrl: 'recantovilarica.com.br',
     status:     'No ar',
   },
   {
