@@ -109,7 +109,7 @@ export function Navbar() {
               viewBox="0 0 100 100"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
-              style={{ display: 'block', flexShrink: 0, fill: 'var(--accent)' }}
+              style={{ display: 'block', flexShrink: 0, fill: '#00d6f5' }}
             >
               <path fillRule="evenodd" d="M50,5 L95,50 L50,95 L5,50 Z M50,8 L79,37 L50,66 L21,37 Z M50,62 L67,79 L50,96 L33,79 Z" />
             </svg>
