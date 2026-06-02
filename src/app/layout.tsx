@@ -34,7 +34,7 @@ const cormorant = Cormorant_Garamond({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://codexa.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://digitalcodexa.com'),
   icons: { icon: '/logo-mark.svg', apple: '/logo-mark.png' },
   title: 'Codexa — Soluções digitais sob medida',
   description:
@@ -56,6 +56,18 @@ export const metadata: Metadata = {
   },
 }
 
+const schemaOrg = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Codexa',
+  description: 'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
+  url: 'https://digitalcodexa.com',
+  email: 'contato@digitalcodexa.com',
+  areaServed: ['Lavras, MG', 'Brasil'],
+  serviceType: ['Desenvolvimento web', 'Aplicativos móveis', 'Automação', 'Sistemas SaaS'],
+  priceRange: '$$',
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -63,6 +75,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${cormorant.variable}`}
     >
       <body suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+        />
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
