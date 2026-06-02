@@ -79,12 +79,26 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   return (
     <div
       className="faq-card"
-      style={{ perspective: '1100px', cursor: 'none', position: 'relative', height: '100%' }}
+      style={{ perspective: '1100px', cursor: 'none', position: 'relative' }}
       onClick={toggle}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
-      {/* Inner — rotates */}
+      {/* Ghost — dimensiona o card com a altura do conteúdo mais longo (a resposta) */}
+      <div aria-hidden style={{
+        visibility:    'hidden',
+        pointerEvents: 'none',
+        padding:       '24px',
+        display:       'flex',
+        flexDirection: 'column',
+        gap:           '10px',
+        minHeight:     '260px',
+      }}>
+        <span style={{ fontSize: '0.62rem', lineHeight: 1 }}>{num}</span>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.87rem', lineHeight: 1.75 }}>{faq.a}</p>
+      </div>
+
+      {/* Inner — rotates (absolute sobre o ghost) */}
       <div
         ref={innerRef}
         style={{
@@ -153,7 +167,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
             display:            'flex',
             flexDirection:      'column',
             gap:                '10px',
-            overflow:           'hidden',
+            overflow:           'auto',
           }}
         >
           <span style={{
@@ -276,7 +290,7 @@ export function FAQ() {
           className="grid grid-cols-2 lg:grid-cols-3 flex-1"
           style={{
             gap:            '10px',
-            gridAutoRows:   '260px',
+            alignItems:     'start',
             marginTop:      '3.5rem',
           }}
         >

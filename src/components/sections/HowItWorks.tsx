@@ -213,14 +213,14 @@ export function HowItWorks() {
 
             {/* Linha vertical de fundo */}
             <div
-              className="absolute left-4 top-0 bottom-0 w-px"
+              className="absolute left-[40px] top-0 bottom-0 w-px"
               style={{ background: 'rgba(255,255,255,0.07)' }}
             />
 
             {/* Linha vertical magenta */}
             <div
               ref={lineVRef}
-              className="absolute left-4 top-0 bottom-0 w-px"
+              className="absolute left-[40px] top-0 bottom-0 w-px"
               style={{
                 background:    'linear-gradient(to bottom, var(--accent), rgba(var(--accent-rgb),0.3))',
                 transformOrigin: 'top center',
