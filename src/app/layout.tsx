@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Syne, DM_Sans, JetBrains_Mono, Cormorant_Garamond } from 'next/font/google'
 import { SmoothScroll }  from '@/components/providers/SmoothScroll'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { Analytics }     from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 const syne = Syne({
@@ -82,6 +84,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
