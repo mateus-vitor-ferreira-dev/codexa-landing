@@ -148,7 +148,7 @@ export default function OGImage() {
               fontFamily: '"Courier New", monospace',
             }}
           >
-            codexa.vercel.app
+            digitalcodexa.com
           </span>
         </div>
       </div>
