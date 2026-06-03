@@ -13,6 +13,7 @@ import { CtaFinal }      from '@/components/sections/CtaFinal'
 import { CustomCursor }   from '@/components/ui/CustomCursor'
 import { ColorSwitcher }  from '@/components/ui/ColorSwitcher'
 import { Preloader }      from '@/components/ui/Preloader'
+import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { SectionDivider }    from '@/components/ui/SectionDivider'
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects'
 
@@ -37,6 +38,7 @@ export default async function Home() {
       <Preloader />
       <CustomCursor />
       <ColorSwitcher />
+      <WhatsAppButton />
       <Navbar />
       <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />

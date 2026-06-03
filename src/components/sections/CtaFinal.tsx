@@ -45,10 +45,34 @@ export function CtaFinal() {
 
   const [form, setForm]     = useState({ nome: '', email: '', whatsapp: '', mensagem: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+  const [errors, setErrors] = useState<{ nome?: string; email?: string }>({})
+
+  function validateEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  function validateField(field: 'nome' | 'email', value: string) {
+    if (field === 'nome' && !value.trim()) return 'Nome é obrigatório'
+    if (field === 'email') {
+      if (!value.trim()) return 'E-mail é obrigatório'
+      if (!validateEmail(value)) return 'E-mail inválido'
+    }
+    return undefined
+  }
+
+  function handleBlur(field: 'nome' | 'email') {
+    const err = validateField(field, form[field])
+    setErrors(prev => ({ ...prev, [field]: err }))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.nome.trim() || !form.email.trim()) return
+    const nomeErr  = validateField('nome',  form.nome)
+    const emailErr = validateField('email', form.email)
+    if (nomeErr || emailErr) {
+      setErrors({ nome: nomeErr, email: emailErr })
+      return
+    }
     setStatus('sending')
     try {
       const res = await fetch(`${API}/leads`, {
@@ -292,39 +316,49 @@ export function CtaFinal() {
                       Nome *
                     </label>
                     <input
-                      required
                       value={form.nome}
-                      onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
+                      onChange={e => { setForm(f => ({ ...f, nome: e.target.value })); if (errors.nome) setErrors(p => ({ ...p, nome: undefined })) }}
+                      onBlur={() => handleBlur('nome')}
                       placeholder="Seu nome"
                       style={{
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${errors.nome ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
                         borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
                         fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
                         width: '100%', cursor: 'auto',
                       }}
-                      onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
-                      onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                      onFocus={e => (e.currentTarget.style.borderColor = errors.nome ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
+                    {errors.nome && (
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
+                        {errors.nome}
+                      </span>
+                    )}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
                       E-mail *
                     </label>
                     <input
-                      required
                       type="email"
                       value={form.email}
-                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                      onChange={e => { setForm(f => ({ ...f, email: e.target.value })); if (errors.email) setErrors(p => ({ ...p, email: undefined })) }}
+                      onBlur={() => handleBlur('email')}
                       placeholder="seu@email.com"
                       style={{
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${errors.email ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
                         borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
                         fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
                         width: '100%', cursor: 'auto',
                       }}
-                      onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
-                      onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
+                      onFocus={e => (e.currentTarget.style.borderColor = errors.email ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
+                    {errors.email && (
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
+                        {errors.email}
+                      </span>
+                    )}
                   </div>
                 </div>
 
