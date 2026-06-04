@@ -37,7 +37,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://digitalcodexa.com'),
-  icons: { icon: '/logo-mark.svg', apple: '/logo-mark.png' },
+  icons: { icon: '/icon.png', apple: '/icon.png' },
   title: 'Codexa — Soluções digitais sob medida',
   description:
     'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
