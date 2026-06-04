@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 
-const WA_URL = 'https://wa.me/5535998765432?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
+const WA_URL = 'https://wa.me/5535997460058?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
 export function WhatsAppButton() {
   const btnRef    = useRef<HTMLAnchorElement>(null)
