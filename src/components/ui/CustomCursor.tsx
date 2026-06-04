@@ -16,6 +16,12 @@ export function CustomCursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      dot.style.display  = 'none'
+      ring.style.display = 'none'
+      return
+    }
+
     const onMove = (e: MouseEvent) => {
       gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.1, ease: 'none' })
       gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.35, ease: 'power2.out' })

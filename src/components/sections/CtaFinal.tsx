@@ -167,7 +167,6 @@ export function CtaFinal() {
       {/* SEÇÃO PINADA — headline reveal word-by-word */}
       <section
         ref={pinnedRef}
-        id="contato"
         className="relative overflow-hidden"
         style={{
           background: 'transparent',
@@ -533,12 +532,8 @@ export function CtaFinal() {
 
               {/* Logo mark */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <div style={{
-                  width: 20, height: 20, transform: 'rotate(45deg)',
-                  border: '2px solid var(--accent)', borderRadius: 4,
-                  boxShadow: '0 0 16px rgba(var(--accent-rgb),0.3)',
-                  flexShrink: 0,
-                }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-mark.svg" width={20} height={20} alt="Codexa" style={{ display: 'block', flexShrink: 0 }} />
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>Codexa</span>
               </div>
 
@@ -556,8 +551,8 @@ export function CtaFinal() {
             {/* ── Navegação ── */}
             <FooterCol title="Navegação" links={[
               { label: 'Serviços',      href: '#servicos' },
-              { label: 'Cases',         href: '#cases' },
               { label: 'Como funciona', href: '#como-funciona' },
+              { label: 'Cases',         href: '#cases' },
               { label: 'Contato',       href: '#contato' },
             ]} />
 

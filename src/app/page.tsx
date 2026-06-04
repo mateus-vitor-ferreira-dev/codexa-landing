@@ -9,6 +9,7 @@ import { Cases }         from '@/components/sections/Cases'
 import { Testimonials }  from '@/components/sections/Testimonials'
 import { FAQ }           from '@/components/sections/FAQ'
 import { Guarantees }    from '@/components/sections/Guarantees'
+import { Contact }       from '@/components/sections/Contact'
 import { CtaFinal }      from '@/components/sections/CtaFinal'
 import { CustomCursor }   from '@/components/ui/CustomCursor'
 import { ColorSwitcher }  from '@/components/ui/ColorSwitcher'
@@ -58,6 +59,8 @@ export default async function Home() {
         <FAQ />
         <SectionDivider />
         <Guarantees />
+        <SectionDivider accent />
+        <Contact />
         <SectionDivider />
         <CtaFinal />
       </main>

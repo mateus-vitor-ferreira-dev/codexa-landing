@@ -10,7 +10,7 @@ export function ColorSwitcher() {
     <div
       style={{
         position: 'fixed',
-        right: 20,
+        left: 20,
         bottom: 32,
 
         display: 'flex',

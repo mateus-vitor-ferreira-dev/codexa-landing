@@ -9,8 +9,8 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Smooth scroll só em desktop (≥1024px) — em mobile/tablet o scroll nativo é mais fluido
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) return
+    // Smooth scroll só em desktop com mouse — mobile/tablet usam scroll nativo
+    if (typeof window !== 'undefined' && (window.innerWidth < 1024 || window.matchMedia('(pointer: coarse)').matches)) return
 
     const lenis = new Lenis({
       duration:    1.2,
