@@ -47,8 +47,10 @@ body::after {
   background-size: 200px 200px;
 }
 
-/* ── Custom cursor ──────────────────────────────────────── */
-html { cursor: none; }
+/* ── Custom cursor (apenas em dispositivos com mouse) ──── */
+@media (pointer: fine) {
+  html { cursor: none; }
+}
 
 /* ── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar              { width: 4px; }
