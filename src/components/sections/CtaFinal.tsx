@@ -566,7 +566,7 @@ export function CtaFinal() {
 
             {/* ── Contato ── */}
             <FooterCol title="Contato" links={[
-              { label: 'WhatsApp', href: 'https://wa.me/5535998765432' },
+              { label: 'WhatsApp', href: 'https://wa.me/5535997460058' },
               { label: 'E-mail',   href: 'mailto:contato@digitalcodexa.com' },
               { label: 'LinkedIn', href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
               { label: 'GitHub',   href: 'https://github.com/mateus-vitor-ferreira-dev' },
@@ -589,7 +589,7 @@ export function CtaFinal() {
             <div style={{ display: 'flex', gap: 22 }}>
               {[
                 { label: 'LinkedIn',  href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
-                { label: 'Instagram', href: 'https://instagram.com/codexa.dev' },
+                { label: 'Instagram', href: 'https://www.instagram.com/desenvolvedoracodexa/' },
                 { label: 'GitHub',    href: 'https://github.com/mateus-vitor-ferreira-dev' },
               ].map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"

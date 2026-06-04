@@ -8,13 +8,13 @@ import { useTheme } from '@/context/ThemeContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const WA_URL = 'https://wa.me/5535998765432?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
+const WA_URL = 'https://wa.me/5535997460058?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
 const CHANNELS = [
   {
     key: 'whatsapp',
     label: 'WhatsApp',
-    value: '+55 35 9 9876-5432',
+    value: '+55 35 9 9746-0058',
     href: WA_URL,
     external: true,
     color: '#25d366',
@@ -39,24 +39,10 @@ const CHANNELS = [
     ),
   },
   {
-    key: 'linkedin',
-    label: 'LinkedIn',
-    value: 'linkedin.com/in/codexa',
-    href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev',
-    external: true,
-    color: '#0a66c2',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
-        <circle cx="4" cy="4" r="2"/>
-      </svg>
-    ),
-  },
-  {
     key: 'instagram',
     label: 'Instagram',
-    value: '@codexa.dev',
-    href: 'https://instagram.com/codexa.dev',
+    value: '@desenvolvedoracodexa',
+    href: 'https://www.instagram.com/desenvolvedoracodexa/',
     external: true,
     color: '#e1306c',
     icon: (
