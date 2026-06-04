@@ -1,7 +1,21 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { gsap } from 'gsap'
+
+const NavOrb = dynamic(
+  () => import('@/components/ui/NavOrb').then(m => m.NavOrb),
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{
+        width: 36, height: 36, flexShrink: 0, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,214,245,0.3) 0%, transparent 70%)',
+      }} />
+    ),
+  },
+)
 
 const LINKS = [
   { label: 'Serviços',      href: '#servicos' },
@@ -104,14 +118,7 @@ export function Navbar() {
             onClick={closeMenu}
             style={{ textDecoration: 'none' }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo-mark.svg"
-              width={28}
-              height={28}
-              alt=""
-              style={{ display: 'block', flexShrink: 0 }}
-            />
+            <NavOrb />
             <span
               style={{
                 fontFamily:    'var(--font-display)',
