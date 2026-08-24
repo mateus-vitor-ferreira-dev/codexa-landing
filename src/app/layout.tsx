@@ -15,7 +15,7 @@ const syne = Syne({
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500'],
+  weight: ['300', '400', '500', '700'],
   variable: '--font-body',
   display: 'swap',
 })

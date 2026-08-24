@@ -16,13 +16,15 @@
   --text-faint:      #71717a;
   --border:          rgba(255,255,255,0.1);
   --border-subtle:   rgba(255,255,255,0.06);
-  --font-display:    var(--font-display, 'Syne', sans-serif);
-  --font-body:       var(--font-body, 'DM Sans', sans-serif);
-  --font-mono:       var(--font-mono, 'JetBrains Mono', monospace);
+  /* --font-display / --font-body / --font-mono / --font-serif vêm do next/font
+     (layout.tsx). Não redeclarar aqui: `--x: var(--x, ...)` é auto-referência,
+     a variável vira inválida e a página inteira cai no serif padrão do browser. */
 }
 
 /* ── Base ───────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Reset: o preflight do Tailwind (@layer base) já aplica box-sizing, margin e
+   padding zero. Não repetir aqui fora de layer — uma regra sem camada vence
+   @layer utilities e anula todos os utilitários de spacing da página. */
 
 html {
   background: var(--bg);
@@ -159,6 +161,12 @@ body::after {
   inset: -12px 20% -12px;
   background: radial-gradient(ellipse at center, rgba(var(--accent-rgb),0.2) 0%, transparent 70%);
   pointer-events: none;
+}
+
+/* ── Terminal decorativo ────────────────────────────────── */
+/* Em telas pequenas dá lugar ao seletor de cor, que fica no mesmo canto */
+@media (max-width: 640px) {
+  .bg-terminal { display: none; }
 }
 
 /* ── Preloader ──────────────────────────────────────────── */
