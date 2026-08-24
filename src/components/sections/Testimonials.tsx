@@ -24,10 +24,10 @@ const TESTIMONIALS = [
   },
   {
     quote: 'Processo organizado e direto. Cada sprint tinha entregável real, dava pra acompanhar o progresso sem precisar ficar perguntando. Recomendo sem hesitar.',
-    name:    'Johnatan Alves De Oliveira',
-    role:    'CEO · FutMatch · Plataforma SaaS',
+    name:    'Só+1',
+    role:    'Plataforma SaaS · Lavras, MG',
     accent:  '#22c55e',
-    initials:'JA',
+    initials:'S+',
   },
 ]
 
