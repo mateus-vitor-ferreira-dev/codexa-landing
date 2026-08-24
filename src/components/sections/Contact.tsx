@@ -4,7 +4,6 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useTheme } from '@/context/ThemeContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -57,7 +56,6 @@ const CHANNELS = [
 
 export function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
-  const { theme } = useTheme()
 
   useGSAP(() => {
     gsap.fromTo(
@@ -129,13 +127,13 @@ export function Contact() {
         {/* Two-column layout */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(1.5rem, 3vw, 2.5rem)',
-          alignItems: 'start',
+          alignItems: 'stretch',
         }}>
 
           {/* Channel cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, height: '100%' }}>
             {CHANNELS.map((ch) => (
               <a
                 key={ch.key}
@@ -146,8 +144,10 @@ export function Contact() {
                 onMouseEnter={(e) => gsap.to(e.currentTarget, { y: -3, duration: 0.2, ease: 'power2.out' })}
                 onMouseLeave={(e) => gsap.to(e.currentTarget, { y: 0,  duration: 0.22, ease: 'power2.in' })}
                 style={{
+                  flex: '1 1 0',
                   display: 'flex', alignItems: 'center', gap: 18,
                   padding: '18px 22px',
+                  minHeight: 82,
                   background: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.07)',
                   borderRadius: 14,

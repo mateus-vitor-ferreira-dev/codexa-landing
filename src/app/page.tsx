@@ -23,10 +23,10 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 async function getStats() {
   try {
     const res = await fetch(`${API}/stats`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { projetos_concluidos: 5, clientes: 10 }
-    return res.json() as Promise<{ projetos_concluidos: number; clientes: number }>
+    if (!res.ok) return { projetos: 8 }
+    return res.json() as Promise<{ projetos: number }>
   } catch {
-    return { projetos_concluidos: 5, clientes: 10 }
+    return { projetos: 8 }
   }
 }
 
@@ -46,7 +46,7 @@ export default async function Home() {
         <Manifesto />
         <PromisesMarquee />
         <SectionDivider accent />
-        <Stats projetosConcluidos={stats.projetos_concluidos} clientes={stats.clientes} />
+        <Stats projetos={stats.projetos} />
         <SectionDivider />
         <Services />
         <SectionDivider accent />

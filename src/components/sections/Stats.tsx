@@ -7,12 +7,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function Stats({ projetosConcluidos = 5, clientes = 10 }: { projetosConcluidos?: number; clientes?: number }) {
+export function Stats({ projetos = 8 }: { projetos?: number }) {
   const STATS = [
-    { value: projetosConcluidos, suffix: '+',  label: 'Projetos entregues', sub: 'Em produção'       },
-    { value: clientes,           suffix: '+',  label: 'Clientes atendidos', sub: 'Em 4 estados'      },
-    { value: 30,                 suffix: 'd',  label: 'Suporte incluso',    sub: 'Pós-entrega'        },
-    { value: 24,                 suffix: 'h',  label: 'Tempo de resposta',  sub: 'Garantido'          },
+    { value: projetos, suffix: '+',  label: 'Projetos no portfólio', sub: 'Entregues e em produção' },
+    { value: 30,       suffix: 'd',  label: 'Suporte incluso',       sub: 'Pós-entrega'             },
+    { value: 24,       suffix: 'h',  label: 'Tempo de resposta',     sub: 'Garantido'               },
   ]
 
   const sectionRef  = useRef<HTMLElement>(null)
@@ -91,20 +90,22 @@ export function Stats({ projetosConcluidos = 5, clientes = 10 }: { projetosConcl
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {STATS.map((stat, i) => (
             <div
               key={i}
-              className="stat-card flex flex-col gap-4 px-8 py-10 rounded-2xl relative overflow-hidden justify-center items-center text-center"
+              className="stat-card flex flex-col rounded-2xl relative overflow-hidden justify-center items-center text-center"
               style={{
-                background: 'linear-gradient(145deg, #1a1a22 0%, #111115 100%)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background:  'linear-gradient(160deg, #101016 0%, #0b0b10 55%, #08080c 100%)',
+                border:      '1px solid rgba(255,255,255,0.08)',
+                padding:     'clamp(2.25rem, 3.5vw, 3rem) clamp(1.5rem, 3vw, 2.25rem)',
+                gap:         '1.25rem',
               }}
             >
               {/* Accent glow corner */}
               <div style={{
                 position: 'absolute', top: 0, left: 0,
-                width: '80px', height: '80px',
+                width: '110px', height: '110px',
                 background: 'radial-gradient(circle at top left, rgba(var(--accent-rgb),0.12), transparent 70%)',
                 pointerEvents: 'none',
               }} />
@@ -112,12 +113,14 @@ export function Stats({ projetosConcluidos = 5, clientes = 10 }: { projetosConcl
               <span
                 ref={el => { counterRefs.current[i] = el }}
                 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
-                  fontWeight: 800,
-                  color: 'var(--accent)',
-                  lineHeight: 1,
-                  letterSpacing: '-0.02em',
+                  fontFamily:         'var(--font-body)',
+                  fontSize:           'clamp(2.4rem, 4vw, 3.4rem)',
+                  fontWeight:         700,
+                  color:              'var(--accent)',
+                  lineHeight:         1.05,
+                  letterSpacing:      '-0.03em',
+                  fontVariantNumeric: 'tabular-nums',
+                  fontFeatureSettings: '"tnum" 1, "lnum" 1',
                 }}
               >
                 0{stat.suffix}

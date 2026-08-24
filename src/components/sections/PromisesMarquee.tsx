@@ -83,7 +83,7 @@ export function PromisesMarquee() {
     <section
       aria-label="O que você leva ao trabalhar conosco"
       style={{
-        background:  '#0d0614',
+        background:  'rgba(255,255,255,0.022)',
         borderTop:   '1px solid rgba(var(--accent-rgb),0.08)',
         borderBottom:'1px solid rgba(var(--accent-rgb),0.08)',
         padding:     'clamp(32px, 5vw, 56px) 0',

@@ -142,7 +142,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
   const onLeave = () => {
     gsap.to(cardRef.current, {
       y: 0,
-      borderColor: 'rgba(255,255,255,0.12)',
+      borderColor: 'rgba(255,255,255,0.08)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
       duration: 0.35, ease: 'power2.out',
     })
@@ -155,8 +155,8 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       ref={cardRef}
       className="service-card flex flex-col sm:flex-row rounded-2xl overflow-hidden"
       style={{
-        background: `linear-gradient(145deg, #1e1e26 0%, #141418 60%, #0e0e13 100%)`,
-        border:     '1px solid rgba(255,255,255,0.12)',
+        background: `linear-gradient(160deg, #101016 0%, #0b0b10 55%, #08080c 100%)`,
+        border:     '1px solid rgba(255,255,255,0.08)',
         boxShadow:  '0 8px 32px rgba(0,0,0,0.35)',
         cursor:     'none',
         position:   'relative',
@@ -178,11 +178,11 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       <div
         className={`relative flex items-center justify-center flex-shrink-0 ${flip ? 'sm:order-2' : 'sm:order-1'}`}
         style={{
-          width:      'clamp(160px, 22%, 220px)',
-          minHeight:  '260px',
-          background: `radial-gradient(ellipse at center, ${service.accent}30 0%, ${service.accent}10 65%, transparent 100%)`,
-          borderRight: !flip ? `1px solid rgba(255,255,255,0.08)` : 'none',
-          borderLeft:   flip ? `1px solid rgba(255,255,255,0.08)` : 'none',
+          width:      'clamp(170px, 24%, 240px)',
+          minHeight:  '280px',
+          background: `radial-gradient(ellipse at center, ${service.accent}22 0%, ${service.accent}0a 62%, transparent 100%)`,
+          borderRight: !flip ? `1px solid rgba(255,255,255,0.06)` : 'none',
+          borderLeft:   flip ? `1px solid rgba(255,255,255,0.06)` : 'none',
         }}
       >
         {/* Corner accent dot */}
@@ -199,25 +199,25 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       <div
         className={`flex flex-col justify-center flex-1 ${flip ? 'sm:order-1' : 'sm:order-2'}`}
         style={{
-          paddingTop:    '3rem',
-          paddingBottom: '3rem',
-          paddingLeft:   flip ? '3rem' : '4rem',
-          paddingRight:  flip ? '4rem' : '3rem',
+          paddingTop:    'clamp(2.25rem, 4vw, 3.5rem)',
+          paddingBottom: 'clamp(2.25rem, 4vw, 3.5rem)',
+          paddingLeft:   flip ? 'clamp(1.75rem, 3.5vw, 3.25rem)' : 'clamp(1.75rem, 4vw, 4rem)',
+          paddingRight:  flip ? 'clamp(1.75rem, 4vw, 4rem)' : 'clamp(1.75rem, 3.5vw, 3.25rem)',
         }}
       >
         {/* Category + badge */}
-        <div className="flex items-center gap-3 flex-wrap mb-3">
+        <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: '1.25rem' }}>
           <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.68rem',
-            letterSpacing: '0.2em', textTransform: 'uppercase' as const,
-            color: service.accent, opacity: 0.85,
+            fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+            letterSpacing: '0.22em', textTransform: 'uppercase' as const,
+            color: service.accent, opacity: 0.9,
           }}>
             {service.id} · {service.category}
           </span>
           {service.badge && (
             <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.62rem',
-              letterSpacing: '0.12em', textTransform: 'uppercase' as const,
+              fontFamily: 'var(--font-mono)', fontSize: '0.64rem',
+              letterSpacing: '0.14em', textTransform: 'uppercase' as const,
               background: `${service.accent}20`, color: service.accent,
               border: `1px solid ${service.accent}40`,
               padding: '3px 10px', borderRadius: '99px',
@@ -228,40 +228,55 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         </div>
 
         {/* Title */}
-        <h3 className="mb-4" style={{
-          fontFamily: 'var(--font-display)',
-          fontSize:   'clamp(1.3rem, 2vw, 1.6rem)',
-          fontWeight: 800,
-          color:      '#f0f0f6',
-          lineHeight: 1.2,
+        <h3 style={{
+          fontFamily:    'var(--font-display)',
+          fontSize:      'clamp(1.45rem, 2.4vw, 1.95rem)',
+          fontWeight:    700,
+          color:         '#f7f7fb',
+          lineHeight:    1.15,
+          letterSpacing: '-0.025em',
+          marginBottom:  '0.9rem',
         }}>
           {service.title}
         </h3>
 
         {/* Description */}
-        <p className="mb-6" style={{
-          fontFamily: 'var(--font-body)',
-          fontSize:   '1rem',
-          fontWeight: 400,
-          color:      '#b8b8cc',
-          lineHeight: 1.6,
+        <p style={{
+          fontFamily:    'var(--font-body)',
+          fontSize:      'clamp(0.98rem, 1.1vw, 1.05rem)',
+          fontWeight:    400,
+          color:         '#b9b9cb',
+          lineHeight:    1.8,
+          letterSpacing: '0.004em',
+          maxWidth:      '52ch',
+          marginBottom:  '2rem',
         }}>
           {service.desc}
         </p>
 
+        {/* Hairline — separa a leitura das tags */}
+        <div style={{
+          height:       '1px',
+          width:        '100%',
+          maxWidth:     '52ch',
+          background:   `linear-gradient(to right, ${service.accent}33, rgba(255,255,255,0.05) 45%, transparent)`,
+          marginBottom: '1.5rem',
+        }} />
+
         {/* Tags */}
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap" style={{ gap: '10px' }}>
           {service.tags.map((tag) => (
             <span key={tag} style={{
-              fontFamily:   'var(--font-mono)',
-              fontSize:     '0.68rem',
-              fontWeight:   500,
-              color:        '#9090a8',
-              background:   'rgba(255,255,255,0.06)',
-              border:       '1px solid rgba(255,255,255,0.1)',
-              padding:      '6px 14px',
-              borderRadius: '6px',
-              whiteSpace:   'nowrap' as const,
+              fontFamily:    'var(--font-mono)',
+              fontSize:      '0.72rem',
+              fontWeight:    400,
+              color:         '#a8a8be',
+              background:    'rgba(255,255,255,0.035)',
+              border:        '1px solid rgba(255,255,255,0.07)',
+              padding:       '7px 15px',
+              borderRadius:  '999px',
+              letterSpacing: '0.02em',
+              whiteSpace:    'nowrap' as const,
             }}>
               {tag}
             </span>
@@ -322,7 +337,7 @@ export function Services() {
         </div>
 
         {/* Cards */}
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-8">
           {SERVICES.map((service, index) => (
             <ServiceCard key={service.id} service={service} index={index} />
           ))}

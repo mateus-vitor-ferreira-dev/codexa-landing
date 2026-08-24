@@ -81,21 +81,14 @@ export function Manifesto() {
         alignItems:     'center',
         justifyContent: 'center',
         padding:        'clamp(96px, 12vw, 160px) clamp(1.5rem, 5vw, 6rem)',
-        background:     '#120818',
+        background:     'transparent',
         overflow:       'hidden',
       }}
     >
-      {/* Top fade — connects to hero */}
+      {/* Vinheta neutra — foco no texto sem alterar a cor do fundo */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '220px',
-        background: 'linear-gradient(180deg, #06060a 0%, transparent 100%)',
-        pointerEvents: 'none', zIndex: 1,
-      }} />
-
-      {/* Bottom fade — connects to promises marquee */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: '220px',
-        background: 'linear-gradient(0deg, #0d0614 0%, transparent 100%)',
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 72% 62% at 50% 50%, rgba(6,6,10,0.88) 0%, rgba(6,6,10,0.6) 42%, transparent 78%)',
         pointerEvents: 'none', zIndex: 1,
       }} />
 

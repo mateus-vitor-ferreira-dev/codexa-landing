@@ -34,7 +34,15 @@ const FAQS = [
   },
   {
     q: 'Como acompanho o andamento do meu projeto?',
-    a: 'Clientes têm acesso ao Portal Codexa — uma plataforma exclusiva onde você acompanha o status do projeto em tempo real, aprova entregáveis, abre chamados de suporte, acessa faturas e se comunica diretamente com a equipe. Sem precisar esperar e-mail.',
+    a: 'Pelo Portal Codexa você acompanha o status em tempo real, aprova entregáveis, abre chamados, acessa faturas e fala direto com a equipe — sem esperar e-mail.',
+  },
+  {
+    q: 'Preciso ter tudo definido antes de começar?',
+    a: 'Não. Na maioria dos casos o cliente chega com uma ideia e a gente transforma em escopo. O briefing inicial é gratuito: entendemos o problema, mapeamos as funcionalidades essenciais e só então montamos a proposta com prazo e valor fechados.',
+  },
+  {
+    q: 'Vocês atendem clientes de fora de Lavras?',
+    a: 'Sim. Somos de Lavras, MG, mas trabalhamos remotamente com clientes de todo o Brasil. Reuniões por vídeo, entregas acompanhadas em ambiente de homologação e comunicação diária pelo WhatsApp — a distância não muda o processo.',
   },
 ]
 
@@ -79,7 +87,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   return (
     <div
       className="faq-card"
-      style={{ perspective: '1100px', cursor: 'none', position: 'relative' }}
+      style={{ perspective: '1100px', cursor: 'none', position: 'relative', height: '100%' }}
       onClick={toggle}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
@@ -88,14 +96,14 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
       <div aria-hidden style={{
         visibility:    'hidden',
         pointerEvents: 'none',
-        padding:       '24px',
+        padding:       '28px',
         display:       'flex',
         flexDirection: 'column',
         gap:           '10px',
-        minHeight:     '260px',
+        minHeight:     '250px',
       }}>
         <span style={{ fontSize: '0.62rem', lineHeight: 1 }}>{num}</span>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.87rem', lineHeight: 1.75 }}>{faq.a}</p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', lineHeight: 1.7 }}>{faq.a}</p>
       </div>
 
       {/* Inner — rotates (absolute sobre o ghost) */}
@@ -133,12 +141,14 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
             {num}
           </span>
           <p style={{
-            fontFamily: 'var(--font-display)',
-            fontSize:   '0.97rem',
-            fontWeight: 700,
-            color:      '#f0f0f6',
-            lineHeight: 1.4,
-            flex:       1,
+            fontFamily:  'var(--font-display)',
+            fontSize:    '1rem',
+            fontWeight:  700,
+            color:       '#f0f0f6',
+            lineHeight:  1.45,
+            flex:        1,
+            display:     'flex',
+            alignItems:  'center',
           }}>
             {faq.q}
           </p>
@@ -180,9 +190,9 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           </span>
           <p style={{
             fontFamily: 'var(--font-body)',
-            fontSize:   '0.87rem',
+            fontSize:   '0.85rem',
             color:      'var(--text-muted)',
-            lineHeight: 1.75,
+            lineHeight: 1.7,
             flex:       1,
           }}>
             {faq.a}
@@ -287,11 +297,12 @@ export function FAQ() {
 
         {/* Right — flip cards */}
         <div
-          className="grid grid-cols-2 lg:grid-cols-3 flex-1"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 flex-1"
           style={{
-            gap:            '10px',
-            alignItems:     'start',
-            marginTop:      '3.5rem',
+            gap:           '14px',
+            gridAutoRows:  '1fr',
+            alignItems:    'stretch',
+            marginTop:     '3.5rem',
           }}
         >
           {FAQS.map((faq, i) => (
