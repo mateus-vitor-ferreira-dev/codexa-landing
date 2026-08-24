@@ -265,13 +265,14 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
       {/* Layer 6: terminal — own stacking context above sections */}
       <div
         aria-hidden="true"
+        className="bg-terminal"
         style={{
           position:  'fixed',
-          bottom:    '24px',
+          bottom:    '132px',
           left:      '24px',
           zIndex:    2,
           width:     '280px',
-          background: 'rgba(15,8,22,.85)',
+          background: 'rgba(10,10,14,.85)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           border:    '1px solid rgba(255,255,255,.08)',
