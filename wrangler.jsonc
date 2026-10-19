@@ -1,0 +1,15 @@
+// Publicação no Cloudflare Workers, no lugar da Vercel. A landing é um site estático
+// (o "next build" com output: 'export' gera out/), sem código de servidor.
+// Deploy pelo Workers Builds: "npm run build" e "npx wrangler deploy".
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "codexa-landing",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./out",
+    // Endereço que não existe mostra a página 404 que o Next gera
+    "not_found_handling": "404-page"
+  },
+  // Cada branch ganha um link próprio de preview, como na Vercel
+  "previews": {}
+}
