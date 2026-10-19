@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 const COMMANDS = [
   'npm run build',
@@ -17,6 +17,13 @@ const COMMANDS = [
 const CODE_SYMS = ['{ }', '< />', '=>', '&&', '||', '( )', '[ ]', ';', '/*', '*/', '!=', '===']
 const DENSITY_MULT = { low: 0.5, medium: 1, high: 1.5 } as const
 
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
+const subscribeReducedMotion = (cb: () => void) => {
+  const mq = window.matchMedia(REDUCED_MOTION)
+  mq.addEventListener('change', cb)
+  return () => mq.removeEventListener('change', cb)
+}
+
 interface Props { density?: 'low' | 'medium' | 'high' }
 
 export function BackgroundEffects({ density = 'medium' }: Props) {
@@ -26,10 +33,16 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
   const binaryRef = useRef<HTMLDivElement>(null)
   const symbolRef = useRef<HTMLDivElement>(null)
   const svgRef    = useRef<SVGSVGElement>(null)
-  const [termText, setTermText] = useState('')
+  const [typedText, setTypedText] = useState('')
+  const reduced = useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => false,
+  )
+  // Com movimento reduzido o terminal fica parado no último comando
+  const termText = reduced ? COMMANDS[COMMANDS.length - 1] : typedText
 
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const dead    = { v: false }
     const cleanups: Array<() => void> = []
 
@@ -179,9 +192,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
     // ── Layer 6: Terminal typewriter ──────────────────────────────
     let termTimer: ReturnType<typeof setTimeout> | undefined
 
-    if (reduced) {
-      setTermText(COMMANDS[COMMANDS.length - 1])
-    } else {
+    if (!reduced) {
       let cmdIdx = 0
       const typeNext = () => {
         if (dead.v) return
@@ -189,7 +200,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         let ci = 0
         const typeChar = () => {
           if (dead.v) return
-          setTermText(cmd.slice(0, ci + 1)); ci++
+          setTypedText(cmd.slice(0, ci + 1)); ci++
           if (ci < cmd.length) {
             termTimer = setTimeout(typeChar, 60 + Math.random() * 40)
           } else {
@@ -198,7 +209,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
               let ei = cmd.length
               const erase = () => {
                 if (dead.v) return
-                ei--; setTermText(cmd.slice(0, ei))
+                ei--; setTypedText(cmd.slice(0, ei))
                 if (ei > 0) termTimer = setTimeout(erase, 25)
                 else { cmdIdx++; termTimer = setTimeout(typeNext, 300) }
               }
@@ -216,7 +227,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
       dead.v = true
       cleanups.forEach(fn => fn())
     }
-  }, [mult])
+  }, [mult, reduced])
 
   return (
     <>
