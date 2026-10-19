@@ -19,7 +19,7 @@ interface Project {
   accent:     string
   preview:    string
   preview2?:  string   // segunda imagem para alternância de tema
-  liveUrl:    string
+  liveUrl?:   string   // sem URL: projeto entregue que não está mais no ar
   displayUrl: string
   status:     string
 }
@@ -61,9 +61,8 @@ const PROJECTS: Project[] = [
     accent:     '#c9a84c',
     preview:    '/cases/recanto-web/preview-light.png',
     preview2:   '/cases/recanto-web/preview-dark.png',
-    liveUrl:    'https://recantovilarica.com.br',
     displayUrl: 'recantovilarica.com.br',
-    status:     'Em produção',
+    status:     'Entregue',
   },
   {
     id:         '04',
@@ -74,9 +73,8 @@ const PROJECTS: Project[] = [
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
     accent:     '#c9a84c',
     preview:    '/cases/recanto-landing/preview.png',
-    liveUrl:    'https://recantovilarica.com.br',
     displayUrl: 'recantovilarica.com.br',
-    status:     'No ar',
+    status:     'Entregue',
   },
   {
     id:         '05',
@@ -142,6 +140,7 @@ function BrowserMockup({ project }: { project: Project }) {
   const themeRef   = useRef<HTMLSpanElement>(null)
   const [showAlt, setShowAlt] = useState(false)
   const hasDual    = !!project.preview2
+  const isLive     = !!project.liveUrl
 
   /* Continuous float */
   useEffect(() => {
@@ -194,16 +193,16 @@ function BrowserMockup({ project }: { project: Project }) {
     <a
       ref={wrapRef}
       href={project.liveUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+      target={isLive ? '_blank' : undefined}
+      rel={isLive ? 'noopener noreferrer' : undefined}
       className="block rounded-2xl overflow-hidden shrink-0 relative"
       style={{
         border:    '1px solid rgba(255,255,255,0.13)',
         boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(0,0,0,0.6), 0 0 50px ${project.accent}18`,
         cursor:    'none',
       }}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
+      onMouseEnter={isLive ? onEnter : undefined}
+      onMouseLeave={isLive ? onLeave : undefined}
     >
       {/* Chrome bar */}
       <div className="flex items-center gap-1.5 px-3"
@@ -367,6 +366,7 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
         </p>
 
         {/* CTA */}
+        {project.liveUrl && (
         <a
           href={project.liveUrl}
           target="_blank"
@@ -385,6 +385,7 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </a>
+        )}
       </div>
     </div>
   )
