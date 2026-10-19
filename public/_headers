@@ -1,0 +1,5 @@
+# Cabeçalhos do Cloudflare Workers. A imagem de prévia do link (Open Graph) sai do build
+# como um arquivo sem extensão, "opengraph-image"; sem declarar o tipo, ela vai sem
+# Content-Type, e o WhatsApp e o Facebook podem não mostrar a imagem.
+/opengraph-image
+  Content-Type: image/png
