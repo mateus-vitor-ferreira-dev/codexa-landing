@@ -1,13 +1,68 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
+import dynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Orb from '@/components/ui/Orb'
 import { onPreloaderDone } from '@/components/ui/Preloader'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// three.js fica fora do bundle inicial: só baixa quando o Orb vai ser montado
+const Orb = dynamic(() => import('@/components/ui/Orb'), { ssr: false, loading: () => <OrbFallback /> })
+
+// Orb 3D só em telas ≥ 768px e sem pedido de menos movimento
+const ORB_QUERY = '(min-width: 768px) and (prefers-reduced-motion: no-preference)'
+
+function subscribeOrb(cb: () => void) {
+  const mq = window.matchMedia(ORB_QUERY)
+  mq.addEventListener('change', cb)
+  return () => mq.removeEventListener('change', cb)
+}
+
+function useShowOrb() {
+  return useSyncExternalStore(
+    subscribeOrb,
+    () => window.matchMedia(ORB_QUERY).matches,
+    () => false,
+  )
+}
+
+/* Versão estática do Orb (mesmo tamanho): aparece no celular, com reduced-motion
+   e enquanto o three.js carrega, para não deixar buraco no layout */
+function OrbFallback() {
+  return (
+    <div className="hero-orb-fallback relative w-full aspect-square max-w-[500px] mx-auto lg:mx-0" aria-hidden="true">
+      {/* Glow */}
+      <div
+        className="absolute inset-[10%] pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(var(--accent-rgb),0.18) 0%, transparent 60%)',
+          filter: 'blur(40px)',
+        }}
+      />
+      {/* Esfera: anel fino + núcleo em gradiente */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          inset: '17%',
+          border: '1px solid rgba(var(--accent-rgb),0.22)',
+          background:
+            'radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb),0.16) 0%, rgba(var(--accent-rgb),0.05) 38%, transparent 70%)',
+          boxShadow: 'inset 0 0 60px rgba(var(--accent-rgb),0.12), 0 0 80px rgba(var(--accent-rgb),0.08)',
+        }}
+      />
+      <div
+        className="absolute rounded-full"
+        style={{
+          inset: '30%',
+          border: '1px dashed rgba(var(--accent-rgb),0.14)',
+        }}
+      />
+    </div>
+  )
+}
 
 const WORDS = ['sistemas', 'websites', 'apps', 'automações']
 
@@ -15,6 +70,7 @@ export function Hero() {
   const sectionRef   = useRef<HTMLElement>(null)
   const wordRef      = useRef<HTMLSpanElement>(null)
   const wordIndexRef = useRef(0)
+  const showOrb      = useShowOrb()
 
   useGSAP(() => {
     // Entrada começa quando o preloader termina (ou na hora, se ele foi pulado)
@@ -198,7 +254,7 @@ export function Hero() {
 
         {/* RIGHT — Orb */}
         <div className="hero-orb flex justify-center lg:justify-end">
-          <Orb />
+          {showOrb ? <Orb /> : <OrbFallback />}
         </div>
       </div>
 
