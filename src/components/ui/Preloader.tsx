@@ -3,103 +3,135 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
-const LETTERS   = ['C', 'O', 'D', 'E', 'X', 'A']
+const LETTERS    = ['C', 'O', 'D', 'E', 'X', 'A']
 const HACK_CHARS = '!<>-_\\/[]{}=+*^?#@$%&ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+const SEEN_KEY   = 'codexa:preloader-seen'
+const OVERLAY_ID = 'codexa-preloader'
+
+/* Contrato com o resto da página: quem precisa esperar o preloader
+   (ex.: animação de entrada do Hero) usa onPreloaderDone. O evento
+   'lenis-start' continua sendo disparado para SmoothScroll e ColorSwitcher. */
+let done = false
+const listeners = new Set<() => void>()
+
+export function onPreloaderDone(cb: () => void) {
+  if (done) { cb(); return () => {} }
+  listeners.add(cb)
+  return () => { listeners.delete(cb) }
+}
+
+function markDone() {
+  done = true
+  listeners.forEach(cb => cb())
+  listeners.clear()
+  window.dispatchEvent(new Event('lenis-start'))
+}
+
+// Pula se já viu nesta sessão ou se pediu menos movimento
+function shouldSkip() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true
+  try { return sessionStorage.getItem(SEEN_KEY) === '1' } catch { return false }
+}
+
+/* Roda antes da hidratação: esconde o overlay já no primeiro paint
+   para quem vai pular, evitando o "flash" da tela de carregamento */
+const SKIP_SCRIPT = `try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('${SEEN_KEY}')==='1'){var e=document.getElementById('${OVERLAY_ID}');if(e)e.style.display='none'}}catch(_){}`
 
 export function Preloader({ onComplete }: { onComplete?: () => void }) {
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const counterRef = useRef<HTMLSpanElement>(null)
+  const overlayRef    = useRef<HTMLDivElement>(null)
+  const onCompleteRef = useRef(onComplete)
+  // Decisão tomada uma vez por montagem (o StrictMode roda o efeito duas vezes)
+  const skipRef       = useRef<boolean | null>(null)
+
+  useEffect(() => { onCompleteRef.current = onComplete }, [onComplete])
 
   useEffect(() => {
     const overlay = overlayRef.current
     if (!overlay) return
 
-    document.body.style.overflow = 'hidden'
+    if (skipRef.current === null) skipRef.current = shouldSkip()
 
-    const runScramble = (onDone?: () => void) => {
-      const TARGET = 'CODEXA'
-      const FRAMES = 14
-      const els = overlay.querySelectorAll<HTMLElement>('.pre-letter-char')
-      let frame = 0
-      const id = setInterval(() => {
-        TARGET.split('').forEach((char, i) => {
-          const el = els[i]
-          if (!el) return
-          const lockAt = Math.floor((i / TARGET.length) * FRAMES * 0.65)
-          el.textContent = frame >= lockAt
-            ? char
-            : HACK_CHARS[Math.floor(Math.random() * HACK_CHARS.length)]
-        })
-        if (frame >= FRAMES) {
-          clearInterval(id)
-          onDone?.()
-        }
-        frame++
-      }, 42)
+    let finished = false
+    const finish = () => {
+      if (finished) return
+      finished = true
+      document.body.style.overflow = ''
+      overlay.style.display = 'none'
+      markDone()
+      onCompleteRef.current?.()
     }
 
-    const counter = { value: 0 }
-    const tl = gsap.timeline()
-
-    // ── 1. Letras sobem de baixo com stagger ─────────────────
-    tl.from('.pre-letter', {
-      y: '115%',
-      duration: 0.65,
-      stagger: 0.06,
-      ease: 'power3.out',
-    })
-
-    // ── 2. Scramble nas letras ───────────────────────────────
-    tl.call(() => runScramble())
-    tl.to({}, { duration: 0.65 })   // aguarda o scramble completar (~14 × 42ms)
-
-    // ── 3. Tagline aparece ───────────────────────────────────
-    tl.from('.pre-tag', {
-      opacity: 0,
-      y: 8,
-      duration: 0.4,
-      ease: 'power2.out',
-    })
-
-    // ── 4. Barra preenche + contador incrementa ──────────────
-    tl.fromTo(
-      '.pre-bar',
-      { scaleX: 0 },
-      { scaleX: 1, duration: 0.65, ease: 'power2.inOut' },
-    )
-
-    tl.to(counter, {
-      value: 100,
-      duration: 0.65,
-      ease: 'power2.inOut',
-      onUpdate: () => {
-        if (counterRef.current) {
-          counterRef.current.textContent = `${Math.round(counter.value)}%`
-        }
-      },
-    }, '<')
-
-    // ── 5. Pausa em 100% ─────────────────────────────────────
-    tl.to({}, { duration: 0.3 })
-
-    // ── 6. Saída: clip-path sobe (cortina para cima) ─────────
-    tl.to(overlay, {
-      clipPath: 'inset(100% 0 0% 0)',
-      duration: 0.8,
-      ease: 'power3.inOut',
-      onComplete: () => {
+    // Pulado: some na hora. Adia um tick para que os listeners de
+    // 'lenis-start' (SmoothScroll, ColorSwitcher) já estejam registrados
+    if (skipRef.current) {
+      overlay.style.display = 'none'
+      const t = setTimeout(finish, 0)
+      return () => {
+        clearTimeout(t)
         document.body.style.overflow = ''
-        gsap.set(overlay, { display: 'none' })
-        window.dispatchEvent(new Event('lenis-start'))
-        onComplete?.()
-      },
-    })
+      }
+    }
 
-  }, [onComplete])
+    // Primeira visita da sessão: marca como visto já no início
+    done = false
+    try { sessionStorage.setItem(SEEN_KEY, '1') } catch {}
+    document.body.style.overflow = 'hidden'
+
+    // Scramble curto nas letras (~350 ms), em paralelo com a subida
+    const els = overlay.querySelectorAll<HTMLElement>('.pre-letter-char')
+    const TARGET = 'CODEXA'
+    const FRAMES = 12
+    let frame = 0
+    const scrambleId = setInterval(() => {
+      TARGET.split('').forEach((char, i) => {
+        const el = els[i]
+        if (!el) return
+        const lockAt = Math.floor((i / TARGET.length) * FRAMES * 0.65)
+        el.textContent = frame >= lockAt
+          ? char
+          : HACK_CHARS[Math.floor(Math.random() * HACK_CHARS.length)]
+      })
+      if (frame >= FRAMES) clearInterval(scrambleId)
+      frame++
+    }, 30)
+
+    // Duração total ≈ 0,9 s. O context permite reverter tudo no cleanup
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ onComplete: finish })
+
+      // ── 1. Letras sobem com stagger + tagline ────────────────
+      tl.from(overlay.querySelectorAll('.pre-letter'), {
+        y: '115%',
+        duration: 0.35,
+        stagger: 0.03,
+        ease: 'power3.out',
+      })
+      tl.from(overlay.querySelector('.pre-tag'), {
+        opacity: 0, y: 6, duration: 0.25, ease: 'power2.out',
+      }, 0.15)
+
+      // ── 2. Saída: clip-path sobe (cortina para cima) ─────────
+      tl.to(overlay, {
+        clipPath: 'inset(100% 0 0% 0)',
+        duration: 0.4,
+        ease: 'power3.inOut',
+      }, '+=0.05')
+    }, overlay)
+
+    return () => {
+      ctx.revert()
+      clearInterval(scrambleId)
+      // Nunca deixa a página travada, mesmo se desmontar no meio
+      document.body.style.overflow = ''
+    }
+  }, [])
 
   return (
     <div
       ref={overlayRef}
+      id={OVERLAY_ID}
+      aria-hidden="true"
+      suppressHydrationWarning
       className="fixed inset-0 flex items-center justify-center"
       style={{
         zIndex:     9998,
@@ -178,44 +210,8 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
           soluções digitais sob medida
         </p>
 
-        {/* Barra de progresso + contador */}
-        <div
-          className="flex items-center gap-4"
-          style={{ width: '100%', minWidth: 'clamp(280px, 50vw, 420px)' }}
-        >
-          {/* Track */}
-          <div
-            className="flex-1 h-px overflow-hidden"
-            style={{ background: 'rgba(255,255,255,0.08)' }}
-          >
-            {/* Fill */}
-            <div
-              className="pre-bar h-full"
-              style={{
-                background:      'linear-gradient(to right, var(--accent), rgba(var(--accent-rgb),0.6))',
-                transformOrigin: 'left center',
-                boxShadow:       '0 0 12px rgba(var(--accent-rgb),0.6)',
-              }}
-            />
-          </div>
-
-          {/* Counter */}
-          <span
-            ref={counterRef}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize:   '0.72rem',
-              color:      'var(--accent)',
-              minWidth:   '3.2ch',
-              textAlign:  'right',
-              letterSpacing: '0.05em',
-            }}
-          >
-            0%
-          </span>
-        </div>
-
       </div>
+      <script dangerouslySetInnerHTML={{ __html: SKIP_SCRIPT }} />
     </div>
   )
 }

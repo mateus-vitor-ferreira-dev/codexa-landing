@@ -7,6 +7,34 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from '@/context/ThemeContext'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
+// Mesmo número usado no botão flutuante e na seção de contato
+const WA_NUMBER = '5535997460058'
+
+// Monta o link do WhatsApp com o que a pessoa já digitou no formulário
+function waLink(nome: string, mensagem: string) {
+  const partes = [`Olá! Meu nome é ${nome.trim() || '...'}.`]
+  if (mensagem.trim()) partes.push(mensagem.trim())
+  else partes.push('Tenho interesse em um projeto.')
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(partes.join('\n\n'))}`
+}
+
+// Lê a mensagem de erro da API ({ error: string }); validação do zod vem como objeto
+async function mensagemDeErro(res: Response) {
+  if (res.status === 429) {
+    const segundos = Number(res.headers.get('Retry-After'))
+    if (Number.isFinite(segundos) && segundos > 0) {
+      const minutos = Math.ceil(segundos / 60)
+      return `Muitas tentativas de envio. Tente novamente em ${minutos} ${minutos === 1 ? 'minuto' : 'minutos'} ou fale com a gente pelo WhatsApp.`
+    }
+    return 'Muitas tentativas de envio. Tente novamente mais tarde ou fale com a gente pelo WhatsApp.'
+  }
+  try {
+    const data = await res.json() as { error?: unknown }
+    if (typeof data.error === 'string' && data.error.trim()) return data.error
+  } catch { /* corpo não é JSON */ }
+  if (res.status === 400) return 'Confira os dados do formulário e tente novamente.'
+  return 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.'
+}
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -46,13 +74,18 @@ export function CtaFinal() {
   const [form, setForm]     = useState({ nome: '', email: '', whatsapp: '', mensagem: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
   const [errors, setErrors] = useState<{ nome?: string; email?: string }>({})
+  const [erroEnvio, setErroEnvio] = useState('')
 
   function validateEmail(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   }
 
   function validateField(field: 'nome' | 'email', value: string) {
-    if (field === 'nome' && !value.trim()) return 'Nome é obrigatório'
+    if (field === 'nome') {
+      if (!value.trim()) return 'Nome é obrigatório'
+      // Mesma regra da API (z.string().min(2))
+      if (value.trim().length < 2) return 'Nome deve ter pelo menos 2 caracteres'
+    }
     if (field === 'email') {
       if (!value.trim()) return 'E-mail é obrigatório'
       if (!validateEmail(value)) return 'E-mail inválido'
@@ -74,14 +107,21 @@ export function CtaFinal() {
       return
     }
     setStatus('sending')
+    setErroEnvio('')
     try {
       const res = await fetch(`${API}/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, nome: form.nome.trim(), email: form.email.trim() }),
       })
-      setStatus(res.ok ? 'ok' : 'error')
+      if (res.ok) {
+        setStatus('ok')
+        return
+      }
+      setErroEnvio(await mensagemDeErro(res))
+      setStatus('error')
     } catch {
+      setErroEnvio('Não foi possível conectar. Verifique sua internet ou fale com a gente pelo WhatsApp.')
       setStatus('error')
     }
   }
@@ -402,9 +442,26 @@ export function CtaFinal() {
                 </div>
 
                 {status === 'error' && (
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#ef4444', textAlign: 'center' }}>
-                    Algo deu errado. Tente novamente ou envie um e-mail diretamente.
-                  </p>
+                  <div role="alert" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#ef4444', textAlign: 'center' }}>
+                      {erroEnvio || 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.'}
+                    </p>
+                    {/* Saída alternativa: leva o que já foi digitado para o WhatsApp */}
+                    <a
+                      href={waLink(form.nome, form.mensagem)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 8,
+                        padding: '10px 20px', borderRadius: 10,
+                        background: '#25D366', color: '#06060c', textDecoration: 'none',
+                        fontFamily: 'var(--font-display)', fontSize: '0.88rem', fontWeight: 700,
+                        cursor: 'none',
+                      }}
+                    >
+                      Chamar no WhatsApp
+                    </a>
+                  </div>
                 )}
 
                 <button
