@@ -3,3 +3,22 @@
 # Content-Type, e o WhatsApp e o Facebook podem não mostrar a imagem.
 /opengraph-image
   Content-Type: image/png
+
+# Segurança em todas as páginas. HSTS sem includeSubDomains de propósito: valeria
+# por 1 ano também para subdomínios ainda sem HTTPS (ex.: o painel do Coolify).
+# A CSP precisa de 'unsafe-inline' em script-src: o site
+# é estático (output: 'export'), sem nonce, e o Next injeta scripts inline (payload do
+# React em self.__next_f, JSON-LD e o script do Preloader que roda antes da hidratação).
+# style-src também: os componentes usam style inline e tags <style>.
+# connect-src libera a API do formulário/estatísticas; WhatsApp e redes são só navegação.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.digitalcodexa.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+# Arquivos do build têm hash no nome: podem ficar em cache "para sempre"
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
