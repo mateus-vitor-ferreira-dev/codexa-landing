@@ -2,7 +2,7 @@
 // Onde pegar: painel do Cloudflare → Web Analytics → Add site → digitalcodexa.com →
 // copiar o "token" do snippet (o valor dentro de data-cf-beacon). Não é segredo: vai
 // no HTML de qualquer forma. Vazio = sem beacon.
-export const CF_WEB_ANALYTICS_TOKEN = ''
+export const CF_WEB_ANALYTICS_TOKEN = 'a4163b483e884e8eb62891629e1e6614'
 
 // Endpoint da API que conta conversões (POST público, sem dado pessoal)
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
