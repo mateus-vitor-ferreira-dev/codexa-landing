@@ -1,9 +1,39 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+const TITULO = 'Política de Privacidade'
+const DESCRICAO = 'Como a Codexa coleta, usa e protege seus dados pessoais, de acordo com a LGPD.'
+const IMAGEM = {
+  url: '/opengraph-image',
+  width: 1200,
+  height: 630,
+  type: 'image/png',
+  alt: 'Codexa — Soluções digitais sob medida',
+}
+
+// openGraph e twitter são substituídos por inteiro (não mesclados com os do layout),
+// por isso repetem siteName, locale e tipo. A imagem gerada em app/opengraph-image.tsx
+// só entra sozinha na home; aqui ela é apontada à mão.
+// O título vira "Política de Privacidade | Codexa" pelo template do layout.
 export const metadata: Metadata = {
-  title: 'Política de Privacidade',
-  description: 'Como a Codexa coleta, usa e protege seus dados pessoais.',
+  title: TITULO,
+  description: DESCRICAO,
+  alternates: { canonical: '/privacidade' },
+  openGraph: {
+    title: `${TITULO} | Codexa`,
+    description: DESCRICAO,
+    url: '/privacidade',
+    siteName: 'Codexa',
+    locale: 'pt_BR',
+    type: 'website',
+    images: [IMAGEM],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${TITULO} | Codexa`,
+    description: DESCRICAO,
+    images: [IMAGEM],
+  },
 }
 
 const UPDATED = '2 de junho de 2026'

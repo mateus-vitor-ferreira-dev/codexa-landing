@@ -50,6 +50,7 @@ export function WhatsAppButton() {
     <a
       ref={btnRef}
       href={WA_URL}
+      data-origem="botao-flutuante"
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={onEnter}
