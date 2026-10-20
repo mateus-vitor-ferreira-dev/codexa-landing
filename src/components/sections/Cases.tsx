@@ -34,8 +34,8 @@ const PROJECTS: Project[] = [
     tags:       ['Next.js', 'Stripe', 'PostgreSQL', 'Railway'],
     accent:     '#FF4500',
     preview:    '/cases/mob-burger-web/preview.png',
-    liveUrl:    'https://mob-burger-web.vercel.app',
-    displayUrl: 'mob-burger-web.vercel.app',
+    liveUrl:    'https://mob-burger-web.desenvolvedoracodexa.workers.dev',
+    displayUrl: 'mob-burger-web.desenvolvedoracodexa.workers.dev',
     status:     'Em produção',
   },
   {
@@ -47,8 +47,8 @@ const PROJECTS: Project[] = [
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
     accent:     '#FFB000',
     preview:    '/cases/mob-burger-landing/preview.png',
-    liveUrl:    'https://mob-burger-landing.vercel.app',
-    displayUrl: 'mob-burger-landing.vercel.app',
+    liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
+    displayUrl: 'mob-burger-landing.desenvolvedoracodexa.workers.dev',
     status:     'No ar',
   },
   {
@@ -216,7 +216,7 @@ function BrowserMockup({ project }: { project: Project }) {
             <rect x="1" y="4" width="6" height="5" rx="0.8" stroke="currentColor" strokeWidth="0.9"/>
             <path d="M2.5 4V2.5a1.5 1.5 0 0 1 3 0V4" stroke="currentColor" strokeWidth="0.9"/>
           </svg>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {project.displayUrl}
           </span>
         </div>
