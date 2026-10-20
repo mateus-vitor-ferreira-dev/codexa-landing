@@ -482,6 +482,7 @@ export function CtaFinal() {
                     {/* Saída alternativa: leva o que já foi digitado para o WhatsApp */}
                     <a
                       href={waLink(form.nome, form.mensagem)}
+                      data-origem="formulario-erro"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -541,8 +542,9 @@ export function CtaFinal() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer (data-origem: cliques no WhatsApp daqui contam como "rodape") */}
       <footer
+        data-origem="rodape"
         style={{
           position: 'relative',
           overflow: 'hidden',

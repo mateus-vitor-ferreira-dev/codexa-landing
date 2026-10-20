@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Syne, DM_Sans, JetBrains_Mono, Cormorant_Garamond } from 'next/font/google'
 import { SmoothScroll }  from '@/components/providers/SmoothScroll'
 import { ThemeProvider } from '@/context/ThemeContext'
-import { Analytics }     from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { RastreioWhatsApp } from '@/components/providers/RastreioWhatsApp'
+import { CF_WEB_ANALYTICS_TOKEN } from '@/lib/analytics'
 import './globals.css'
 
 const syne = Syne({
@@ -109,8 +109,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
-        <Analytics />
-        <SpeedInsights />
+        <RastreioWhatsApp />
+        {/* Cloudflare Web Analytics: só com o token configurado em src/lib/analytics.ts */}
+        {CF_WEB_ANALYTICS_TOKEN && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: CF_WEB_ANALYTICS_TOKEN })}
+          />
+        )}
       </body>
     </html>
   )
