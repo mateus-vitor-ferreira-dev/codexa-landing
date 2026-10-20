@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Navbar }          from '@/components/layout/Navbar'
 import { Hero }            from '@/components/sections/Hero'
 import { Manifesto }       from '@/components/sections/Manifesto'
@@ -17,6 +18,11 @@ import { Preloader }      from '@/components/ui/Preloader'
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { SectionDivider }    from '@/components/ui/SectionDivider'
 import { BackgroundEffects } from '@/components/ui/BackgroundEffects'
+
+// Título e descrição vêm do layout; aqui só o endereço canônico da home
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 

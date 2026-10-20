@@ -35,10 +35,18 @@ const cormorant = Cormorant_Garamond({
   display: 'swap',
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://digitalcodexa.com'
+
+// O canonical fica em cada página (home em page.tsx, /privacidade na própria pasta):
+// declarado aqui, ele seria herdado por toda página nova apontando para a home.
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://digitalcodexa.com'),
+  metadataBase: new URL(SITE_URL),
   icons: { icon: '/icon.png', apple: '/icon.png' },
-  title: 'Codexa — Soluções digitais sob medida',
+  // Páginas internas definem só o próprio título; a marca entra pelo template
+  title: {
+    default: 'Codexa — Soluções digitais sob medida',
+    template: '%s | Codexa',
+  },
   description:
     'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
   openGraph: {
@@ -58,13 +66,30 @@ export const metadata: Metadata = {
   },
 }
 
+// Dados estruturados da empresa. Telefone, e-mail e redes são os mesmos que o site
+// mostra (WhatsApp, rodapé e seção de contato): se mudarem lá, mudar aqui também.
 const schemaOrg = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
+  '@id': `${SITE_URL}/#empresa`,
   name: 'Codexa',
   description: 'Desenvolvemos sites, sistemas web, apps e automações com IA para empresas em Lavras, MG e em todo o Brasil.',
-  url: 'https://digitalcodexa.com',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
+  image: `${SITE_URL}/opengraph-image`,
   email: 'contato@digitalcodexa.com',
+  telephone: '+55 35 99746-0058',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Lavras',
+    addressRegion: 'MG',
+    addressCountry: 'BR',
+  },
+  sameAs: [
+    'https://www.instagram.com/desenvolvedoracodexa/',
+    'https://linkedin.com/in/mateus-vitor-ferreira-dev',
+    'https://github.com/mateus-vitor-ferreira-dev',
+  ],
   areaServed: ['Lavras, MG', 'Brasil'],
   serviceType: ['Desenvolvimento web', 'Aplicativos móveis', 'Automação', 'Sistemas SaaS'],
   priceRange: '$$',
