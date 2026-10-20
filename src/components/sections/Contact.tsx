@@ -143,6 +143,7 @@ export function Contact() {
               <a
                 key={ch.key}
                 href={ch.href}
+                data-origem={ch.key === 'whatsapp' ? 'contato-card' : undefined}
                 target={ch.external ? '_blank' : undefined}
                 rel={ch.external ? 'noopener noreferrer' : undefined}
                 className="contact-card"
@@ -242,6 +243,7 @@ export function Contact() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <a
                 href={WA_URL}
+                data-origem="contato"
                 target="_blank"
                 rel="noopener noreferrer"
                 onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.03, duration: 0.18 })}

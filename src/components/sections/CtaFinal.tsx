@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from '@/context/ThemeContext'
+import { PROJETOS_NO_AR } from '@/lib/numeros'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 // Mesmo número usado no botão flutuante e na seção de contato
@@ -481,6 +482,7 @@ export function CtaFinal() {
                     {/* Saída alternativa: leva o que já foi digitado para o WhatsApp */}
                     <a
                       href={waLink(form.nome, form.mensagem)}
+                      data-origem="formulario-erro"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -540,8 +542,9 @@ export function CtaFinal() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer (data-origem: cliques no WhatsApp daqui contam como "rodape") */}
       <footer
+        data-origem="rodape"
         style={{
           position: 'relative',
           overflow: 'hidden',
@@ -609,7 +612,7 @@ export function CtaFinal() {
                 </div>
                 <div style={{ padding: '14px 13px', fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.75 }}>
                   <div><span style={{ color: 'var(--accent)' }}>$</span> status --prod</div>
-                  <div style={{ color: 'var(--text-muted)' }}>› 5 projetos no ar · 100% uptime</div>
+                  <div style={{ color: 'var(--text-muted)' }}>› {PROJETOS_NO_AR} projetos no ar · 100% uptime</div>
                   <div>
                     <span style={{ color: 'var(--accent)' }}>$</span>
                     <span style={{ display: 'inline-block', width: 7, height: 14, background: 'var(--accent)', verticalAlign: '-2px', marginLeft: 4, animation: 'footerCursorBlink 1.1s steps(1) infinite' }} />

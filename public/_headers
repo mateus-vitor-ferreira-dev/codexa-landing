@@ -10,14 +10,15 @@
 # é estático (output: 'export'), sem nonce, e o Next injeta scripts inline (payload do
 # React em self.__next_f, JSON-LD e o script do Preloader que roda antes da hidratação).
 # style-src também: os componentes usam style inline e tags <style>.
-# connect-src libera a API do formulário/estatísticas; WhatsApp e redes são só navegação.
+# connect-src libera a API (formulário e contagem de cliques no WhatsApp) e o envio do
+# Cloudflare Web Analytics; script-src, o beacon dele. WhatsApp e redes são só navegação.
 /*
   Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.digitalcodexa.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.digitalcodexa.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Arquivos do build têm hash no nome: podem ficar em cache "para sempre"
 /_next/static/*

@@ -135,7 +135,7 @@ Sobrepostos à página: `Preloader` (segura o Lenis até terminar), `CustomCurso
     </tr>
     <tr>
       <td><strong>Observabilidade</strong></td>
-      <td><img src="https://img.shields.io/badge/Vercel_Analytics-000000?style=flat-square&logo=vercel&logoColor=white"/> <img src="https://img.shields.io/badge/Speed_Insights-000000?style=flat-square&logo=vercel&logoColor=white"/></td>
+      <td>Cloudflare Web Analytics (token em <code>src/lib/analytics.ts</code>) · cliques no WhatsApp contados em <code>POST /eventos</code> da API</td>
     </tr>
     <tr>
       <td><strong>Qualidade</strong></td>
