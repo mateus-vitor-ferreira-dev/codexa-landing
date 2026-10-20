@@ -1,5 +1,5 @@
-# O site é estático: o que muda com o tempo (o número de projetos) só se atualiza
-# num build novo. Este agendamento pede um build ao Cloudflare todo dia, pelo deploy hook
+# O site é estático: o que muda com o tempo (hoje só o lastmod do sitemap; o número de
+# projetos ficou fixo em src/lib/numeros.ts) só se atualiza num build novo. Este agendamento pede um build ao Cloudflare todo dia, pelo deploy hook
 # do Workers Builds.
 #
 # Configurar uma vez: no painel do Cloudflare, Worker "codexa-landing" → Settings →

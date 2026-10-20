@@ -4,15 +4,17 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { PROJETOS_NO_AR } from '@/lib/numeros'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function Stats({ projetos = 8 }: { projetos?: number }) {
-  const STATS = [
-    { value: projetos, suffix: '+',  label: 'Projetos no portfólio', sub: 'Entregues e em produção' },
-    { value: 30,       suffix: 'd',  label: 'Suporte incluso',       sub: 'Pós-entrega'             },
-    { value: 24,       suffix: 'h',  label: 'Tempo de resposta',     sub: 'Garantido'               },
-  ]
+const STATS = [
+  { value: PROJETOS_NO_AR, suffix: '',  label: 'Projetos no ar',    sub: 'Em produção hoje' },
+  { value: 30,             suffix: 'd', label: 'Suporte incluso',   sub: 'Pós-entrega'      },
+  { value: 24,             suffix: 'h', label: 'Tempo de resposta', sub: 'Garantido'        },
+]
+
+export function Stats() {
 
   const sectionRef  = useRef<HTMLElement>(null)
   const counterRefs = useRef<(HTMLSpanElement | null)[]>([])
@@ -51,7 +53,8 @@ export function Stats({ projetos = 8 }: { projetos?: number }) {
         }
       )
 
-      // Animated counters
+      // Contadores: o HTML já sai com o valor final (sem JS, ou antes da hidratação,
+      // aparece o número certo); immediateRender: false evita zerar antes da rolagem
       counterRefs.current.forEach((el, i) => {
         if (!el) return
         const stat = STATS[i]
@@ -63,6 +66,7 @@ export function Stats({ projetos = 8 }: { projetos?: number }) {
             duration: 1.8,
             ease: 'power2.out',
             delay: i * 0.1,
+            immediateRender: false,
             onUpdate() { el.textContent = Math.round(proxy.val) + stat.suffix },
             scrollTrigger: {
               trigger: sectionRef.current,
@@ -133,7 +137,7 @@ export function Stats({ projetos = 8 }: { projetos?: number }) {
                   fontFeatureSettings: '"tnum" 1, "lnum" 1',
                 }}
               >
-                0{stat.suffix}
+                {stat.value}{stat.suffix}
               </span>
 
               <div className="flex flex-col gap-1">

@@ -24,21 +24,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 }
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
-
-async function getStats() {
-  try {
-    const res = await fetch(`${API}/stats`, { next: { revalidate: 3600 } })
-    if (!res.ok) return { projetos: 8 }
-    return res.json() as Promise<{ projetos: number }>
-  } catch {
-    return { projetos: 8 }
-  }
-}
-
-export default async function Home() {
-  const stats = await getStats()
-
+export default function Home() {
   return (
     <>
       <BackgroundEffects />
@@ -52,7 +38,7 @@ export default async function Home() {
         <Manifesto />
         <PromisesMarquee />
         <SectionDivider accent />
-        <Stats projetos={stats.projetos} />
+        <Stats />
         <SectionDivider />
         <Services />
         <SectionDivider accent />
