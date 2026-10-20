@@ -44,7 +44,7 @@ const PROJECTS: Project[] = [
     subtitle:   'Landing Page',
     type:       'Landing Page',
     desc:       'Uma página que vende antes mesmo do cliente terminar de rolar. Animações, galeria de produtos e CTA direto para o pedido — tudo pensado para converter visitante em cliente.',
-    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
+    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Cloudflare'],
     accent:     '#FFB000',
     preview:    '/cases/mob-burger-landing/preview.png',
     liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
