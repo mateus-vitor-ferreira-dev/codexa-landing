@@ -18,52 +18,62 @@ export function Stats({ projetos = 8 }: { projetos?: number }) {
   const counterRefs = useRef<(HTMLSpanElement | null)[]>([])
 
   useGSAP(() => {
-    // Card entrance — stagger lateral
-    gsap.fromTo('.stat-card',
-      { opacity: 0, y: 36, scale: 0.96 },
-      {
-        opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.1, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
-
-    gsap.fromTo('.stats-heading',
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 84%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
-
-    // Animated counters
-    counterRefs.current.forEach((el, i) => {
-      if (!el) return
-      const stat = STATS[i]
-      const proxy = { val: 0 }
-      gsap.fromTo(proxy,
-        { val: 0 },
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: sem entrada, contadores já no valor final
+    mm.add('(prefers-reduced-motion: reduce)', () => {
+      counterRefs.current.forEach((el, i) => {
+        if (el) el.textContent = STATS[i].value + STATS[i].suffix
+      })
+    })
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      // Card entrance — stagger lateral
+      gsap.fromTo('.stat-card',
+        { opacity: 0, y: 36, scale: 0.96 },
         {
-          val: stat.value,
-          duration: 1.8,
-          ease: 'power2.out',
-          delay: i * 0.1,
-          onUpdate() { el.textContent = Math.round(proxy.val) + stat.suffix },
+          opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.1, ease: 'power3.out',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 80%',
+            start: 'top 82%',
             toggleActions: 'play reverse play reverse',
           },
         }
       )
-    })
+
+      gsap.fromTo('.stats-heading',
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 84%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
+
+      // Animated counters
+      counterRefs.current.forEach((el, i) => {
+        if (!el) return
+        const stat = STATS[i]
+        const proxy = { val: 0 }
+        gsap.fromTo(proxy,
+          { val: 0 },
+          {
+            val: stat.value,
+            duration: 1.8,
+            ease: 'power2.out',
+            delay: i * 0.1,
+            onUpdate() { el.textContent = Math.round(proxy.val) + stat.suffix },
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 80%',
+              toggleActions: 'play reverse play reverse',
+            },
+          }
+        )
+      })
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (

@@ -195,7 +195,6 @@ export function ColorSwitcher() {
                   alignItems:     'center',
                   justifyContent: 'center',
                   cursor:         'none',
-                  outline:        'none',
                   transition:     'border-color 0.2s',
                 }}
               >

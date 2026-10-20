@@ -33,7 +33,7 @@ const PROJECTS: Project[] = [
     desc:       'O M.O.B deixou de depender de apps de delivery e passou a receber pedidos direto — sem pagar comissão. Sistema com PIX, cartão e painel em tempo real para a cozinha.',
     tags:       ['Next.js', 'Stripe', 'PostgreSQL', 'Railway'],
     accent:     '#FF4500',
-    preview:    '/cases/mob-burger-web/preview.png',
+    preview:    '/cases/mob-burger-web/preview.webp',
     liveUrl:    'https://mob-burger-web.desenvolvedoracodexa.workers.dev',
     displayUrl: 'mob-burger-web.desenvolvedoracodexa.workers.dev',
     status:     'Em produção',
@@ -46,7 +46,7 @@ const PROJECTS: Project[] = [
     desc:       'Uma página que vende antes mesmo do cliente terminar de rolar. Animações, galeria de produtos e CTA direto para o pedido — tudo pensado para converter visitante em cliente.',
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Cloudflare'],
     accent:     '#FFB000',
-    preview:    '/cases/mob-burger-landing/preview.png',
+    preview:    '/cases/mob-burger-landing/preview.webp',
     liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
     displayUrl: 'mob-burger-landing.desenvolvedoracodexa.workers.dev',
     status:     'No ar',
@@ -59,8 +59,8 @@ const PROJECTS: Project[] = [
     desc:       'O Recanto eliminou planilhas e o vai-e-vem de mensagens. Hoje reservas, pagamentos e confirmações acontecem no sistema — o dono acompanha tudo num único painel.',
     tags:       ['React', 'Node.js', 'PostgreSQL', 'Stripe'],
     accent:     '#c9a84c',
-    preview:    '/cases/recanto-web/preview-light.png',
-    preview2:   '/cases/recanto-web/preview-dark.png',
+    preview:    '/cases/recanto-web/preview-light.webp',
+    preview2:   '/cases/recanto-web/preview-dark.webp',
     displayUrl: 'recantovilarica.com.br',
     status:     'Entregue',
   },
@@ -72,7 +72,7 @@ const PROJECTS: Project[] = [
     desc:       'Clientes chegam ao site, veem o espaço, consultam preços e já reservam — sem precisar ligar. A landing reduziu o atrito entre o interesse e a reserva confirmada.',
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
     accent:     '#c9a84c',
-    preview:    '/cases/recanto-landing/preview.png',
+    preview:    '/cases/recanto-landing/preview.webp',
     displayUrl: 'recantovilarica.com.br',
     status:     'Entregue',
   },
@@ -84,7 +84,7 @@ const PROJECTS: Project[] = [
     desc:       'Achar jogo deixou de depender do grupo do WhatsApp. O jogador entra em uma partida aberta com um clique, vê vagas, local e valor na hora — em 12 modalidades diferentes.',
     tags:       ['React + Vite', 'Login com Google', 'Painel do jogador', 'Vercel'],
     accent:     '#22c55e',
-    preview:    '/cases/somaisum-app/preview.png',
+    preview:    '/cases/somaisum-app/preview.webp',
     liveUrl:    'https://app.so-mais-um.com',
     displayUrl: 'app.so-mais-um.com',
     status:     'Em produção',
@@ -97,7 +97,7 @@ const PROJECTS: Project[] = [
     desc:       'A página explica o produto em segundos e leva o jogador direto para o cadastro. Base de usuários construída antes mesmo da plataforma abrir oficialmente.',
     tags:       ['Next.js', 'Tailwind', 'SEO', 'Vercel'],
     accent:     '#22c55e',
-    preview:    '/cases/somaisum-landing/preview.png',
+    preview:    '/cases/somaisum-landing/preview.webp',
     liveUrl:    'https://so-mais-um.com',
     displayUrl: 'so-mais-um.com',
     status:     'No ar',
@@ -110,7 +110,7 @@ const PROJECTS: Project[] = [
     desc:       'Quem compra em BH descobre em segundos que a MDMJ busca a carga e entrega em Lavras. O orçamento sai direto no WhatsApp, e páginas por cidade capturam quem procura frete no Google.',
     tags:       ['Next.js', 'SEO local', 'WhatsApp', 'Vercel'],
     accent:     '#f97316',
-    preview:    '/cases/mdmj-landing/preview.png',
+    preview:    '/cases/mdmj-landing/preview.webp',
     liveUrl:    'https://mdmjtransportes.com.br',
     displayUrl: 'mdmjtransportes.com.br',
     status:     'No ar',
@@ -123,7 +123,7 @@ const PROJECTS: Project[] = [
     desc:       'Painel de gestão da transportadora com acompanhamento de pedidos pelo cliente. Quem despachou consulta o status do frete sem precisar ligar para a empresa.',
     tags:       ['Next.js', 'Login com Google', 'Painel de gestão', 'Vercel'],
     accent:     '#f97316',
-    preview:    '/cases/mdmj-app/preview.png',
+    preview:    '/cases/mdmj-app/preview.webp',
     liveUrl:    'https://app.mdmjtransportes.com.br',
     displayUrl: 'app.mdmjtransportes.com.br',
     status:     'Em produção',
@@ -142,10 +142,10 @@ function BrowserMockup({ project }: { project: Project }) {
   const hasDual    = !!project.preview2
   const isLive     = !!project.liveUrl
 
-  /* Continuous float */
+  /* Continuous float (parado com reduced-motion) */
   useEffect(() => {
     const el = wrapRef.current
-    if (!el) return
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const tween = gsap.to(el, {
       y: -9, duration: 3.2 + Math.random() * 0.8,
       ease: 'sine.inOut', yoyo: true, repeat: -1,
@@ -153,9 +153,9 @@ function BrowserMockup({ project }: { project: Project }) {
     return () => { tween.kill() }
   }, [])
 
-  /* Auto-toggle para projetos com dois temas */
+  /* Auto-toggle para projetos com dois temas (desligado com reduced-motion) */
   useEffect(() => {
-    if (!hasDual) return
+    if (!hasDual || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const id = setInterval(() => {
       setShowAlt((v) => !v)
     }, 3200)
@@ -396,22 +396,26 @@ export function Cases() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    // Heading
-    gsap.fromTo('.cases-heading',
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
-    )
-
-    // Desfoque → nítido — bidirecional
-    gsap.utils.toArray<HTMLElement>('.project-card').forEach((card) => {
-      gsap.fromTo(card,
-        { opacity: 0, y: 44, filter: 'blur(6px)' },
-        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 83%', toggleActions: 'play reverse play reverse' } }
+    // Só anima sem reduced-motion; com ele os cards já ficam visíveis
+    const mm = gsap.matchMedia()
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      // Heading
+      gsap.fromTo('.cases-heading',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
       )
-    })
 
+      // Desfoque → nítido — bidirecional
+      gsap.utils.toArray<HTMLElement>('.project-card').forEach((card) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 44, filter: 'blur(6px)' },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 83%', toggleActions: 'play reverse play reverse' } }
+        )
+      })
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
