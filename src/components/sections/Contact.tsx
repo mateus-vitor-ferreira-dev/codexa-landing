@@ -58,30 +58,35 @@ export function Contact() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    gsap.fromTo(
-      '.contact-heading',
-      { opacity: 0, y: 28 },
-      {
-        opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play none none none' },
-      },
-    )
-    gsap.fromTo(
-      '.contact-card',
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1, y: 0, stagger: 0.1, duration: 0.55, ease: 'power2.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', toggleActions: 'play none none none' },
-      },
-    )
-    gsap.fromTo(
-      '.contact-cta-block',
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 65%', toggleActions: 'play none none none' },
-      },
-    )
+    // Só anima sem reduced-motion; com ele o conteúdo já fica visível
+    const mm = gsap.matchMedia()
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.fromTo(
+        '.contact-heading',
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play none none none' },
+        },
+      )
+      gsap.fromTo(
+        '.contact-card',
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, stagger: 0.1, duration: 0.55, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', toggleActions: 'play none none none' },
+        },
+      )
+      gsap.fromTo(
+        '.contact-cta-block',
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 65%', toggleActions: 'play none none none' },
+        },
+      )
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (

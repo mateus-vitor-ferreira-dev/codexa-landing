@@ -142,10 +142,10 @@ function BrowserMockup({ project }: { project: Project }) {
   const hasDual    = !!project.preview2
   const isLive     = !!project.liveUrl
 
-  /* Continuous float */
+  /* Continuous float (parado com reduced-motion) */
   useEffect(() => {
     const el = wrapRef.current
-    if (!el) return
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const tween = gsap.to(el, {
       y: -9, duration: 3.2 + Math.random() * 0.8,
       ease: 'sine.inOut', yoyo: true, repeat: -1,
@@ -153,9 +153,9 @@ function BrowserMockup({ project }: { project: Project }) {
     return () => { tween.kill() }
   }, [])
 
-  /* Auto-toggle para projetos com dois temas */
+  /* Auto-toggle para projetos com dois temas (desligado com reduced-motion) */
   useEffect(() => {
-    if (!hasDual) return
+    if (!hasDual || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const id = setInterval(() => {
       setShowAlt((v) => !v)
     }, 3200)
@@ -396,22 +396,26 @@ export function Cases() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    // Heading
-    gsap.fromTo('.cases-heading',
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
-    )
-
-    // Desfoque → nítido — bidirecional
-    gsap.utils.toArray<HTMLElement>('.project-card').forEach((card) => {
-      gsap.fromTo(card,
-        { opacity: 0, y: 44, filter: 'blur(6px)' },
-        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 83%', toggleActions: 'play reverse play reverse' } }
+    // Só anima sem reduced-motion; com ele os cards já ficam visíveis
+    const mm = gsap.matchMedia()
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      // Heading
+      gsap.fromTo('.cases-heading',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
       )
-    })
 
+      // Desfoque → nítido — bidirecional
+      gsap.utils.toArray<HTMLElement>('.project-card').forEach((card) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 44, filter: 'blur(6px)' },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 83%', toggleActions: 'play reverse play reverse' } }
+        )
+      })
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (

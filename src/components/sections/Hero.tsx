@@ -12,6 +12,8 @@ gsap.registerPlugin(ScrollTrigger)
 // three.js fica fora do bundle inicial: só baixa quando o Orb vai ser montado
 const Orb = dynamic(() => import('@/components/ui/Orb'), { ssr: false, loading: () => <OrbFallback /> })
 
+const MOTION_OK = '(prefers-reduced-motion: no-preference)'
+
 // Orb 3D só em telas ≥ 768px e sem pedido de menos movimento
 const ORB_QUERY = '(min-width: 768px) and (prefers-reduced-motion: no-preference)'
 
@@ -73,38 +75,46 @@ export function Hero() {
   const showOrb      = useShowOrb()
 
   useGSAP(() => {
-    // Entrada começa quando o preloader termina (ou na hora, se ele foi pulado)
-    const tl = gsap.timeline({ paused: true })
+    // Com reduced-motion nada anima: o conteúdo já aparece no lugar
+    const mm = gsap.matchMedia()
+    mm.add(MOTION_OK, () => {
+      // Entrada começa quando o preloader termina (ou na hora, se ele foi pulado).
+      // fromTo com destino explícito: o from() lia a opacidade no meio da transição
+      // CSS do .btn-primary e deixava o botão invisível.
+      const tl = gsap.timeline({ paused: true })
 
-    tl.from('.hero-tag', {
-      opacity: 0, y: 12, duration: 0.5, ease: 'power3.out',
-    })
+      tl.fromTo('.hero-tag', { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.5, ease: 'power3.out',
+      })
 
-    tl.from('.hero-word', {
-      opacity: 0, y: 48, duration: 0.7, stagger: 0.08, ease: 'power3.out',
-    }, '-=0.2')
+      tl.fromTo('.hero-word', { opacity: 0, y: 48 }, {
+        opacity: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out',
+      }, '-=0.2')
 
-    tl.from('.hero-desc', {
-      opacity: 0, y: 16, duration: 0.5, ease: 'power2.out',
-    }, '-=0.3')
+      tl.fromTo('.hero-desc', { opacity: 0, y: 16 }, {
+        opacity: 1, y: 0, duration: 0.5, ease: 'power2.out',
+      }, '-=0.3')
 
-    tl.from('.hero-cta', {
-      opacity: 0, y: 12, stagger: 0.08, duration: 0.4, ease: 'power2.out',
-    }, '-=0.25')
+      tl.fromTo('.hero-cta', { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, stagger: 0.08, duration: 0.4, ease: 'power2.out',
+      }, '-=0.25')
 
-    tl.from('.hero-orb', {
-      opacity: 0, scale: 0.88, duration: 0.9, ease: 'power3.out',
-    }, '-=0.55')
+      tl.fromTo('.hero-orb', { opacity: 0, scale: 0.88 }, {
+        opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out',
+      }, '-=0.55')
 
-    tl.from('.hero-scroll', {
-      opacity: 0, duration: 0.45,
-    }, '-=0.2')
+      tl.fromTo('.hero-scroll', { opacity: 0 }, {
+        opacity: 1, duration: 0.45,
+      }, '-=0.2')
 
-    return onPreloaderDone(() => { tl.play() })
+      return onPreloaderDone(() => { tl.play() })
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
-  // Rotating word
+  // Rotating word (parado com reduced-motion)
   useEffect(() => {
+    if (!window.matchMedia(MOTION_OK).matches) return
     const interval = setInterval(() => {
       const el = wordRef.current
       if (!el) return
@@ -126,11 +136,12 @@ export function Hero() {
   // Pulse no accent dot do tag
   useEffect(() => {
     const el = document.querySelector<HTMLElement>('.hero-tag-dot')
-    if (!el) return
-    gsap.to(el, {
+    if (!el || !window.matchMedia(MOTION_OK).matches) return
+    const tween = gsap.to(el, {
       scale: 1.5, opacity: 0.5, duration: 1.1,
       ease: 'sine.inOut', yoyo: true, repeat: -1,
     })
+    return () => { tween.kill() }
   }, [])
 
   return (

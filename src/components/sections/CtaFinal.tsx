@@ -64,6 +64,12 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
   )
 }
 
+// Rótulos do formulário: branco a 60% dá ~7:1 sobre o fundo (antes 35%, ~2,9:1)
+const LABEL_STYLE: React.CSSProperties = {
+  fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em',
+  textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)',
+}
+
 const LINE1 = ['Tem', 'uma', 'ideia?']
 const LINE2 = ['Vamos', 'transformar', 'em', 'realidade.']
 const ALL_WORDS = [...LINE1, ...LINE2]
@@ -104,6 +110,8 @@ export function CtaFinal() {
     const emailErr = validateField('email', form.email)
     if (nomeErr || emailErr) {
       setErrors({ nome: nomeErr, email: emailErr })
+      // Leva o foco ao primeiro campo com erro (o leitor de tela lê a mensagem junto)
+      document.getElementById(nomeErr ? 'contato-nome' : 'contato-email')?.focus()
       return
     }
     setStatus('sending')
@@ -326,6 +334,13 @@ export function CtaFinal() {
 
           {/* Formulário de contato */}
           <div style={{ width: '100%', maxWidth: 480, textAlign: 'left' }}>
+            {/* Anuncia o status para leitores de tela; fica sempre no DOM */}
+            <p className="sr-only" aria-live="polite">
+              {status === 'sending' ? 'Enviando mensagem…'
+                : status === 'ok' ? 'Mensagem enviada! Entraremos em contato em breve.'
+                : status === 'error' ? (erroEnvio || 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.')
+                : ''}
+            </p>
             {status === 'ok' ? (
               <div style={{
                 background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
@@ -343,18 +358,24 @@ export function CtaFinal() {
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: '#f4f4f5', marginBottom: 8 }}>
                   Mensagem enviada!
                 </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
                   Entraremos em contato em breve para dar início ao seu projeto.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                    <label htmlFor="contato-nome" style={LABEL_STYLE}>
                       Nome *
                     </label>
                     <input
+                      id="contato-nome"
+                      name="nome"
+                      autoComplete="name"
+                      required
+                      aria-invalid={!!errors.nome}
+                      aria-describedby={errors.nome ? 'contato-nome-erro' : undefined}
                       value={form.nome}
                       onChange={e => { setForm(f => ({ ...f, nome: e.target.value })); if (errors.nome) setErrors(p => ({ ...p, nome: undefined })) }}
                       onBlur={() => handleBlur('nome')}
@@ -363,23 +384,29 @@ export function CtaFinal() {
                         background: 'rgba(255,255,255,0.04)',
                         border: `1px solid ${errors.nome ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
                         borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                        fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                        fontFamily: 'var(--font-body)', fontSize: '0.9rem',
                         width: '100%', cursor: 'auto',
                       }}
                       onFocus={e => (e.currentTarget.style.borderColor = errors.nome ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
                     {errors.nome && (
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
+                      <span id="contato-nome-erro" style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
                         {errors.nome}
                       </span>
                     )}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                    <label htmlFor="contato-email" style={LABEL_STYLE}>
                       E-mail *
                     </label>
                     <input
+                      id="contato-email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
+                      required
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'contato-email-erro' : undefined}
                       value={form.email}
                       onChange={e => { setForm(f => ({ ...f, email: e.target.value })); if (errors.email) setErrors(p => ({ ...p, email: undefined })) }}
                       onBlur={() => handleBlur('email')}
@@ -388,13 +415,13 @@ export function CtaFinal() {
                         background: 'rgba(255,255,255,0.04)',
                         border: `1px solid ${errors.email ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
                         borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                        fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                        fontFamily: 'var(--font-body)', fontSize: '0.9rem',
                         width: '100%', cursor: 'auto',
                       }}
                       onFocus={e => (e.currentTarget.style.borderColor = errors.email ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
                     {errors.email && (
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
+                      <span id="contato-email-erro" style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
                         {errors.email}
                       </span>
                     )}
@@ -402,18 +429,21 @@ export function CtaFinal() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                  <label htmlFor="contato-whatsapp" style={LABEL_STYLE}>
                     WhatsApp
                   </label>
                   <input
+                    id="contato-whatsapp"
+                    name="whatsapp"
                     type="tel"
+                    autoComplete="tel"
                     value={form.whatsapp}
                     onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
                     placeholder="(35) 9 9999-9999"
                     style={{
                       background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
                       borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                      fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9rem',
                       width: '100%', cursor: 'auto',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
@@ -422,10 +452,12 @@ export function CtaFinal() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+                  <label htmlFor="contato-mensagem" style={LABEL_STYLE}>
                     Sobre o projeto
                   </label>
                   <textarea
+                    id="contato-mensagem"
+                    name="mensagem"
                     rows={4}
                     value={form.mensagem}
                     onChange={e => setForm(f => ({ ...f, mensagem: e.target.value }))}
@@ -433,7 +465,7 @@ export function CtaFinal() {
                     style={{
                       background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
                       borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                      fontFamily: 'var(--font-body)', fontSize: '0.9rem', outline: 'none',
+                      fontFamily: 'var(--font-body)', fontSize: '0.9rem',
                       resize: 'vertical', width: '100%', cursor: 'auto',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
@@ -442,7 +474,7 @@ export function CtaFinal() {
                 </div>
 
                 {status === 'error' && (
-                  <div role="alert" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#ef4444', textAlign: 'center' }}>
                       {erroEnvio || 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.'}
                     </p>
@@ -494,9 +526,9 @@ export function CtaFinal() {
                     </>
                   )}
                 </button>
-                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
                   Ao enviar, você concorda com nossa{' '}
-                  <a href="/privacidade" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}>
+                  <a href="/privacidade" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'underline' }}>
                     Política de Privacidade
                   </a>
                   . Seus dados são usados apenas para retorno do contato.
@@ -552,15 +584,13 @@ export function CtaFinal() {
         <div className="page-container" style={{ position: 'relative' }}>
 
           {/* Nav grid: brand col + 3 link cols */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+          <div className="footer-grid grid grid-cols-2 lg:grid-cols-4" style={{
             gap: 'clamp(24px, 4vw, 48px)',
             paddingBottom: 64,
           }}>
 
-            {/* ── Brand column ── */}
-            <div style={{ gridColumn: 'span 1' }}>
+            {/* ── Brand column (linha inteira no celular) ── */}
+            <div className="col-span-2 lg:col-span-1">
               {/* Mini terminal */}
               <div style={{
                 border: '1px solid rgba(255,255,255,0.08)',

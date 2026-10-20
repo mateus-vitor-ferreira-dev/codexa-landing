@@ -63,6 +63,17 @@ body::after {
 /* ── Selection ──────────────────────────────────────────── */
 ::selection { background: var(--accent); color: #fff; }
 
+/* ── Foco visível (teclado) ─────────────────────────────── */
+/* Anel na cor de destaque para quem navega por teclado; clique de mouse não mostra */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+input:focus-visible,
+textarea:focus-visible {
+  outline-offset: 0;
+}
+
 /* ── Layout container ───────────────────────────────────── */
 .page-container {
   width: 100%;
@@ -110,6 +121,7 @@ body::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  html { scroll-behavior: auto; }
 }
 
 @keyframes pulse {
