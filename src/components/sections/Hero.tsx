@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Orb from '@/components/ui/Orb'
+import { onPreloaderDone } from '@/components/ui/Preloader'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -16,7 +17,8 @@ export function Hero() {
   const wordIndexRef = useRef(0)
 
   useGSAP(() => {
-    const tl = gsap.timeline({ delay: 2.6 })
+    // Entrada começa quando o preloader termina (ou na hora, se ele foi pulado)
+    const tl = gsap.timeline({ paused: true })
 
     tl.from('.hero-tag', {
       opacity: 0, y: 12, duration: 0.5, ease: 'power3.out',
@@ -41,6 +43,8 @@ export function Hero() {
     tl.from('.hero-scroll', {
       opacity: 0, duration: 0.45,
     }, '-=0.2')
+
+    return onPreloaderDone(() => { tl.play() })
   }, { scope: sectionRef })
 
   // Rotating word
