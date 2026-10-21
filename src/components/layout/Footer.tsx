@@ -1,6 +1,5 @@
 'use client'
 
-import { PROJETOS_NO_AR } from '@/lib/numeros'
 import { Magnetic } from '@/components/fx/Magnetic'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 
@@ -95,32 +94,6 @@ export function Footer() {
 
           {/* ── Brand column (linha inteira no celular) ── */}
           <div className="col-span-2 lg:col-span-1">
-            {/* Mini terminal */}
-            <div style={{
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.02)',
-              maxWidth: 280,
-              marginBottom: 28,
-              boxShadow: '0 24px 60px -30px rgba(0,0,0,0.8)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 13px', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-                {(['#ff5f57','#febc2e','#28c840'] as const).map(c => (
-                  <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, flexShrink: 0 }} />
-                ))}
-                <span style={{ marginLeft: 6, color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 11 }}>codexa@deploy</span>
-              </div>
-              <div style={{ padding: '14px 13px', fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.75 }}>
-                <div><span style={{ color: 'var(--accent)' }}>$</span> <ScrambleText text="status --prod" duration={700} /></div>
-                <div style={{ color: 'var(--text-muted)' }}>› <ScrambleText text={`${PROJETOS_NO_AR} projetos no ar · 100% uptime`} delay={500} duration={1100} /></div>
-                <div>
-                  <span style={{ color: 'var(--accent)' }}>$</span>
-                  <span style={{ display: 'inline-block', width: 7, height: 14, background: 'var(--accent)', verticalAlign: '-2px', marginLeft: 4, animation: 'footerCursorBlink 1.1s steps(1) infinite' }} />
-                </div>
-              </div>
-            </div>
-
             {/* Logo mark (alt vazio: o nome já vem no texto ao lado) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -198,7 +171,6 @@ export function Footer() {
       </div>
 
       <style>{`
-        @keyframes footerCursorBlink { 50% { opacity: 0 } }
         @keyframes footerStatusPulse {
           0%   { box-shadow: 0 0 0 0 rgba(40,200,64,0.5) }
           70%  { box-shadow: 0 0 0 8px rgba(40,200,64,0) }
