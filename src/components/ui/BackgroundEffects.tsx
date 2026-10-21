@@ -1,19 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { NeuralBackground } from '@/components/fx/NeuralBackground'
-
-const COMMANDS = [
-  'npm run build',
-  'git push origin main',
-  'docker compose up -d',
-  'pnpm deploy --prod',
-  'kubectl apply -f .',
-  'next build && next start',
-  'prisma migrate deploy',
-  'vercel --prod',
-  'yarn test --coverage',
-]
 
 const CODE_SYMS = ['{ }', '< />', '=>', '&&', '||', '( )', '[ ]', ';', '/*', '*/', '!=', '===']
 const DENSITY_MULT = { low: 0.5, medium: 1, high: 1.5 } as const
@@ -32,14 +20,11 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
 
   const binaryRef = useRef<HTMLDivElement>(null)
   const symbolRef = useRef<HTMLDivElement>(null)
-  const [typedText, setTypedText] = useState('')
   const reduced = useSyncExternalStore(
     subscribeReducedMotion,
     () => window.matchMedia(REDUCED_MOTION).matches,
     () => false,
   )
-  // Com movimento reduzido o terminal fica parado no último comando
-  const termText = reduced ? COMMANDS[COMMANDS.length - 1] : typedText
 
   useEffect(() => {
     const dead    = { v: false }
@@ -90,40 +75,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
       reg(setInterval(spawnSym, Math.round(4500 / mult)))
     }
 
-    // ── Layer 6: Terminal typewriter ──────────────────────────────
-    let termTimer: ReturnType<typeof setTimeout> | undefined
-
-    if (!reduced) {
-      let cmdIdx = 0
-      const typeNext = () => {
-        if (dead.v) return
-        const cmd = COMMANDS[cmdIdx % COMMANDS.length]
-        let ci = 0
-        const typeChar = () => {
-          if (dead.v) return
-          setTypedText(cmd.slice(0, ci + 1)); ci++
-          if (ci < cmd.length) {
-            termTimer = setTimeout(typeChar, 60 + Math.random() * 40)
-          } else {
-            termTimer = setTimeout(() => {
-              if (dead.v) return
-              let ei = cmd.length
-              const erase = () => {
-                if (dead.v) return
-                ei--; setTypedText(cmd.slice(0, ei))
-                if (ei > 0) termTimer = setTimeout(erase, 25)
-                else { cmdIdx++; termTimer = setTimeout(typeNext, 300) }
-              }
-              erase()
-            }, 1500)
-          }
-        }
-        typeChar()
-      }
-      termTimer = setTimeout(typeNext, 1000)
-      cleanups.push(() => { if (termTimer !== undefined) clearTimeout(termTimer) })
-    }
-
     return () => {
       dead.v = true
       cleanups.forEach(fn => fn())
@@ -140,10 +91,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         @keyframes bgSymbolRise {
           from { transform: translateY(calc(100vh + 60px)) rotate(var(--rot, 0deg)); }
           to   { transform: translateY(-160px) rotate(var(--rot, 0deg)); }
-        }
-        @keyframes bgCursorBlink {
-          0%, 49% { opacity: 1; }
-          50%, 100% { opacity: 0; }
         }
       `}</style>
 
@@ -168,51 +115,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         <div ref={symbolRef} style={{ position: 'absolute', inset: 0 }} />
       </div>
 
-      {/* Layer 6: terminal — own stacking context above sections */}
-      <div
-        aria-hidden="true"
-        className="bg-terminal"
-        style={{
-          position:  'fixed',
-          bottom:    '132px',
-          left:      '24px',
-          zIndex:    2,
-          width:     '280px',
-          background: 'rgba(10,10,14,.85)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border:    '1px solid rgba(255,255,255,.08)',
-          borderRadius: '10px',
-          overflow:  'hidden',
-          fontFamily: '"JetBrains Mono",monospace',
-          fontSize:  '12px',
-          pointerEvents: 'none',
-        }}
-      >
-        {/* macOS dots */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '6px',
-          padding: '8px 12px',
-          borderBottom: '1px solid rgba(255,255,255,.06)',
-          background: 'rgba(255,255,255,.03)',
-        }}>
-          {['#ff5f57','#ffbd2e','#28c840'].map(c => (
-            <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, flexShrink: 0 }} />
-          ))}
-          <span style={{ marginLeft: 6, color: 'rgba(255,255,255,.3)', fontSize: 10 }}>codexa@deploy</span>
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: '10px 14px 14px', display: 'flex', alignItems: 'flex-start', gap: 6, minHeight: 36 }}>
-          <span style={{ color: 'var(--accent)', userSelect: 'none', flexShrink: 0 }}>$</span>
-          <span style={{ color: 'rgba(255,255,255,.75)', wordBreak: 'break-all', flex: 1 }}>{termText}</span>
-          <span style={{
-            display: 'inline-block', width: 7, height: 14,
-            background: 'var(--accent)', flexShrink: 0, alignSelf: 'center',
-            animation: 'bgCursorBlink 1s step-end infinite',
-          }} />
-        </div>
-      </div>
     </>
   )
 }
