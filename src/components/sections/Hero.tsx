@@ -147,7 +147,7 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="gradient-mesh relative min-h-screen flex flex-col justify-center px-5 md:px-12 xl:px-20 pt-24 pb-16 overflow-hidden"
+      className="gradient-mesh relative min-h-dvh flex flex-col justify-center px-5 md:px-12 xl:px-20 pt-24 pb-16 overflow-hidden"
     >
       {/* Subtle grid */}
       <div
@@ -182,45 +182,52 @@ export function Hero() {
 
           {/* Headline */}
           <div style={{ fontFamily: 'var(--font-display)' }}>
-            <h1 className="font-bold leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(2.75rem, 6vw, 4.5rem)' }}>
-              <div className="flex flex-wrap gap-x-3 mb-1">
-                <div className="hero-word-wrap">
-                  <span className="hero-word block" style={{ color: 'var(--text)' }}>Construímos</span>
-                </div>
-              </div>
+            {/* Teto de 9.6vw: "transformam" precisa caber inteira em celulares de 320px */}
+            <h1 className="font-bold leading-[1.05] tracking-tight" style={{ fontSize: 'min(clamp(2.75rem, 6vw, 4.5rem), 9.6vw)' }}>
+              {/* Texto estável para leitor de tela: a palavra rotativa muda a cada 2,6s */}
+              <span className="sr-only">Construímos sistemas, websites, apps e automações que transformam seu negócio.</span>
 
-              <div className="flex flex-wrap items-baseline gap-x-3 mb-1">
-                <div className="hero-word-wrap" style={{ overflow: 'hidden' }}>
-                  <span
-                    ref={wordRef}
-                    className="hero-word block"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    {WORDS[0]}
+              {/* Parte visual (spans: <div> não é permitido dentro de <h1>) */}
+              <span aria-hidden="true" className="block">
+                <span className="flex flex-wrap gap-x-3 mb-1">
+                  <span className="hero-word-wrap">
+                    <span className="hero-word block" style={{ color: 'var(--text)' }}>Construímos</span>
                   </span>
-                </div>
-              </div>
+                </span>
 
-              <div className="flex flex-wrap gap-x-3 mb-1">
-                {['que', 'transformam'].map((w) => (
-                  <div key={w} className="hero-word-wrap">
-                    <span className="hero-word block" style={{ color: 'var(--text)' }}>{w}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-x-3">
-                {['seu', 'negócio.'].map((w) => (
-                  <div key={w} className="hero-word-wrap">
+                <span className="flex flex-wrap items-baseline gap-x-3 mb-1">
+                  <span className="hero-word-wrap" style={{ overflow: 'hidden' }}>
                     <span
+                      ref={wordRef}
                       className="hero-word block"
-                      style={{ color: w === 'negócio.' ? 'var(--text-muted)' : 'var(--text)' }}
+                      style={{ color: 'var(--accent)' }}
                     >
-                      {w}
+                      {WORDS[0]}
                     </span>
-                  </div>
-                ))}
-              </div>
+                  </span>
+                </span>
+
+                <span className="flex flex-wrap gap-x-3 mb-1">
+                  {['que', 'transformam'].map((w) => (
+                    <span key={w} className="hero-word-wrap">
+                      <span className="hero-word block" style={{ color: 'var(--text)' }}>{w}</span>
+                    </span>
+                  ))}
+                </span>
+
+                <span className="flex flex-wrap gap-x-3">
+                  {['seu', 'negócio.'].map((w) => (
+                    <span key={w} className="hero-word-wrap">
+                      <span
+                        className="hero-word block"
+                        style={{ color: w === 'negócio.' ? 'var(--text-muted)' : 'var(--text)' }}
+                      >
+                        {w}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              </span>
             </h1>
           </div>
 
@@ -246,9 +253,10 @@ export function Hero() {
               href="#cases"
               onClick={(e) => { e.preventDefault(); document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' }) }}
               className="btn-ghost hero-cta"
+              style={{ minHeight: 44 }} // alvo de toque mínimo sem mudar o visual
             >
               Ver portfólio
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 const TITULO = 'Política de Privacidade'
 const DESCRICAO = 'Como a Codexa coleta, usa e protege seus dados pessoais, de acordo com a LGPD.'
@@ -49,14 +50,14 @@ export default function PrivacidadePage() {
     <div style={{ background: '#09090b', minHeight: '100dvh', color: '#f4f4f5', fontFamily: 'var(--font-body)' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '80px 24px 120px' }}>
 
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.83rem', color: '#71717a', fontFamily: 'var(--font-mono)', textDecoration: 'none', marginBottom: '40px' }}>
-          ← Voltar
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.83rem', color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', textDecoration: 'none', marginBottom: '40px' }}>
+          <ArrowLeft size={14} aria-hidden="true" /> Voltar
         </Link>
 
         <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 800, color: '#f4f4f5', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', lineHeight: 1.2, marginBottom: '0.5rem' }}>
           Política de Privacidade
         </h1>
-        <p style={{ fontSize: '0.82rem', color: '#52525b', fontFamily: 'var(--font-mono)', marginBottom: '3rem' }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '3rem' }}>
           Última atualização: {UPDATED}
         </p>
 

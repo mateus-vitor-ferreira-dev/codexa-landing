@@ -35,30 +35,35 @@ export function Testimonials() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    gsap.fromTo('.testimonials-heading',
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: sem entrada, conteúdo já no estado final
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.fromTo('.testimonials-heading',
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 82%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
 
-    gsap.fromTo('.testimonial-card',
-      { opacity: 0, y: 44, scale: 0.97 },
-      {
-        opacity: 1, y: 0, scale: 1,
-        duration: 0.72, stagger: 0.14, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 78%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
+      gsap.fromTo('.testimonial-card',
+        { opacity: 0, y: 44, scale: 0.97 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.72, stagger: 0.14, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 78%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
+    })
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
@@ -157,17 +162,17 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
         pointerEvents: 'none',
       }} />
 
-      {/* Stars */}
-      <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+      {/* Stars — lidas como uma nota única */}
+      <div role="img" aria-label="5 de 5 estrelas" style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
         {Array.from({ length: 5 }).map((_, i) => (
-          <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill={t.accent} style={{ opacity: 0.85 }}>
+          <svg key={i} aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill={t.accent} style={{ opacity: 0.85 }}>
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         ))}
       </div>
 
       {/* Quote mark */}
-      <svg width="32" height="24" viewBox="0 0 32 24" fill="none" style={{ flexShrink: 0 }}>
+      <svg aria-hidden="true" width="32" height="24" viewBox="0 0 32 24" fill="none" style={{ flexShrink: 0 }}>
         <path
           d="M0 24V14.4C0 6.4 4.8 1.6 14.4 0L16 3.2C11.2 4.267 8.533 7.2 8 12H14.4V24H0ZM17.6 24V14.4C17.6 6.4 22.4 1.6 32 0L33.6 3.2C28.8 4.267 26.133 7.2 25.6 12H32V24H17.6Z"
           fill={t.accent}
@@ -203,7 +208,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
           flexShrink: 0,
         }}>
           <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+            fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
             fontWeight: 700, color: t.accent, letterSpacing: '0.04em',
           }}>
             {t.initials}
@@ -219,7 +224,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
           </span>
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.65rem', color: 'var(--text-faint)',
+            fontSize: '0.75rem', color: 'var(--text-muted)',
             letterSpacing: '0.06em',
           }}>
             {t.role}

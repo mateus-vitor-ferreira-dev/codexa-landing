@@ -169,7 +169,8 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
                 className="pre-letter pre-letter-char block"
                 style={{
                   fontFamily:    'var(--font-display)',
-                  fontSize:      'clamp(3.5rem, 9vw, 6.5rem)',
+                  // O teto em vw garante que CODEXA_ caiba em celulares pequenos (320px)
+                  fontSize:      'min(clamp(3.5rem, 9vw, 6.5rem), 10.5vw)',
                   fontWeight:    800,
                   color:         '#fff',
                   letterSpacing: '0.1em',
@@ -186,7 +187,7 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
               className="pre-letter block animate-pulse"
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize:   'clamp(2.5rem, 7vw, 5rem)',
+                fontSize:   'min(clamp(2.5rem, 7vw, 5rem), 7.5vw)',
                 fontWeight: 700,
                 color:      'var(--accent)',
               }}

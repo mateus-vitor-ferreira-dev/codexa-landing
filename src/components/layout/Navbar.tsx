@@ -24,12 +24,20 @@ const LINKS = [
   { label: 'Contato',       href: '#contato' },
 ]
 
+// Mesmas URLs do rodapé (CtaFinal)
+const SOCIALS = [
+  { label: 'LinkedIn',  href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
+  { label: 'Instagram', href: 'https://www.instagram.com/desenvolvedoracodexa/' },
+  { label: 'GitHub',    href: 'https://github.com/mateus-vitor-ferreira-dev' },
+]
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef  = useRef<HTMLDivElement>(null)
+  const menuRef  = useRef<HTMLElement>(null)
   const linesRef = useRef<HTMLDivElement>(null)
   const navRef   = useRef<HTMLElement>(null)
+  const btnRef   = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -59,6 +67,8 @@ export function Navbar() {
         opacity: 0, y: 24, stagger: 0.07, duration: 0.4,
         ease: 'power2.out', delay: 0.2,
       })
+      // Foco no primeiro link ao abrir
+      menu.querySelector<HTMLElement>('a[href]')?.focus()
     } else {
       document.body.style.overflow = ''
       gsap.to(menu, {
@@ -86,6 +96,31 @@ export function Navbar() {
     }
   }, [menuOpen])
 
+  // Menu aberto: Esc fecha (foco volta ao botão) e Tab circula só entre botão + itens do menu
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        btnRef.current?.focus()
+        return
+      }
+      if (e.key !== 'Tab' || !menuRef.current || !btnRef.current) return
+      const items = [
+        btnRef.current,
+        ...Array.from(menuRef.current.querySelectorAll<HTMLElement>('a[href], button')),
+      ]
+      const i    = items.indexOf(document.activeElement as HTMLElement)
+      const next = e.shiftKey
+        ? (i <= 0 ? items.length - 1 : i - 1)
+        : (i + 1) % items.length
+      e.preventDefault()
+      items[next].focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
   const closeMenu = () => setMenuOpen(false)
 
   return (
@@ -97,9 +132,9 @@ export function Navbar() {
         }}
       />
 
-      <nav
+      <header
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+        className="fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500"
         style={{
           background: scrolled ? 'rgba(9,9,11,0.88)' : 'transparent',
           backdropFilter: scrolled ? 'blur(24px)' : 'none',
@@ -135,7 +170,7 @@ export function Navbar() {
           </a>
 
           {/* Desktop links */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav aria-label="Principal" className="hidden md:flex items-center gap-7">
             {LINKS.map((link) => (
               <a
                 key={link.href}
@@ -154,7 +189,7 @@ export function Navbar() {
               >
                 {link.label}
                 <span
-                  className="absolute bottom-0 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
+                  className="absolute bottom-0 left-0 h-px w-full scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 group-focus-visible:scale-x-100"
                   style={{ background: 'var(--accent)' }}
                 />
               </a>
@@ -166,7 +201,7 @@ export function Navbar() {
             <a
               href="#contato"
               onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
-              className="inline-flex items-center gap-2 rounded-full text-sm font-semibold transition-all duration-250"
+              className="inline-flex items-center gap-2 rounded-full text-sm font-semibold transition-[background-color,border-color,box-shadow] duration-250"
               style={{
                 fontFamily:      'var(--font-display)',
                 padding:         '10px 24px',
@@ -176,7 +211,6 @@ export function Navbar() {
                 boxShadow:       '0 0 12px rgba(var(--accent-rgb),0.18), inset 0 0 0 0 transparent',
                 textShadow:      'none',
                 letterSpacing:   '0.03em',
-                cursor:          'none',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background  = 'rgba(var(--accent-rgb),0.15)'
@@ -195,9 +229,13 @@ export function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden w-10 h-10 flex items-center justify-center"
+            ref={btnRef}
+            type="button"
+            className="md:hidden w-11 h-11 flex items-center justify-center"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={menuOpen}
+            aria-controls="menu-mobile"
           >
             <div ref={linesRef} className="flex flex-col gap-[5px]">
               {[0, 1, 2].map((i) => (
@@ -210,11 +248,14 @@ export function Navbar() {
             </div>
           </button>
         </div>
-      </nav>
+      </header>
 
-      {/* Mobile fullscreen menu */}
-      <div
+      {/* Mobile fullscreen menu — inert quando fechado (fora do Tab e do leitor de tela) */}
+      <nav
         ref={menuRef}
+        id="menu-mobile"
+        aria-label="Menu"
+        inert={!menuOpen}
         className="fixed inset-0 z-40 flex-col justify-between px-6 pt-28 pb-12"
         style={{ display: 'none', background: '#09090b', clipPath: 'inset(0 0 100% 0)' }}
       >
@@ -251,19 +292,21 @@ export function Navbar() {
             Iniciar projeto
           </a>
           <div className="flex items-center gap-6">
-            {['LinkedIn', 'Instagram', 'GitHub'].map((s) => (
+            {SOCIALS.map((s) => (
               <a
-                key={s}
-                href="#"
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm"
                 style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}
               >
-                {s}
+                {s.label}
               </a>
             ))}
           </div>
         </div>
-      </div>
+      </nav>
     </>
   )
 }

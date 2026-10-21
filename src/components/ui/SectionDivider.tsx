@@ -21,27 +21,15 @@ export function SectionDivider({ accent = false }: Props) {
     const glow = glowRef.current
     if (!el || !line) return
 
-    // Line draws left → right on scroll
-    gsap.fromTo(line,
-      { scaleX: 0, opacity: 0 },
-      {
-        scaleX: 1, opacity: 1,
-        duration: 0.9,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    )
-
-    if (glow) {
-      gsap.fromTo(glow,
-        { opacity: 0, scale: 0.6 },
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: linha e brilho já visíveis, sem desenho
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      // Line draws left → right on scroll
+      gsap.fromTo(line,
+        { scaleX: 0, opacity: 0 },
         {
-          opacity: 1, scale: 1,
-          duration: 0.7, delay: 0.3,
+          scaleX: 1, opacity: 1,
+          duration: 0.9,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: el,
@@ -50,7 +38,24 @@ export function SectionDivider({ accent = false }: Props) {
           },
         }
       )
-    }
+
+      if (glow) {
+        gsap.fromTo(glow,
+          { opacity: 0, scale: 0.6 },
+          {
+            opacity: 1, scale: 1,
+            duration: 0.7, delay: 0.3,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        )
+      }
+    })
+    return () => mm.revert()
   }, [])
 
   return (

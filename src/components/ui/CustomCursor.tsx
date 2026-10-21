@@ -16,11 +16,16 @@ export function CustomCursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
-    if (window.matchMedia('(pointer: coarse)').matches) {
+    // Só com mouse: no toque (ou sem ponteiro) o cursor do sistema fica como está
+    if (!window.matchMedia('(pointer: fine)').matches) {
       dot.style.display  = 'none'
       ring.style.display = 'none'
       return
     }
+
+    // Esconde o cursor do sistema (globals.css) só enquanto este componente existe
+    const html = document.documentElement
+    html.classList.add('has-custom-cursor')
 
     const onMove = (e: MouseEvent) => {
       gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.1, ease: 'none' })
@@ -47,6 +52,7 @@ export function CustomCursor() {
     })
 
     return () => {
+      html.classList.remove('has-custom-cursor')
       window.removeEventListener('mousemove', onMove)
       links.forEach(el => {
         el.removeEventListener('mouseenter', onEnterLink)

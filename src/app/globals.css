@@ -13,7 +13,7 @@
   --accent-border:   rgba(0, 214, 245, 0.2);
   --text:            #f4f4f5;
   --text-muted:      #a1a1aa;
-  --text-faint:      #71717a;
+  --text-faint:      #8a8a93;
   --border:          rgba(255,255,255,0.1);
   --border-subtle:   rgba(255,255,255,0.06);
   /* --font-display / --font-body / --font-mono / --font-serif vêm do next/font
@@ -33,6 +33,8 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
+  /* Navbar fixo de 80px: âncoras não ficam escondidas atrás dele */
+  scroll-padding-top: 88px;
 }
 
 body { overflow-x: hidden; }
@@ -50,8 +52,19 @@ body::after {
 }
 
 /* ── Custom cursor (apenas em dispositivos com mouse) ──── */
+/* A classe é posta pelo CustomCursor ao montar: sem ele (ex.: /privacidade ou
+   antes da hidratação) o cursor do sistema continua visível */
+@layer base {
+  a, button, [role="button"], [data-cursor] { cursor: pointer; }
+}
 @media (pointer: fine) {
-  html { cursor: none; }
+  html.has-custom-cursor,
+  html.has-custom-cursor a,
+  html.has-custom-cursor button,
+  html.has-custom-cursor [role="button"],
+  html.has-custom-cursor [data-cursor],
+  html.has-custom-cursor .btn-primary,
+  html.has-custom-cursor .btn-ghost { cursor: none; }
 }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
@@ -61,7 +74,7 @@ body::after {
 ::-webkit-scrollbar-thumb:hover  { background: var(--accent); }
 
 /* ── Selection ──────────────────────────────────────────── */
-::selection { background: var(--accent); color: #fff; }
+::selection { background: var(--accent); color: #06060c; }
 
 /* ── Foco visível (teclado) ─────────────────────────────── */
 /* Anel na cor de destaque para quem navega por teclado; clique de mouse não mostra */
@@ -142,7 +155,11 @@ textarea:focus-visible {
 .marquee-track          { animation: marquee         28s linear infinite; }
 .marquee-track-reverse  { animation: marquee-reverse 32s linear infinite; }
 .marquee-track:hover,
-.marquee-track-reverse:hover { animation-play-state: paused; }
+.marquee-track-reverse:hover,
+.marquee-track:focus-within,
+.marquee-track-reverse:focus-within,
+.marquee-paused .marquee-track,
+.marquee-paused .marquee-track-reverse { animation-play-state: paused; }
 
 /* ── Section glow line (animated separator) ─────────────── */
 .section-glow-line {
@@ -204,7 +221,8 @@ textarea:focus-visible {
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn-primary {
   background: var(--accent);
-  color: #fff;
+  /* Texto escuro: branco sobre o accent dava ~1,8:1 de contraste */
+  color: #06060c;
   font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 600;
@@ -215,7 +233,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 8px;
   transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -233,7 +251,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 10px;
   transition: color 0.2s, gap 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 
 .btn-ghost:hover { color: var(--text); gap: 14px; }

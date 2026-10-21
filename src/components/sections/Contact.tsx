@@ -132,7 +132,8 @@ export function Contact() {
         {/* Two-column layout */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          // min(300px, 100%): em telas de 320px a coluna não estoura o container
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
           gap: 'clamp(1.5rem, 3vw, 2.5rem)',
           alignItems: 'stretch',
         }}>
@@ -159,7 +160,6 @@ export function Contact() {
                   borderRadius: 14,
                   textDecoration: 'none',
                   transition: 'border-color 0.25s, background 0.25s',
-                  cursor: 'none',
                 }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = `rgba(var(--accent-rgb),0.35)`)}
                 onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
@@ -251,9 +251,10 @@ export function Contact() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                   padding: '14px 28px', borderRadius: 10,
-                  background: '#25d366', color: '#fff',
+                  // Texto escuro: branco sobre #25d366 não passa no contraste (1,98:1)
+                  background: '#25d366', color: '#06060c',
                   fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 700,
-                  textDecoration: 'none', cursor: 'none',
+                  textDecoration: 'none',
                   boxShadow: '0 4px 24px rgba(37,211,102,0.3)',
                 }}
               >
@@ -271,7 +272,7 @@ export function Contact() {
                   background: 'rgba(255,255,255,0.04)', color: 'var(--text-muted)',
                   border: '1px solid rgba(255,255,255,0.09)',
                   fontFamily: 'var(--font-display)', fontSize: '0.92rem', fontWeight: 600,
-                  textDecoration: 'none', cursor: 'none',
+                  textDecoration: 'none',
                   transition: 'color 0.2s, border-color 0.2s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}

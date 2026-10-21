@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -9,33 +9,33 @@ gsap.registerPlugin(ScrollTrigger)
 
 /* ── Icons ──────────────────────────────────────────────── */
 const IconGlobe = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
   </svg>
 )
 const IconPhone = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>
   </svg>
 )
 const IconLayout = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
   </svg>
 )
 const IconCpu = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/>
     <path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/>
   </svg>
 )
 const IconCode = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
   </svg>
 )
 const IconServer = ({ size = 36 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
     <path d="M6 6h.01M6 18h.01"/>
   </svg>
@@ -95,34 +95,34 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
   const iconRef  = useRef<HTMLDivElement>(null)
   const Icon     = service.icon
 
-  /* Scroll entry — lateral slide bidirecional via direct ref */
   useGSAP(() => {
-    gsap.fromTo(cardRef.current,
-      { opacity: 0, x: flip ? 70 : -70 },
-      {
-        opacity: 1, x: 0, duration: 0.75, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: cardRef.current,
-          start: 'top 88%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
-  }, { scope: cardRef })
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: card já visível no lugar e ícone parado
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      /* Scroll entry — lateral slide bidirecional via direct ref */
+      gsap.fromTo(cardRef.current,
+        { opacity: 0, x: flip ? 70 : -70 },
+        {
+          opacity: 1, x: 0, duration: 0.75, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: cardRef.current,
+            start: 'top 88%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
 
-  /* Continuous — float suave no ícone */
-  useEffect(() => {
-    const el = iconRef.current
-    if (!el) return
-    const tween = gsap.to(el, {
-      y: -6,
-      duration: 2.0 + (index % 3) * 0.4,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
+      /* Continuous — float suave no ícone */
+      gsap.to(iconRef.current, {
+        y: -6,
+        duration: 2.0 + (index % 3) * 0.4,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      })
     })
-    return () => { tween.kill() }
-  }, [index])
+    return () => mm.revert()
+  }, { scope: cardRef, dependencies: [flip, index] })
 
   /* Hover — brilho deslizante + lift */
   const onEnter = () => {
@@ -158,7 +158,6 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         background: `linear-gradient(160deg, #101016 0%, #0b0b10 55%, #08080c 100%)`,
         border:     '1px solid rgba(255,255,255,0.08)',
         boxShadow:  '0 8px 32px rgba(0,0,0,0.35)',
-        cursor:     'none',
         position:   'relative',
       }}
       onMouseEnter={onEnter}
@@ -174,15 +173,11 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         }}
       />
 
-      {/* Icon block — alternates side */}
+      {/* Icon block — alternates side; no mobile ocupa a largura toda e fica mais baixo */}
       <div
-        className={`relative flex items-center justify-center flex-shrink-0 ${flip ? 'sm:order-2' : 'sm:order-1'}`}
+        className={`relative flex items-center justify-center flex-shrink-0 w-full min-h-[140px] sm:w-[clamp(170px,24%,240px)] sm:min-h-[280px] border-[rgba(255,255,255,0.06)] border-b sm:border-b-0 ${flip ? 'sm:order-2 sm:border-l' : 'sm:order-1 sm:border-r'}`}
         style={{
-          width:      'clamp(170px, 24%, 240px)',
-          minHeight:  '280px',
           background: `radial-gradient(ellipse at center, ${service.accent}22 0%, ${service.accent}0a 62%, transparent 100%)`,
-          borderRight: !flip ? `1px solid rgba(255,255,255,0.06)` : 'none',
-          borderLeft:   flip ? `1px solid rgba(255,255,255,0.06)` : 'none',
         }}
       >
         {/* Corner accent dot */}
@@ -208,7 +203,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         {/* Category + badge */}
         <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: '1.25rem' }}>
           <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+            fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
             letterSpacing: '0.22em', textTransform: 'uppercase' as const,
             color: service.accent, opacity: 0.9,
           }}>
@@ -216,7 +211,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
           </span>
           {service.badge && (
             <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.64rem',
+              fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
               letterSpacing: '0.14em', textTransform: 'uppercase' as const,
               background: `${service.accent}20`, color: service.accent,
               border: `1px solid ${service.accent}40`,
@@ -268,7 +263,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
           {service.tags.map((tag) => (
             <span key={tag} style={{
               fontFamily:    'var(--font-mono)',
-              fontSize:      '0.72rem',
+              fontSize:      '0.75rem',
               fontWeight:    400,
               color:         '#a8a8be',
               background:    'rgba(255,255,255,0.035)',
@@ -292,20 +287,21 @@ export function Services() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    const reduced = typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced) return
-
-    gsap.fromTo('.services-h2-line',
-      { yPercent: 105 },
-      { yPercent: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
-    )
-    gsap.fromTo('.services-header-sub',
-      { opacity: 0, y: 22 },
-      { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
-    )
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: título e subtítulo já no estado final
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.fromTo('.services-h2-line',
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
+      )
+      gsap.fromTo('.services-header-sub',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
+      )
+    })
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
@@ -354,7 +350,7 @@ export function Services() {
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
             Não encontrou o que precisa? Vamos conversar
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
