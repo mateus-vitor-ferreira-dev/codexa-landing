@@ -180,7 +180,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
 
       {/* Icon block — alternates side; no celular vira um ícone pequeno ao lado da categoria */}
       <div
-        className={`relative hidden sm:flex items-center justify-center flex-shrink-0 sm:w-[clamp(170px,24%,240px)] sm:min-h-[280px] border-[rgba(255,255,255,0.06)] ${flip ? 'sm:order-2 sm:border-l' : 'sm:order-1 sm:border-r'}`}
+        className={`relative hidden sm:flex items-center justify-center shrink-0 sm:w-[clamp(170px,24%,240px)] sm:min-h-70 border-[rgba(255,255,255,0.06)] ${flip ? 'sm:order-2 sm:border-l' : 'sm:order-1 sm:border-r'}`}
         style={{
           background: `radial-gradient(ellipse at center, ${service.accent}22 0%, ${service.accent}0a 62%, transparent 100%)`,
         }}
