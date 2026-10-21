@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { NeuralBackground } from '@/components/fx/NeuralBackground'
 
 const COMMANDS = [
   'npm run build',
@@ -29,10 +30,8 @@ interface Props { density?: 'low' | 'medium' | 'high' }
 export function BackgroundEffects({ density = 'medium' }: Props) {
   const mult = DENSITY_MULT[density]
 
-  const flashRef  = useRef<HTMLDivElement>(null)
   const binaryRef = useRef<HTMLDivElement>(null)
   const symbolRef = useRef<HTMLDivElement>(null)
-  const svgRef    = useRef<SVGSVGElement>(null)
   const [typedText, setTypedText] = useState('')
   const reduced = useSyncExternalStore(
     subscribeReducedMotion,
@@ -47,21 +46,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
     const cleanups: Array<() => void> = []
 
     const reg = (id: ReturnType<typeof setInterval>) => { cleanups.push(() => clearInterval(id)); return id }
-
-    // ── Layer 2: Flashing grid cells ─────────────────────────────
-    if (!reduced && flashRef.current) {
-      const c = flashRef.current
-      reg(setInterval(() => {
-        if (dead.v) return
-        const W = window.innerWidth, H = window.innerHeight
-        const el = document.createElement('div')
-        const col = Math.floor(Math.random() * Math.floor(W / 60))
-        const row = Math.floor(Math.random() * Math.floor(H / 60))
-        el.style.cssText = `position:absolute;left:${col*60}px;top:${row*60}px;width:60px;height:60px;background:rgba(var(--accent-rgb),.08);opacity:0;animation:bgCellFlash 4s ease-out forwards;`
-        c.appendChild(el)
-        setTimeout(() => { try { el.remove() } catch {} }, 4200)
-      }, Math.round(1200 / mult)))
-    }
 
     // ── Layer 3: Vertical binary drops ───────────────────────────
     if (!reduced && binaryRef.current) {
@@ -81,89 +65,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         setTimeout(spawnBinary, Math.random() * 5000)
       }
       reg(setInterval(spawnBinary, Math.round(2500 / mult)))
-    }
-
-    // ── Layer 4: Node network ────────────────────────────────────
-    let nodes: Array<{ x: number; y: number }> = []
-    let edges: Array<[number, number]> = []
-    const NS = 'http://www.w3.org/2000/svg'
-
-    const buildNetwork = () => {
-      const svg = svgRef.current
-      if (!svg || dead.v) return
-      const W = window.innerWidth, H = window.innerHeight
-      while (svg.firstChild) svg.removeChild(svg.firstChild)
-      nodes = []; edges = []
-
-      let tries = 0
-      while (nodes.length < 14 && tries < 400) {
-        tries++
-        const x = Math.random() * W, y = Math.random() * H
-        if (x > W * .25 && x < W * .75 && y > H * .25 && y < H * .75) continue
-        nodes.push({ x, y })
-      }
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y
-          if (dx*dx + dy*dy >= 280*280) continue
-          edges.push([i, j])
-          const line = document.createElementNS(NS, 'line')
-          line.setAttribute('x1', String(nodes[i].x)); line.setAttribute('y1', String(nodes[i].y))
-          line.setAttribute('x2', String(nodes[j].x)); line.setAttribute('y2', String(nodes[j].y))
-          line.style.stroke = 'rgba(var(--accent-rgb),.12)'
-          line.setAttribute('stroke-width', '.5')
-          svg.appendChild(line)
-        }
-      }
-
-      nodes.forEach((node, i) => {
-        const circle = document.createElementNS(NS, 'circle')
-        circle.setAttribute('cx', String(node.x)); circle.setAttribute('cy', String(node.y))
-        circle.setAttribute('r', '2'); circle.style.fill = 'rgba(var(--accent-rgb),.5)'
-        ;(['r', 'opacity'] as const).forEach((attr, ai) => {
-          const anim = document.createElementNS(NS, 'animate')
-          anim.setAttribute('attributeName', attr)
-          anim.setAttribute('values', ai === 0 ? '2;3;2' : '.3;.7;.3')
-          anim.setAttribute('dur', '3s')
-          anim.setAttribute('begin', `${(i * .3).toFixed(1)}s`)
-          anim.setAttribute('repeatCount', 'indefinite')
-          circle.appendChild(anim)
-        })
-        svg.appendChild(circle)
-      })
-    }
-
-    const firePulse = () => {
-      const svg = svgRef.current
-      if (!svg || dead.v || edges.length === 0) return
-      const [fi, ti] = edges[Math.floor(Math.random() * edges.length)]
-      const from = nodes[fi], to = nodes[ti]
-      if (!from || !to) return
-      const dot = document.createElementNS(NS, 'circle')
-      dot.setAttribute('r', '3'); dot.style.fill = 'var(--accent)'
-      dot.style.filter = 'drop-shadow(0 0 4px var(--accent))'
-      svg.appendChild(dot)
-      const dur = 1200 + Math.random() * 800, t0 = performance.now()
-      const tick = (now: number) => {
-        if (dead.v) { try { dot.remove() } catch {} ; return }
-        const t = Math.min((now - t0) / dur, 1)
-        const s = t * t * (3 - 2 * t)
-        dot.setAttribute('cx', String(from.x + (to.x - from.x) * s))
-        dot.setAttribute('cy', String(from.y + (to.y - from.y) * s))
-        dot.setAttribute('opacity', String(t < .2 ? t / .2 : t > .8 ? (1 - t) / .2 : 1))
-        if (t < 1) requestAnimationFrame(tick); else try { dot.remove() } catch {}
-      }
-      requestAnimationFrame(tick)
-    }
-
-    if (!reduced) {
-      buildNetwork()
-      reg(setInterval(firePulse, 600))
-      let resizeT: ReturnType<typeof setTimeout>
-      const onResize = () => { clearTimeout(resizeT); resizeT = setTimeout(buildNetwork, 250) }
-      window.addEventListener('resize', onResize)
-      cleanups.push(() => { clearTimeout(resizeT); window.removeEventListener('resize', onResize) })
     }
 
     // ── Layer 5: Rising code symbols ─────────────────────────────
@@ -232,11 +133,6 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
   return (
     <>
       <style>{`
-        @keyframes bgCellFlash {
-          0%   { opacity: 0; }
-          15%  { opacity: 1; }
-          100% { opacity: 0; }
-        }
         @keyframes bgBinaryDrop {
           from { transform: translateY(-220px); }
           to   { transform: translateY(calc(100vh + 220px)); }
@@ -251,7 +147,7 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
         }
       `}</style>
 
-      {/* Layers 1–5: decorative backdrop */}
+      {/* Camadas decorativas: grade, rede neural, binários e símbolos */}
       <div
         aria-hidden="true"
         style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}
@@ -266,10 +162,9 @@ export function BackgroundEffects({ density = 'medium' }: Props) {
           backgroundSize: '60px 60px',
         }} />
 
-        <div ref={flashRef}  style={{ position: 'absolute', inset: 0 }} />
+        {/* Rede neural viva (WebGL): substitui a rede SVG estática e as células piscando */}
+        <NeuralBackground />
         <div ref={binaryRef} style={{ position: 'absolute', inset: 0 }} />
-        <svg ref={svgRef} aria-hidden="true"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
         <div ref={symbolRef} style={{ position: 'absolute', inset: 0 }} />
       </div>
 
