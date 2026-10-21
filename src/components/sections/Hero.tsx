@@ -1,38 +1,39 @@
 'use client'
 
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { onPreloaderDone } from '@/components/ui/Preloader'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
+import { useMagnetic } from '@/lib/fx/useMagnetic'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// three.js fica fora do bundle inicial: só baixa quando o Orb vai ser montado
-const Orb = dynamic(() => import('@/components/ui/Orb'), { ssr: false, loading: () => <OrbFallback /> })
+// three.js fica fora do bundle inicial: só baixa quando a esfera vai ser montada
+const TravelingOrb = dynamic(() => import('@/components/fx/TravelingOrb'), { ssr: false })
 
 const MOTION_OK = '(prefers-reduced-motion: no-preference)'
 
-// Orb 3D só em telas ≥ 768px e sem pedido de menos movimento
-const ORB_QUERY = '(min-width: 768px) and (prefers-reduced-motion: no-preference)'
-
-function subscribeOrb(cb: () => void) {
-  const mq = window.matchMedia(ORB_QUERY)
+/* Esfera 3D viajante em qualquer largura (no celular numa versão leve),
+   desde que o visitante não tenha pedido menos movimento */
+function subscribeMotion(cb: () => void) {
+  const mq = window.matchMedia(MOTION_OK)
   mq.addEventListener('change', cb)
   return () => mq.removeEventListener('change', cb)
 }
 
 function useShowOrb() {
   return useSyncExternalStore(
-    subscribeOrb,
-    () => window.matchMedia(ORB_QUERY).matches,
+    subscribeMotion,
+    () => window.matchMedia(MOTION_OK).matches,
     () => false,
   )
 }
 
-/* Versão estática do Orb (mesmo tamanho): aparece no celular, com reduced-motion
-   e enquanto o three.js carrega, para não deixar buraco no layout */
+/* Versão estática da esfera (mesmo tamanho): aparece com reduced-motion, sem
+   WebGL e enquanto o three.js carrega, para não deixar buraco no layout */
 function OrbFallback() {
   return (
     <div className="hero-orb-fallback relative w-full aspect-square max-w-[500px] mx-auto lg:mx-0" aria-hidden="true">
@@ -72,7 +73,16 @@ export function Hero() {
   const sectionRef   = useRef<HTMLElement>(null)
   const wordRef      = useRef<HTMLSpanElement>(null)
   const wordIndexRef = useRef(0)
+  const slotRef      = useRef<HTMLDivElement>(null)
+  const primaryRef   = useRef<HTMLSpanElement>(null)
+  const ghostRef     = useRef<HTMLSpanElement>(null)
   const showOrb      = useShowOrb()
+  // 'loading' até o primeiro frame WebGL; 'failed' mantém o fallback estático
+  const [orbStatus, setOrbStatus] = useState<'loading' | 'ready' | 'failed'>('loading')
+  const onOrbStatus = useCallback((ok: boolean) => setOrbStatus(ok ? 'ready' : 'failed'), [])
+
+  useMagnetic(primaryRef, { strength: 0.3, radius: 36 })
+  useMagnetic(ghostRef,   { strength: 0.3, radius: 36 })
 
   useGSAP(() => {
     // Com reduced-motion nada anima: o conteúdo já aparece no lugar
@@ -147,6 +157,7 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
+      id="hero"
       className="gradient-mesh relative min-h-dvh flex flex-col justify-center px-5 md:px-12 xl:px-20 pt-24 pb-16 overflow-hidden"
     >
       {/* Subtle grid */}
@@ -172,12 +183,14 @@ export function Hero() {
               className="hero-tag-dot w-1.5 h-1.5 rounded-full"
               style={{ background: 'var(--accent)' }}
             />
-            <span
+            {/* Texto em caixa alta direto na fonte mono: a decodificação não muda a largura */}
+            <ScrambleText
+              text="DESENVOLVIMENTO · IA · AUTOMAÇÃO"
               className="text-xs tracking-[0.18em] uppercase"
-              style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}
-            >
-              Desenvolvimento · IA · Automação
-            </span>
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}
+              duration={1100}
+              delay={350}
+            />
           </div>
 
           {/* Headline */}
@@ -241,7 +254,9 @@ export function Hero() {
           </p>
 
           {/* CTAs */}
+          {/* Ímã num invólucro: o GSAP da entrada anima o <a>, o ímã move o invólucro */}
           <div className="flex flex-wrap items-center gap-5">
+            <span ref={primaryRef} className="inline-flex">
             <a
               href="#contato"
               onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
@@ -249,6 +264,8 @@ export function Hero() {
             >
               Iniciar projeto
             </a>
+            </span>
+            <span ref={ghostRef} className="inline-flex">
             <a
               href="#cases"
               onClick={(e) => { e.preventDefault(); document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' }) }}
@@ -260,6 +277,7 @@ export function Hero() {
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
+            </span>
           </div>
 
           {/* Trust line */}
@@ -271,9 +289,21 @@ export function Hero() {
           </p>
         </div>
 
-        {/* RIGHT — Orb */}
+        {/* RIGHT — espaço da esfera. A esfera WebGL não mora aqui: é um canvas
+            fixo (TravelingOrb) que nasce sobre este espaço e viaja pela página */}
         <div className="hero-orb flex justify-center lg:justify-end">
-          {showOrb ? <Orb /> : <OrbFallback />}
+          <div ref={slotRef} data-orb-slot="" className="relative w-full aspect-square max-w-[500px] mx-auto lg:mx-0">
+            <div
+              className="absolute inset-0"
+              style={{
+                opacity: showOrb && orbStatus === 'ready' ? 0 : 1,
+                transition: 'opacity 0.8s ease',
+              }}
+            >
+              <OrbFallback />
+            </div>
+          </div>
+          {showOrb && orbStatus !== 'failed' && <TravelingOrb slotRef={slotRef} onStatus={onOrbStatus} />}
         </div>
       </div>
 

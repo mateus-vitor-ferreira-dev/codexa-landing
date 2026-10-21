@@ -4,6 +4,9 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { Magnetic } from '@/components/fx/Magnetic'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -111,7 +114,8 @@ export function Contact() {
             fontFamily: 'var(--font-mono)', fontSize: '0.72rem', letterSpacing: '0.22em',
             textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 14,
           }}>
-            Contato
+            <span aria-hidden="true">{'// '}</span>
+            <ScrambleText text="Contato" />
           </p>
           <h2 style={{
             fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
@@ -141,9 +145,11 @@ export function Contact() {
           {/* Channel cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, height: '100%' }}>
             {CHANNELS.map((ch) => (
+              // Tilt no wrapper; o lift do GSAP (y) fica no link
+              <GlowCard key={ch.key} tilt={{ max: 9 }} style={{ flex: '1 1 0', display: 'flex', borderRadius: 14 }}>
               <a
-                key={ch.key}
                 href={ch.href}
+                data-cursor="abrir"
                 data-origem={ch.key === 'whatsapp' ? 'contato-card' : undefined}
                 target={ch.external ? '_blank' : undefined}
                 rel={ch.external ? 'noopener noreferrer' : undefined}
@@ -151,7 +157,7 @@ export function Contact() {
                 onMouseEnter={(e) => gsap.to(e.currentTarget, { y: -3, duration: 0.2, ease: 'power2.out' })}
                 onMouseLeave={(e) => gsap.to(e.currentTarget, { y: 0,  duration: 0.22, ease: 'power2.in' })}
                 style={{
-                  flex: '1 1 0',
+                  flex: 1, minWidth: 0, position: 'relative',
                   display: 'flex', alignItems: 'center', gap: 18,
                   padding: '18px 22px',
                   minHeight: 82,
@@ -164,7 +170,8 @@ export function Contact() {
                 onFocus={(e) => (e.currentTarget.style.borderColor = `rgba(var(--accent-rgb),0.35)`)}
                 onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
               >
-                {/* Icon */}
+                {/* Icon — flutua acima do card no tilt */}
+                <Depth z={60} style={{ flexShrink: 0 }}>
                 <div style={{
                   width: 46, height: 46, borderRadius: 12, flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -176,16 +183,15 @@ export function Contact() {
                 }}>
                   {ch.icon}
                 </div>
+                </Depth>
 
                 {/* Text */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
+                  <ScrambleText as="p" text={ch.label} style={{
                     fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
                     letterSpacing: '0.15em', textTransform: 'uppercase',
                     color: 'var(--text-faint)', marginBottom: 3,
-                  }}>
-                    {ch.label}
-                  </p>
+                  }} />
                   <p style={{
                     fontFamily: 'var(--font-body)', fontSize: '0.92rem',
                     color: 'var(--text-muted)', fontWeight: 450,
@@ -196,17 +202,23 @@ export function Contact() {
                 </div>
 
                 {/* Arrow */}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-faint)', flexShrink: 0 }}>
+                <Depth z={45} style={{ flexShrink: 0 }}>
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-faint)', display: 'block' }}>
                   <path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
+                </Depth>
+                <GlowLayers color={ch.color} ring="1px" />
               </a>
+              </GlowCard>
             ))}
           </div>
 
-          {/* CTA block */}
+          {/* CTA block — luz seguindo o ponteiro, sem inclinar (bloco grande com formulário perto) */}
+          <GlowCard tilt={false} style={{ borderRadius: 18 }}>
           <div
             className="contact-cta-block"
             style={{
+              position: 'relative', height: '100%',
               padding: 'clamp(28px, 4vw, 40px)',
               background: `rgba(var(--accent-rgb), 0.04)`,
               border: `1px solid rgba(var(--accent-rgb), 0.18)`,
@@ -220,9 +232,7 @@ export function Contact() {
                 width: 8, height: 8, borderRadius: '50%', background: '#28c840', flexShrink: 0,
                 boxShadow: '0 0 0 3px rgba(40,200,64,0.18)',
               }} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-                Disponível para novos projetos
-              </span>
+              <ScrambleText text="Disponível para novos projetos" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }} />
             </div>
 
             <div>
@@ -241,6 +251,8 @@ export function Contact() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {/* Ímã no wrapper: o scale do hover continua no próprio link */}
+              <Magnetic display="block" strength={0.18} radius={30} max={8}>
               <a
                 href={WA_URL}
                 data-origem="contato"
@@ -249,7 +261,7 @@ export function Contact() {
                 onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.03, duration: 0.18 })}
                 onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1,    duration: 0.22 })}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                   padding: '14px 28px', borderRadius: 10,
                   // Texto escuro: branco sobre #25d366 não passa no contraste (1,98:1)
                   background: '#25d366', color: '#06060c',
@@ -263,11 +275,13 @@ export function Contact() {
                 </svg>
                 Chamar no WhatsApp
               </a>
+              </Magnetic>
+              <Magnetic display="block" strength={0.18} radius={30} max={8}>
               <a
                 href="#form-contato"
                 onClick={(e) => { e.preventDefault(); document.getElementById('form-contato')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   padding: '13px 28px', borderRadius: 10,
                   background: 'rgba(255,255,255,0.04)', color: 'var(--text-muted)',
                   border: '1px solid rgba(255,255,255,0.09)',
@@ -283,8 +297,11 @@ export function Contact() {
                   <path d="M12 5l7 7-7 7M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </a>
+              </Magnetic>
             </div>
+            <GlowLayers ring="1px" />
           </div>
+          </GlowCard>
 
         </div>
       </div>

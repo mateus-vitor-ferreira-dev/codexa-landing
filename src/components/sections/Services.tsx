@@ -4,6 +4,9 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -151,6 +154,8 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
   }
 
   return (
+    // Tilt no wrapper; o GSAP (entrada em x, lift no hover) fica no card de dentro
+    <GlowCard className="rounded-2xl" tilt={{ max: 4, scale: 1.01 }}>
     <div
       ref={cardRef}
       className="service-card flex flex-col sm:flex-row rounded-2xl overflow-hidden"
@@ -185,9 +190,11 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
           position: 'absolute', top: 14, left: flip ? 'auto' : 14, right: flip ? 14 : 'auto',
           width: 6, height: 6, borderRadius: '50%', background: service.accent, opacity: 0.6,
         }} />
-        <div ref={iconRef} style={{ color: service.accent }}>
-          <Icon size={38} />
-        </div>
+        <Depth z={70}>
+          <div ref={iconRef} style={{ color: service.accent }}>
+            <Icon size={38} />
+          </div>
+        </Depth>
       </div>
 
       {/* Text block */}
@@ -202,13 +209,14 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       >
         {/* Category + badge */}
         <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: '1.25rem' }}>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
-            letterSpacing: '0.22em', textTransform: 'uppercase' as const,
-            color: service.accent, opacity: 0.9,
-          }}>
-            {service.id} · {service.category}
-          </span>
+          <ScrambleText
+            text={`${service.id} · ${service.category}`}
+            style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
+              letterSpacing: '0.22em', textTransform: 'uppercase' as const,
+              color: service.accent, opacity: 0.9,
+            }}
+          />
           {service.badge && (
             <span style={{
               fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
@@ -222,7 +230,8 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
           )}
         </div>
 
-        {/* Title */}
+        {/* Title — sobe um pouco acima do texto no tilt */}
+        <Depth z={30}>
         <h3 style={{
           fontFamily:    'var(--font-display)',
           fontSize:      'clamp(1.45rem, 2.4vw, 1.95rem)',
@@ -234,6 +243,7 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         }}>
           {service.title}
         </h3>
+        </Depth>
 
         {/* Description */}
         <p style={{
@@ -278,7 +288,9 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
           ))}
         </div>
       </div>
+      <GlowLayers color={service.accent} />
     </div>
+    </GlowCard>
   )
 }
 
@@ -313,7 +325,8 @@ export function Services() {
           <div>
             <p className="text-xs tracking-[0.22em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-              O que construímos
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="O que construímos" />
             </p>
             <h2 className="font-bold leading-tight"
               style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
@@ -333,11 +346,11 @@ export function Services() {
         </div>
 
         {/* Cards */}
-        <div className="flex flex-col gap-8">
+        <SpotlightGroup className="flex flex-col gap-8" radius={480}>
           {SERVICES.map((service, index) => (
             <ServiceCard key={service.id} service={service} index={index} />
           ))}
-        </div>
+        </SpotlightGroup>
 
         {/* CTA */}
         <div className="flex justify-center pt-2">

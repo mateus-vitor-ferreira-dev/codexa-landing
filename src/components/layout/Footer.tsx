@@ -1,6 +1,8 @@
 'use client'
 
 import { PROJETOS_NO_AR } from '@/lib/numeros'
+import { Magnetic } from '@/components/fx/Magnetic'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 // Links do rodapé com alvo de 44px de altura (toque); o texto continua igual
 const LINK_ALVO: React.CSSProperties = {
@@ -12,7 +14,7 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
     <div>
       {/* marginBottom menor compensa o respiro interno do primeiro link (alvo de 44px) */}
       <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 9 }}>
-        {title}
+        <ScrambleText text={title} />
       </h3>
       <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column' }}>
         {links.map(link => (
@@ -108,8 +110,8 @@ export function Footer() {
                 <span style={{ marginLeft: 6, color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 11 }}>codexa@deploy</span>
               </div>
               <div style={{ padding: '14px 13px', fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.75 }}>
-                <div><span style={{ color: 'var(--accent)' }}>$</span> status --prod</div>
-                <div style={{ color: 'var(--text-muted)' }}>› {PROJETOS_NO_AR} projetos no ar · 100% uptime</div>
+                <div><span style={{ color: 'var(--accent)' }}>$</span> <ScrambleText text="status --prod" duration={700} /></div>
+                <div style={{ color: 'var(--text-muted)' }}>› <ScrambleText text={`${PROJETOS_NO_AR} projetos no ar · 100% uptime`} delay={500} duration={1100} /></div>
                 <div>
                   <span style={{ color: 'var(--accent)' }}>$</span>
                   <span style={{ display: 'inline-block', width: 7, height: 14, background: 'var(--accent)', verticalAlign: '-2px', marginLeft: 4, animation: 'footerCursorBlink 1.1s steps(1) infinite' }} />
@@ -179,11 +181,14 @@ export function Footer() {
               { label: 'Instagram', href: 'https://www.instagram.com/desenvolvedoracodexa/' },
               { label: 'GitHub',    href: 'https://github.com/mateus-vitor-ferreira-dev' },
             ].map(s => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+              // Ímã no wrapper; o link continua com 44px de altura
+              <Magnetic key={s.label} strength={0.4} radius={18}>
+              <a href={s.href} target="_blank" rel="noopener noreferrer"
                 style={{ ...LINK_ALVO, color: 'var(--text-faint)', textDecoration: 'none', transition: 'color 0.25s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}
               >{s.label}</a>
+              </Magnetic>
             ))}
           </div>
           <span>Feito com <strong style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Next.js</strong> + <strong style={{ color: 'var(--text-muted)', fontWeight: 500 }}>GSAP</strong></span>
