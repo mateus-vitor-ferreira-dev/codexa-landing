@@ -51,47 +51,64 @@ function sectionKey(sec: HTMLElement) {
   return 'numeros'
 }
 
-/* Pose de cada seção. Regra: ficar na margem lateral/canto livre de texto,
-   alternando os lados para a esfera "atravessar" a página. Atrás do texto
-   só quando grande e com opacidade baixa (CTA final). */
+/* Humor de cada seção (expandir, arame, ruído, anel…). A posição e o
+   tamanho saem de freeLane: a esfera só ocupa uma faixa lateral em que a
+   seção não tem conteúdo, para nunca passar por trás de texto ou card.
+   No celular ela some depois do Hero: lá o conteúdo ocupa a largura toda. */
 function poseFor(key: string, W: number, H: number, mobile: boolean): Pose {
-  if (mobile) {
-    // Celular: pequena e translúcida, meio para fora da borda, atrás do conteúdo
-    const d = Math.min(Math.max(W * 0.3, 96), 130)
-    const right = W - d * 0.32, left = d * 0.32
-    const top = 104 + d / 2, low = H - d / 2 - 96
-    switch (key) {
-      case 'manifesto':     return { x: right, y: H * 0.22, d: d * 1.25, op: 0.45, noise: 0.4, energy: 0.4 }
-      case 'promessas':     return { x: right, y: top, d, op: 0.55, energy: 0.6 }
-      case 'numeros':       return { x: left,  y: top, d, op: 0.5, energy: 0.6, expand: 0.4 }
-      case 'servicos':      return { x: right, y: top, d, op: 0.5, expand: 1, energy: 0.7 }
-      case 'como-funciona': return { x: left,  y: top, d, op: 0.5, wire: 1, energy: 0.6, spin: 0.15 }
-      case 'cases':         return { x: right, y: top, d: d * 0.85, op: 0.6, ring: 1, energy: 0.8, spin: 0.25 }
-      case 'depoimentos':   return { x: left,  y: low, d, op: 0.45, noise: 1, energy: 0.5 }
-      case 'faq':           return { x: right, y: top, d, op: 0.45, energy: 0.45 }
-      case 'garantias':     return { x: left,  y: top, d, op: 0.5, wire: 0.8, energy: 0.6 }
-      case 'contato':       return { x: right, y: top, d, op: 0.5, energy: 1, spin: 0.2 }
-      case 'cta':           return { x: W / 2, y: H * 0.47, d: W * 0.95, op: 0.42, energy: 1, expand: 0.4, noise: 0.3 }
-      case 'form-contato':  return { x: left,  y: top, d: d * 0.9, op: 0.4, energy: 0.6 }
-      default:              return { x: right, y: top, d, op: 0.5 }
-    }
-  }
-  const nav = 96
+  if (mobile) return { x: W / 2, y: H * 0.4, d: 120, op: 0 }
   switch (key) {
-    case 'manifesto':     return { x: W - H * 0.16, y: H * 0.52, d: H * 0.52, op: 0.5, noise: 0.45, energy: 0.35, spin: -0.05 }
-    case 'promessas':     return { x: W - H * 0.2,  y: H * 0.34, d: H * 0.3, op: 0.75, energy: 0.6 }
-    case 'numeros':       return { x: W - H * 0.14, y: nav + H * 0.16, d: H * 0.22, op: 0.8, energy: 0.7, expand: 0.4 }
-    case 'servicos':      return { x: W - H * 0.12, y: H * 0.6, d: H * 0.3, op: 0.85, expand: 1, energy: 0.75, spin: 0.1 }
-    case 'como-funciona': return { x: H * 0.13,     y: H * 0.56, d: H * 0.3, op: 0.85, wire: 1, energy: 0.6, spin: 0.2 }
-    case 'cases':         return { x: W - 84,       y: nav + 60, d: 104, op: 1, ring: 1, energy: 0.9, spin: 0.35 }
-    case 'depoimentos':   return { x: H * 0.12,     y: H * 0.3, d: H * 0.26, op: 0.8, noise: 1, energy: 0.5, spin: -0.1 }
-    case 'faq':           return { x: W * 0.16,     y: H * 0.52, d: H * 0.28, op: 0.7, energy: 0.45 }
-    case 'garantias':     return { x: W - H * 0.13, y: H * 0.5, d: H * 0.3, op: 0.8, wire: 0.8, energy: 0.6 }
-    case 'contato':       return { x: W - H * 0.09, y: H * 0.25, d: H * 0.3, op: 0.8, energy: 1, spin: 0.25 }
-    case 'cta':           return { x: W / 2,        y: H * 0.47, d: Math.min(H * 0.95, W * 0.66), op: 0.5, energy: 1, expand: 0.45, noise: 0.3 }
-    case 'form-contato':  return { x: H * 0.14,     y: H * 0.45, d: H * 0.24, op: 0.6, energy: 0.6 }
-    default:              return { x: W - H * 0.15, y: H * 0.5, d: H * 0.26, op: 0.7 }
+    case 'manifesto':     return { op: 0.5, noise: 0.45, energy: 0.35, spin: -0.05 }
+    case 'promessas':     return { op: 0.7, energy: 0.6 }
+    case 'numeros':       return { op: 0.75, energy: 0.7, expand: 0.4 }
+    case 'servicos':      return { op: 0.75, expand: 1, energy: 0.75, spin: 0.1 }
+    case 'como-funciona': return { op: 0.75, wire: 1, energy: 0.6, spin: 0.2 }
+    case 'cases':         return { op: 0.8, ring: 1, energy: 0.9, spin: 0.35 }
+    case 'depoimentos':   return { op: 0.7, noise: 1, energy: 0.5, spin: -0.1 }
+    case 'faq':           return { op: 0.65, energy: 0.45 }
+    case 'garantias':     return { op: 0.7, wire: 0.8, energy: 0.6 }
+    case 'contato':       return { op: 0.7, energy: 1, spin: 0.25 }
+    // CTA final: só um brilho grande e apagado atrás do texto
+    case 'cta':           return { x: W / 2, y: H * 0.5, d: Math.min(H * 0.95, W * 0.66), op: 0.12, energy: 0.5, expand: 0.45, noise: 0.3 }
+    case 'form-contato':  return { x: W / 2, y: H * 0.5, d: H * 0.3, op: 0 }
+    default:              return { op: 0.65 }
   }
+}
+
+// Posição no layout, sem transforms (cards que ainda vão entrar de lado contam no lugar final)
+function layoutLeft(el: HTMLElement) {
+  let x = 0
+  for (let e: HTMLElement | null = el; e; e = e.offsetParent as HTMLElement | null) x += e.offsetLeft
+  return x
+}
+
+const CONTENT = 'h1,h2,h3,h4,h5,p,a,button,img,canvas,li,blockquote,form,input,textarea,[data-glow-card]'
+const LANE_PAD = 28, MIN_D = 72
+
+/* Maior faixa vertical da viewport sem conteúdo da seção. Como a esfera fica
+   parada enquanto a seção rola por baixo, vale a seção inteira, não só a tela. */
+function freeLane(sec: HTMLElement, W: number) {
+  const spans: [number, number][] = []
+  for (const el of sec.querySelectorAll<HTMLElement>(CONTENT)) {
+    if (!el.offsetWidth || !el.offsetHeight || el.closest('[aria-hidden="true"]')) continue
+    const l = layoutLeft(el)
+    spans.push([Math.max(0, l - LANE_PAD), Math.min(W, l + el.offsetWidth + LANE_PAD)])
+  }
+  spans.sort((a, b) => a[0] - b[0])
+  let best = { x0: 0, x1: 0 }, end = 0
+  for (const [a, b] of [...spans, [W, W] as [number, number]]) {
+    if (a - end > best.x1 - best.x0) best = { x0: end, x1: a }
+    end = Math.max(end, b)
+  }
+  return best
+}
+
+/* Encaixa a pose na faixa livre; sem faixa larga o bastante, a esfera some */
+function fitLane(p: Pose, sec: HTMLElement, W: number, H: number): Pose {
+  const { x0, x1 } = freeLane(sec, W)
+  const d = Math.min(x1 - x0, H * 0.3)
+  if (d < MIN_D) return { ...p, x: x0 < W / 2 ? 0 : W, y: H * 0.5, d: MIN_D, op: 0 }
+  return { ...p, x: (x0 + x1) / 2, y: H * 0.55, d }
 }
 
 interface Props {
@@ -192,28 +209,9 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
         const top = r.top + sy, h = r.height
         const T = Math.min(H * 0.3, h * 0.28)
         const a = top - H * 0.5 + T, b = top + h - H * 0.5 - T
-        const pose = poseFor(key, W, H, isMobile)
+        const base = poseFor(key, W, H, isMobile)
+        const pose = base.x === undefined ? fitLane(base, sec, W, H) : base
 
-        if (key === 'cta') {
-          // CTA final: grande ao centro enquanto as palavras acendem; no fim
-          // desce e encolhe até "abraçar" o botão com o anel orbitando
-          const btn = sec.querySelector<HTMLElement>('.cta-buttons')
-          push(top - H * 0.15, pose, key)
-          if (btn) {
-            const br = btn.getBoundingClientRect(), secR = sec.getBoundingClientRect()
-            const bx = br.left + br.width / 2
-            const by = br.top - secR.top + br.height / 2
-            const pinEnd = top + h - H // fim do trecho preso
-            const hug: Pose = {
-              x: bx, y: by, d: Math.min(br.width * 1.45, W * 0.92), op: 1,
-              ring: 1, energy: 1.3, expand: 0.2, spin: 0.4,
-            }
-            push(top + (pinEnd - top) * 0.62, pose, key)
-            push(top + (pinEnd - top) * 0.9, hug, key)
-            push(pinEnd + H * 0.12, hug, key)
-          } else push(b, pose, key)
-          continue
-        }
         if (b > a) { push(a, pose, key); push(b, pose, key) }
         else push((a + b) / 2, pose, key)
       }

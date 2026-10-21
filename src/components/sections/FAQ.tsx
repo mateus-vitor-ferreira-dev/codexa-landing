@@ -4,7 +4,7 @@ import { useId, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Plus } from 'lucide-react'
 import { GlowLayers } from '@/components/fx/GlowCard'
 import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
 import { Magnetic } from '@/components/fx/Magnetic'
@@ -244,6 +244,76 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   )
 }
 
+/* ── Acordeão (celular) ────────────────────────────────────── */
+// No celular os cards de giro viravam uma coluna de blocos altos e quase
+// vazios; aqui a pergunta fica numa linha e a resposta abre embaixo.
+function AccordionItem({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
+  const [open, setOpen] = useState(false)
+  const uid = useId()
+  const answerId = `${uid}-a`
+  const num = String(index + 1).padStart(2, '0')
+
+  return (
+    <div
+      className="faq-item"
+      style={{
+        background:   'var(--bg-elevated)',
+        border:       `1px solid ${open ? 'rgba(var(--accent-rgb),0.25)' : 'rgba(255,255,255,0.09)'}`,
+        borderRadius: '14px',
+        transition:   'border-color 0.25s',
+      }}
+    >
+      <h3 style={{ margin: 0 }}>
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          aria-controls={answerId}
+          className="w-full flex items-center gap-3 text-left"
+          style={{
+            padding:    '16px 18px',
+            background: 'transparent',
+            border:     'none',
+            color:      '#f0f0f6',
+            fontFamily: 'var(--font-display)',
+            fontSize:   '0.95rem',
+            fontWeight: 700,
+            lineHeight: 1.4,
+          }}
+        >
+          <span aria-hidden style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--accent)' }}>{num}</span>
+          <span style={{ flex: 1 }}>{faq.q}</span>
+          <Plus
+            size={18}
+            strokeWidth={2}
+            aria-hidden
+            style={{ flexShrink: 0, color: 'var(--accent)', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.25s' }}
+          />
+        </button>
+      </h3>
+      <div
+        id={answerId}
+        role="region"
+        aria-hidden={!open}
+        style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows 0.3s ease' }}
+      >
+        <p style={{
+          overflow:   'hidden',
+          margin:     0,
+          padding:    open ? '0 18px 18px 46px' : '0 18px 0 46px',
+          fontFamily: 'var(--font-body)',
+          fontSize:   '0.88rem',
+          color:      'var(--text-muted)',
+          lineHeight: 1.7,
+          transition: 'padding 0.3s ease',
+        }}>
+          {faq.a}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 /* ── Section ───────────────────────────────────────────────── */
 export function FAQ() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -264,7 +334,7 @@ export function FAQ() {
         }
       )
 
-      gsap.fromTo('.faq-card',
+      gsap.fromTo('.faq-card, .faq-item',
         { opacity: 0, y: 28, scale: 0.97 },
         {
           opacity: 1, y: 0, scale: 1,
@@ -284,9 +354,10 @@ export function FAQ() {
     <section
       ref={sectionRef}
       id="faq"
-      style={{ background: 'transparent', position: 'relative', zIndex: 0, paddingTop: '10rem', paddingBottom: '8rem' }}
+      className="pt-24 pb-20 lg:pt-40 lg:pb-32"
+      style={{ background: 'transparent', position: 'relative', zIndex: 0 }}
     >
-      <div className="page-container flex flex-col lg:flex-row gap-20 lg:gap-32">
+      <div className="page-container flex flex-col lg:flex-row gap-10 lg:gap-32">
 
         {/* Left — heading + CTA */}
         <div className="faq-heading flex flex-col gap-6 lg:w-80 flex-shrink-0 self-start">
@@ -342,15 +413,21 @@ export function FAQ() {
 
 </div>
 
+        {/* Celular — acordeão */}
+        <div className="flex flex-col gap-2.5 sm:hidden">
+          {FAQS.map((faq, i) => (
+            <AccordionItem key={i} faq={faq} index={i} />
+          ))}
+        </div>
+
         {/* Right — flip cards */}
         <SpotlightGroup
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 flex-1"
+          className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 flex-1 lg:mt-14"
           radius={340}
           style={{
             gap:           '14px',
             gridAutoRows:  '1fr',
             alignItems:    'stretch',
-            marginTop:     '3.5rem',
           }}
         >
           {FAQS.map((faq, i) => (

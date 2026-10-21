@@ -230,18 +230,19 @@ export function createNeuralEngine(canvas: HTMLCanvasElement, opts: EngineOption
     ctx.orbX = orbDocX; ctx.orbY = orbDocY - sY; ctx.orbR = orbR
     ctx.ringW = smoothstep(1 - sY / (heroH * 0.85))
 
-    // texto principal: no hero fica à esquerda; nas outras seções, coluna central
+    // texto principal: no hero fica à esquerda; nas outras seções, o container
+    // inteiro do conteúdo (1280px), onde ficam títulos e grades de cards
     const heroW = (SA.id === 'hero' ? 1 - blend : 0) + (SB.id === 'hero' ? blend : 0)
     const q = common.uQuiet.value
-    if (mobile) q.set(W * 0.04, H * 0.14, W * 0.96, H * 0.86)
+    if (mobile) q.set(W * 0.04, H * 0.12, W * 0.96, H * 0.9)
     else {
-      const cw = Math.min(W * 0.7, 1080)
+      const cw = Math.min(W * 0.9, 1280)
       const cx0 = (W - cw) / 2, cx1 = (W + cw) / 2
       const hx0 = Math.max(W * 0.04, (W - 1280) / 2), hx1 = hx0 + Math.min(W * 0.5, 700)
-      q.set(cx0 + (hx0 - cx0) * heroW, H * 0.16, cx1 + (hx1 - cx1) * heroW, H * 0.86)
+      q.set(cx0 + (hx0 - cx0) * heroW, H * 0.12, cx1 + (hx1 - cx1) * heroW, H * 0.9)
     }
-    // no celular o texto ocupa a largura toda: apaga menos para a rede continuar visível
-    common.uQuietStr.value = mobile ? P.quiet * 0.5 : P.quiet
+    // no celular o texto ocupa a largura toda: apaga um pouco menos para a rede continuar visível
+    common.uQuietStr.value = mobile ? P.quiet * 0.8 : P.quiet
 
     // campo de fluxo (curl de um potencial analítico) — move os nós "livres"
     const W2 = W + 2 * MARGIN, H2 = H + 2 * MARGIN

@@ -178,9 +178,9 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
         }}
       />
 
-      {/* Icon block — alternates side; no mobile ocupa a largura toda e fica mais baixo */}
+      {/* Icon block — alternates side; no celular vira um ícone pequeno ao lado da categoria */}
       <div
-        className={`relative flex items-center justify-center flex-shrink-0 w-full min-h-[140px] sm:w-[clamp(170px,24%,240px)] sm:min-h-[280px] border-[rgba(255,255,255,0.06)] border-b sm:border-b-0 ${flip ? 'sm:order-2 sm:border-l' : 'sm:order-1 sm:border-r'}`}
+        className={`relative hidden sm:flex items-center justify-center flex-shrink-0 sm:w-[clamp(170px,24%,240px)] sm:min-h-[280px] border-[rgba(255,255,255,0.06)] ${flip ? 'sm:order-2 sm:border-l' : 'sm:order-1 sm:border-r'}`}
         style={{
           background: `radial-gradient(ellipse at center, ${service.accent}22 0%, ${service.accent}0a 62%, transparent 100%)`,
         }}
@@ -209,6 +209,12 @@ function ServiceCard({ service, index }: { service: typeof SERVICES[0]; index: n
       >
         {/* Category + badge */}
         <div className="flex items-center gap-3 flex-wrap" style={{ marginBottom: '1.25rem' }}>
+          <span
+            className="sm:hidden flex items-center justify-center rounded-lg"
+            style={{ width: 34, height: 34, color: service.accent, background: `${service.accent}1a`, border: `1px solid ${service.accent}33` }}
+          >
+            <Icon size={18} />
+          </span>
           <ScrambleText
             text={`${service.id} · ${service.category}`}
             style={{
