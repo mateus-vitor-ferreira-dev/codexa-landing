@@ -12,6 +12,7 @@ import { FAQ }           from '@/components/sections/FAQ'
 import { Guarantees }    from '@/components/sections/Guarantees'
 import { Contact }       from '@/components/sections/Contact'
 import { CtaFinal }      from '@/components/sections/CtaFinal'
+import { Footer }        from '@/components/layout/Footer'
 import { CustomCursor }   from '@/components/ui/CustomCursor'
 import { ColorSwitcher }  from '@/components/ui/ColorSwitcher'
 import { Preloader }      from '@/components/ui/Preloader'
@@ -27,13 +28,21 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
+      {/* Skip link: primeiro item do Tab, só aparece com foco */}
+      <a
+        href="#conteudo"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10001] focus:rounded-lg focus:px-4 focus:py-3 focus:font-semibold"
+        style={{ background: 'var(--accent)', color: '#06060c' }}
+      >
+        Pular para o conteúdo
+      </a>
       <BackgroundEffects />
       <Preloader />
       <CustomCursor />
-      <ColorSwitcher />
-      <WhatsAppButton />
       <Navbar />
-      <main style={{ position: 'relative', zIndex: 10 }}>
+      {/* overflow-x: clip segura os cards que entram de lado (GSAP) sem quebrar o sticky;
+          sem isso o celular alarga a página e corta o conteúdo */}
+      <main id="conteudo" style={{ position: 'relative', zIndex: 10, overflowX: 'clip' }}>
         <Hero />
         <Manifesto />
         <PromisesMarquee />
@@ -56,6 +65,10 @@ export default function Home() {
         <SectionDivider />
         <CtaFinal />
       </main>
+      <Footer />
+      {/* Flutuantes depois do conteúdo: no Tab vêm por último, não antes do menu */}
+      <ColorSwitcher />
+      <WhatsAppButton />
     </>
   )
 }

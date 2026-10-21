@@ -39,6 +39,7 @@ function buildPoints(): THREE.Vector3[] {
 export function NavOrb() {
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const materialsRef = useRef<{ lineMat: THREE.LineBasicMaterial; ptMat: THREE.PointsMaterial } | null>(null)
+  const renderRef    = useRef<(() => void) | null>(null)
   const { theme } = useTheme()
 
   useEffect(() => {
@@ -100,8 +101,41 @@ export function NavOrb() {
 
     materialsRef.current = { lineMat, ptMat }
 
-    let raf = 0
-    const animate = () => {
+    renderRef.current = () => renderer.render(scene, camera)
+
+    const dispose = () => {
+      renderRef.current = null
+      ptGeom.dispose(); ptMat.dispose(); ptTex.dispose()
+      lineGeom.dispose(); lineMat.dispose()
+      pulseMeshGeom.dispose()
+      for (const p of pulses) p.mat.dispose()
+      renderer.dispose()
+    }
+
+    // Com reduced-motion: um frame estático e nenhum loop
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      orb.rotation.y = 0.4
+      renderer.render(scene, camera)
+      return dispose
+    }
+
+    // Loop só roda com a aba visível e o orb na tela
+    let raf      = 0
+    let onScreen = true
+    const shouldRun = () => onScreen && !document.hidden
+    const start = () => { if (!raf && shouldRun()) raf = requestAnimationFrame(animate) }
+    const stop  = () => { cancelAnimationFrame(raf); raf = 0 }
+
+    const onVisibility = () => (document.hidden ? stop() : start())
+    document.addEventListener('visibilitychange', onVisibility)
+
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting
+      if (onScreen) start(); else stop()
+    })
+    io.observe(canvas)
+
+    function animate() {
       raf = requestAnimationFrame(animate)
       orb.rotation.y += 0.004
       orb.rotation.x = Math.sin(Date.now() * 0.0003) * 0.15
@@ -119,15 +153,13 @@ export function NavOrb() {
 
       renderer.render(scene, camera)
     }
-    animate()
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
-      ptGeom.dispose(); ptMat.dispose(); ptTex.dispose()
-      lineGeom.dispose(); lineMat.dispose()
-      pulseMeshGeom.dispose()
-      for (const p of pulses) p.mat.dispose()
-      renderer.dispose()
+      stop()
+      io.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+      dispose()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -140,6 +172,8 @@ export function NavOrb() {
     m.lineMat.color.setHex(theme.three)
     m.ptMat.map = makeTexture(r, g, b)
     m.ptMat.needsUpdate = true
+    // Sem loop (reduced-motion), redesenha o frame estático com a cor nova
+    renderRef.current?.()
   }, [theme.id, theme.three, theme.rgb])
 
   return (

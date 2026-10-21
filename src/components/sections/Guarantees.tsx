@@ -12,7 +12,7 @@ const ITEMS = [
     label: 'Resposta em até 24h',
     desc:  'Proposta detalhada enviada em no máximo um dia útil após o briefing. Sem enrolação.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <polyline points="12 6 12 12 16 14"/>
       </svg>
@@ -22,7 +22,7 @@ const ITEMS = [
     label: 'Proposta sem compromisso',
     desc:  'Não gostou do que viu? Tudo bem. Sem custo, sem pressão, sem obrigação de fechar.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
     ),
@@ -31,7 +31,7 @@ const ITEMS = [
     label: 'Contrato transparente',
     desc:  'Escopo, prazo, valor e titularidade do código definidos por escrito antes de começar.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <polyline points="14 2 14 8 20 8"/>
         <line x1="16" y1="13" x2="8" y2="13"/>
@@ -114,7 +114,7 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
       </div>
 
       {/* Label */}
-      <p style={{
+      <h3 style={{
         fontFamily: 'var(--font-display)',
         fontSize:   '1.08rem',
         fontWeight: 700,
@@ -124,7 +124,7 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
         zIndex:     2,
       }}>
         {item.label}
-      </p>
+      </h3>
 
       {/* Desc */}
       <p style={{
@@ -145,24 +145,30 @@ export function Guarantees() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    gsap.set('.guarantee-item', { opacity: 0, x: 72, scale: 0.93, rotateY: 8 })
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: sem entrada, cards já visíveis e no lugar
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.set('.guarantee-item', { opacity: 0, x: 72, scale: 0.93, rotateY: 8 })
 
-    gsap.to('.guarantee-item', {
-      opacity: 1, x: 0, scale: 1, rotateY: 0,
-      duration: 0.75,
-      stagger: 0.18,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 78%',
-        toggleActions: 'play reverse play reverse',
-      },
+      gsap.to('.guarantee-item', {
+        opacity: 1, x: 0, scale: 1, rotateY: 0,
+        duration: 0.75,
+        stagger: 0.18,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 78%',
+          toggleActions: 'play reverse play reverse',
+        },
+      })
     })
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
     <section
       ref={sectionRef}
+      aria-labelledby="garantias-titulo"
       style={{
         background:    'transparent',
         borderTop:     '1px solid rgba(255,255,255,0.05)',
@@ -171,6 +177,8 @@ export function Guarantees() {
       }}
     >
       <div className="page-container">
+        {/* Seção sem título visual — h2 só para leitores de tela */}
+        <h2 id="garantias-titulo" className="sr-only">Nossas garantias</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ perspective: '1200px' }}>
           {ITEMS.map((item) => (
             <GuaranteeCard key={item.label} item={item} />

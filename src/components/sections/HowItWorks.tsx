@@ -51,59 +51,64 @@ export function HowItWorks() {
   const lineVRef    = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
-    // Header
-    gsap.fromTo('.hiw-header',
-      { opacity: 0, y: 28 },
-      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', toggleActions: 'play reverse play reverse' } }
-    )
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: sem entrada nem scrub, linhas e cards já no estado final
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      // Header
+      gsap.fromTo('.hiw-header',
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', toggleActions: 'play reverse play reverse' } }
+      )
 
-    // ── Linha horizontal (desktop) — scrub driven ──────────────
-    gsap.fromTo(lineRef.current,
-      { scaleX: 0 },
-      {
-        scaleX: 1,
-        ease: 'none',
-        transformOrigin: 'left center',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 60%',
-          end:   'center 30%',
-          scrub: 1.2,
+      // ── Linha horizontal (desktop) — scrub driven ──────────────
+      gsap.fromTo(lineRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: 'none',
+          transformOrigin: 'left center',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 60%',
+            end:   'center 30%',
+            scrub: 1.2,
+          },
         },
-      },
-    )
+      )
 
-    // ── Linha vertical (mobile) — scrub driven ─────────────────
-    gsap.fromTo(lineVRef.current,
-      { scaleY: 0 },
-      {
-        scaleY: 1,
-        ease: 'none',
-        transformOrigin: 'top center',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 60%',
-          end:   'bottom 50%',
-          scrub: 1.2,
+      // ── Linha vertical (mobile) — scrub driven ─────────────────
+      gsap.fromTo(lineVRef.current,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: 'none',
+          transformOrigin: 'top center',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 60%',
+            end:   'bottom 50%',
+            scrub: 1.2,
+          },
         },
-      },
-    )
+      )
 
-    // Dots — zoom de entrada bidirecional
-    gsap.fromTo('.step-dot',
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.2, ease: 'back.out(3)',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 62%', toggleActions: 'play reverse play reverse' } }
-    )
+      // Dots — zoom de entrada bidirecional
+      gsap.fromTo('.step-dot',
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5, stagger: 0.2, ease: 'back.out(3)',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 62%', toggleActions: 'play reverse play reverse' } }
+      )
 
-    // Cards — fade + subida + scale bidirecional
-    gsap.fromTo('.step-card',
-      { opacity: 0, y: 40, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.12, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 58%', toggleActions: 'play reverse play reverse' } }
-    )
+      // Cards — fade + subida + scale bidirecional
+      gsap.fromTo('.step-card',
+        { opacity: 0, y: 40, scale: 0.97 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 58%', toggleActions: 'play reverse play reverse' } }
+      )
 
+    })
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
@@ -243,7 +248,7 @@ export function HowItWorks() {
                   }}
                 >
                   <span
-                    className="text-[10px] font-bold"
+                    className="text-xs font-bold"
                     style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}
                   >
                     {i + 1}
@@ -253,17 +258,17 @@ export function HowItWorks() {
                 {/* Content */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span
+                    <h3
                       className="text-lg font-bold"
                       style={{ fontFamily: 'var(--font-display)', color: 'var(--text)' }}
                     >
                       {step.title}
-                    </span>
+                    </h3>
                     <span
                       style={{
                         display: 'inline-flex', justifyContent: 'center',
                         minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
-                        fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+                        fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
                         color:      'var(--accent)',
                         background: 'rgba(var(--accent-rgb),0.08)',
                         border:     '1px solid rgba(var(--accent-rgb),0.55)',
@@ -276,7 +281,7 @@ export function HowItWorks() {
                   <p className="leading-relaxed" style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
                     {step.desc}
                   </p>
-                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-faint)' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-faint)' }}>
                     {step.detail}
                   </p>
                 </div>
@@ -356,7 +361,7 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
       <span style={{
         display: 'inline-flex', justifyContent: 'center',
         minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
-        fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+        fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
         color: 'var(--accent)', background: 'rgba(var(--accent-rgb),0.08)',
         border: '1px solid rgba(var(--accent-rgb),0.55)',
         boxShadow: '0 0 12px rgba(var(--accent-rgb),0.18)',
@@ -376,7 +381,7 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
 
       {/* Detail */}
       <p className="mt-auto pt-3" style={{
-        fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
+        fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
         color: 'var(--text-faint)', borderTop: '1px solid rgba(255,255,255,0.07)',
       }}>
         {step.detail}

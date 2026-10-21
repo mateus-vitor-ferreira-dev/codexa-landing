@@ -78,7 +78,7 @@ const schemaOrg = {
   logo: `${SITE_URL}/icon.png`,
   image: `${SITE_URL}/opengraph-image`,
   email: 'contato@digitalcodexa.com',
-  telephone: '+55 35 99746-0058',
+  telephone: '+55 35 99172-2707',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Lavras',
