@@ -214,36 +214,6 @@ function BrowserMockup({ project }: { project: Project }) {
   // Tilt 3D num wrapper próprio: o <a> já tem o float do GSAP e o card a entrada
   useTilt(tiltRef, { max: 6, scale: 1.015, perspective: 1100 })
 
-  /* O useTilt para o easing a ~0.01 do alvo e pode deixar um resto como
-     scale(1.008) — o suficiente para reamostrar o print e tirar a nitidez.
-     Depois que o ponteiro sai e a mola assenta, limpa o transform de vez. */
-  useEffect(() => {
-    const el = tiltRef.current
-    if (!el || prefersReducedMotion()) return
-    let timer = 0
-    // Zera quando o style fica 700ms sem mudar (a mola terminou); se a mola
-    // ainda escrever depois, o observer rearma e limpa de novo
-    const clear = () => {
-      if (el.style.getPropertyValue('--tilt-active') === '0' && el.style.transform) el.style.transform = ''
-    }
-    const mo = new MutationObserver(() => { clearTimeout(timer); timer = window.setTimeout(clear, 700) })
-    const settle = () => {
-      mo.observe(el, { attributes: true, attributeFilter: ['style'] })
-      clearTimeout(timer); timer = window.setTimeout(clear, 700)
-    }
-    const cancel = () => { mo.disconnect(); clearTimeout(timer) }
-    el.addEventListener('pointerleave', settle)
-    el.addEventListener('pointercancel', settle)
-    el.addEventListener('pointerenter', cancel)
-    return () => {
-      mo.disconnect()
-      clearTimeout(timer)
-      el.removeEventListener('pointerleave', settle)
-      el.removeEventListener('pointercancel', settle)
-      el.removeEventListener('pointerenter', cancel)
-    }
-  }, [])
-
   /* Continuous float (parado com reduced-motion) */
   useEffect(() => {
     const el = wrapRef.current

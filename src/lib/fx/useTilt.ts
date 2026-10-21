@@ -40,10 +40,7 @@ export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: T
     el.style.setProperty('--tilt-active', '0')
     el.style.setProperty('--tilt-nx', '0')
     el.style.setProperty('--tilt-ny', '0')
-    if (rotate) {
-      el.style.transformStyle = 'preserve-3d'
-      el.style.willChange = 'transform'
-    }
+    if (rotate) el.style.transformStyle = 'preserve-3d'
 
     let rx = 0, ry = 0, s = 1          // estado atual
     let tx = 0, ty = 0, ts = 1         // alvo
@@ -55,10 +52,20 @@ export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: T
       if (rotate) el.style.transform = `perspective(${perspective}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`
       el.style.setProperty('--tilt-nx', (ry / max).toFixed(3))
       el.style.setProperty('--tilt-ny', (-rx / max).toFixed(3))
-      if (Math.abs(tx - rx) + Math.abs(ty - ry) + Math.abs(ts - s) > 0.01) raf = requestAnimationFrame(animate)
-      else raf = 0
+      if (Math.abs(tx - rx) + Math.abs(ty - ry) + Math.abs(ts - s) > 0.01) { raf = requestAnimationFrame(animate); return }
+      raf = 0
+      // Ao parar, encaixa no alvo; em repouso tira transform e will-change —
+      // um resto tipo scale(1.009) ou a camada promovida borram o conteúdo
+      rx = tx; ry = ty; s = ts
+      if (rotate && tx === 0 && ty === 0 && ts === 1) {
+        el.style.transform = ''
+        el.style.willChange = ''
+      }
     }
-    const kick = () => { if (!raf) raf = requestAnimationFrame(animate) }
+    const kick = () => {
+      if (rotate) el.style.willChange = 'transform'
+      if (!raf) raf = requestAnimationFrame(animate)
+    }
 
     const aim = (clientX: number, clientY: number) => {
       const r = el.getBoundingClientRect()
