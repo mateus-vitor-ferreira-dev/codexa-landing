@@ -4,6 +4,8 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -70,9 +72,11 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
   }
 
   return (
+    // Tilt no wrapper; entrada (x/scale/rotateY) e lift do GSAP ficam no card
+    <GlowCard className="h-full" style={{ borderRadius: 20 }}>
     <div
       ref={cardRef}
-      className="guarantee-item flex flex-col gap-5 cursor-default overflow-hidden"
+      className="guarantee-item h-full flex flex-col gap-5 cursor-default overflow-hidden"
       style={{
         background:   'linear-gradient(145deg, #1a1a22 0%, #131318 100%)',
         border:       '1px solid rgba(255,255,255,0.09)',
@@ -95,7 +99,8 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
         }}
       />
 
-      {/* Icon badge */}
+      {/* Icon badge — flutua acima do card no tilt */}
+      <Depth z={60} style={{ position: 'relative', zIndex: 2, alignSelf: 'flex-start' }}>
       <div style={{
         width:          '52px',
         height:         '52px',
@@ -112,8 +117,10 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
       }}>
         {item.icon}
       </div>
+      </Depth>
 
       {/* Label */}
+      <Depth z={28} style={{ position: 'relative', zIndex: 2 }}>
       <h3 style={{
         fontFamily: 'var(--font-display)',
         fontSize:   '1.08rem',
@@ -125,6 +132,7 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
       }}>
         {item.label}
       </h3>
+      </Depth>
 
       {/* Desc */}
       <p style={{
@@ -137,7 +145,9 @@ function GuaranteeCard({ item }: { item: typeof ITEMS[0] }) {
       }}>
         {item.desc}
       </p>
+      <GlowLayers />
     </div>
+    </GlowCard>
   )
 }
 
@@ -179,11 +189,11 @@ export function Guarantees() {
       <div className="page-container">
         {/* Seção sem título visual — h2 só para leitores de tela */}
         <h2 id="garantias-titulo" className="sr-only">Nossas garantias</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ perspective: '1200px' }}>
+        <SpotlightGroup className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ perspective: '1200px' }}>
           {ITEMS.map((item) => (
             <GuaranteeCard key={item.label} item={item} />
           ))}
-        </div>
+        </SpotlightGroup>
       </div>
     </section>
   )

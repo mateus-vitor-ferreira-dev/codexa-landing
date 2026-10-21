@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from '@/context/ThemeContext'
+import { Magnetic } from '@/components/fx/Magnetic'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 // Mesmo número usado no botão flutuante e na seção de contato
@@ -250,33 +251,49 @@ export function CtaFinal() {
           </span>
         </h2>
 
-        {/* Botão — posicionado na base da seção pinada */}
-        <button
+        {/* Botão — posicionado na base da seção pinada. Três camadas, cada uma com
+            o seu transform: .cta-buttons (faixa centralizada, autoAlpha/y do GSAP),
+            Magnetic (x/y do ímã) e o botão (scale do hover). Centralizar com flex
+            em vez de translateX(-50%) evita que o GSAP/ímã sobrescrevam o centro. */}
+        <div
           className="cta-buttons"
-          onClick={() => document.getElementById('form-contato')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           style={{
             position: 'absolute',
             bottom: 'clamp(48px, 9vh, 88px)',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            left: 0, right: 0,
+            display: 'flex', justifyContent: 'center',
+            padding: '0 16px',
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+        <Magnetic strength={0.4} radius={70} max={30} inner=".cta-btn-label" style={{ pointerEvents: 'auto', maxWidth: '100%' }}>
+        <button
+          type="button"
+          data-cursor="ir"
+          onClick={() => document.getElementById('form-contato')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          style={{
             display: 'inline-flex', alignItems: 'center', gap: '14px',
             // Tamanho fluido: em 320-414px o botão fixo (432px) saía da tela
             padding: 'clamp(14px, 3vw, 20px) clamp(24px, 6vw, 52px)', borderRadius: '100px',
-            maxWidth: 'calc(100% - 32px)',
+            maxWidth: '100%',
             background: theme.accent, color: '#06060c',
             fontFamily: 'var(--font-display)', fontSize: 'clamp(1rem, 4.5vw, 1.35rem)', fontWeight: 800,
             letterSpacing: '-0.01em', whiteSpace: 'nowrap', border: 'none',
             boxShadow: `0 0 80px rgba(${theme.rgb},0.5), 0 20px 48px rgba(0,0,0,0.4)`,
-            zIndex: 2,
           }}
           onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.05, boxShadow: `0 0 130px rgba(${theme.rgb},0.7), 0 24px 48px rgba(0,0,0,0.5)`, duration: 0.22 })}
           onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1, boxShadow: `0 0 80px rgba(${theme.rgb},0.5), 0 20px 48px rgba(0,0,0,0.4)`, duration: 0.28 })}
         >
-          Iniciar um Projeto
-          <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-            <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <span className="cta-btn-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '14px' }}>
+            Iniciar um Projeto
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 22 22" fill="none">
+              <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
         </button>
+        </Magnetic>
+        </div>
       </section>
 
       {/* SEÇÃO CTA — subtext + formulário */}
@@ -471,11 +488,13 @@ export function CtaFinal() {
                   </div>
                 )}
 
+                {/* Ímã no wrapper; o scale do hover fica no botão */}
+                <Magnetic display="block" strength={0.2} radius={30} max={8} inner=".cta-submit-label" style={{ marginTop: 4 }}>
                 <button
                   type="submit"
                   disabled={status === 'sending'}
                   style={{
-                    marginTop: 4, padding: '14px 32px', borderRadius: 10, border: 'none',
+                    width: '100%', padding: '14px 32px', borderRadius: 10, border: 'none',
                     background: theme.accent, color: '#06060c',
                     fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 800,
                     letterSpacing: '-0.01em', cursor: status === 'sending' ? 'wait' : undefined,
@@ -487,6 +506,7 @@ export function CtaFinal() {
                   onMouseEnter={e => status !== 'sending' && gsap.to(e.currentTarget, { scale: 1.02, duration: 0.18 })}
                   onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.22 })}
                 >
+                  <span className="cta-submit-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                   {status === 'sending' ? (
                     <>
                       <span style={{ width: 16, height: 16, border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
@@ -495,12 +515,14 @@ export function CtaFinal() {
                   ) : (
                     <>
                       Enviar mensagem
-                      <svg width="16" height="16" viewBox="0 0 22 22" fill="none">
+                      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 22 22" fill="none">
                         <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </>
                   )}
+                  </span>
                 </button>
+                </Magnetic>
                 <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
                   Ao enviar, você concorda com nossa{' '}
                   <a href="/privacidade" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'underline' }}>
