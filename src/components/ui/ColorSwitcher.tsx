@@ -12,6 +12,8 @@ export function ColorSwitcher() {
   const ringRef  = useRef<HTMLDivElement>(null)
   const hintRef  = useRef<HTMLDivElement>(null)
   const [touched, setTouched] = useState(false)
+  // Celular: o dock fica recolhido num botão só e abre a paleta no toque
+  const [open, setOpen] = useState(false)
 
   const dismissHint = () => {
     try { sessionStorage.setItem(HINT_KEY, '1') } catch {}
@@ -63,12 +65,24 @@ export function ColorSwitcher() {
       gsap.set(ringRef.current, { opacity: 0 })
       dismissHint()
     }
+    setOpen(false)
   }
+
+  // Fecha a paleta aberta ao tocar fora dela
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (!dockRef.current?.contains(e.target as Node)) setOpen(false)
+    }
+    window.addEventListener('pointerdown', onDown)
+    return () => window.removeEventListener('pointerdown', onDown)
+  }, [open])
 
   return (
     <div
       ref={dockRef}
       className="color-dock"
+      data-open={open ? '' : undefined}
       style={{
         position:  'fixed',
         zIndex:    1000,
@@ -144,6 +158,33 @@ export function ColorSwitcher() {
           }}
         />
 
+        {/* Só no celular: abre e fecha a paleta */}
+        <button
+          type="button"
+          className="color-dock-toggle"
+          aria-label="Escolher a cor do site"
+          aria-expanded={open}
+          onClick={() => { setOpen(o => !o); if (!touched) dismissHint() }}
+          style={{
+            padding:        0,
+            background:     'transparent',
+            border:         'none',
+            alignItems:     'center',
+            justifyContent: 'center',
+            color:          'var(--accent)',
+          }}
+        >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+              style={{ color: 'var(--accent)', flexShrink: 0 }}>
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+        </button>
+
         <span
           className="color-dock-label"
           style={{
@@ -168,7 +209,7 @@ export function ColorSwitcher() {
           Cor do site
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="color-dock-swatches" style={{ alignItems: 'center' }}>
           {THEMES.map((t) => {
             const active = theme.id === t.id
             return (
@@ -232,14 +273,17 @@ export function ColorSwitcher() {
         .color-dock-btn { width: 32px; height: 32px; margin: -5px 0; }
         .color-dock-btn:focus-visible { outline: none; }
         .color-dock-btn:focus-visible .color-dock-ring { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .color-dock-toggle { display: none; }
+        .color-dock-swatches { display: flex; }
         @media (max-width: 640px) {
           .color-dock { left: 12px; bottom: 16px; }
-          /* Mobile: alvo de 44px — dock fica ~260px de largura */
-          .color-dock-bar { gap: 3px; padding: 10px 5px 10px 14px; }
-          .color-dock-btn { width: 44px; height: 44px; margin: -11px 0; }
-          .color-dock-label span,
-          .color-dock-label { font-size: 0; gap: 0; }
-          .color-dock-label svg { width: 16px; height: 16px; }
+          /* Mobile: recolhido é só o botão da paleta (44px); aberto mostra as cores com alvo de 44px */
+          .color-dock-bar { gap: 0; padding: 0; }
+          .color-dock-toggle { display: flex; width: 44px; height: 44px; }
+          .color-dock-label { display: none !important; }
+          .color-dock-swatches { display: none; }
+          .color-dock[data-open] .color-dock-swatches { display: flex; padding-right: 4px; }
+          .color-dock-btn { width: 40px; height: 44px; margin: 0; }
         }
       `}</style>
     </div>

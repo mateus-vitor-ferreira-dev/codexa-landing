@@ -140,47 +140,10 @@ const helix: ShapeFn = (i, c, o) => {
   o.a = 0.55 + 0.45 * Math.max(0, Math.cos(ph + strand * Math.PI))
 }
 
-/* ── cases: molduras de janelas/telas flutuando ──────────────── */
-// x, y, w, h normalizados (desktop deixa o centro livre para os cards)
-const FRAMES_D = [
-  [0.03, 0.14, 0.24, 0.30], [0.73, 0.10, 0.24, 0.32], [0.05, 0.60, 0.21, 0.28],
-  [0.75, 0.58, 0.21, 0.30], [0.36, 0.05, 0.28, 0.16], [0.38, 0.80, 0.24, 0.15],
-]
-const FRAMES_M = [
-  [0.05, 0.10, 0.55, 0.20], [0.45, 0.36, 0.50, 0.20], [0.04, 0.62, 0.52, 0.18], [0.50, 0.82, 0.46, 0.14],
-]
-const windows: ShapeFn = (i, c, o) => {
-  const { W, H, t } = c
-  const F = c.mobile ? FRAMES_M : FRAMES_D
-  const f = i % F.length
-  const fr = F[f]
-  const fx = fr[0] * W + Math.sin(t * 0.45 + f * 1.7) * 10
-  const fy = fr[1] * H + Math.cos(t * 0.38 + f * 2.3) * 12
-  const fw = fr[2] * W, fh = fr[3] * H
-  const p = c.r1[i], sel = c.r2[i]
-  o.a = 1
-  if (sel < 0.06) {
-    // três "botões" da barra de título
-    const k = Math.floor(sel / 0.02)
-    o.x = fx + 12 + k * 11; o.y = fy + 11
-    o.b = 0.6
-    return
-  }
-  if (sel < 0.2) {
-    // linha da barra de título
-    o.x = fx + p * fw; o.y = fy + 22
-    o.b = 0
-    return
-  }
-  // contorno da janela, percorrido por um brilho
-  const per = 2 * (fw + fh)
-  let d = p * per
-  if (d < fw) { o.x = fx + d; o.y = fy }
-  else if ((d -= fw) < fh) { o.x = fx + fw; o.y = fy + d }
-  else if ((d -= fh) < fw) { o.x = fx + fw - d; o.y = fy + fh }
-  else { d -= fw; o.x = fx; o.y = fy + fh - d }
-  const scan = 0.5 + 0.5 * Math.sin((p - t * 0.22 + f * 0.17) * TAU)
-  o.b = Math.pow(scan, 16) * 1.1
+/* ── cases: deriva livre e apagada — as imagens dos projetos são o destaque ── */
+const drift: ShapeFn = (i, c, o) => {
+  o.x = c.hx[i]; o.y = c.hy[i]
+  o.a = 0.7; o.b = 0
 }
 
 /* ── depoimentos: ondas senoidais sobrepostas (vozes) ─────────── */
@@ -291,14 +254,14 @@ export interface SceneDef { id: string; shape: ShapeFn; params: SceneParams }
 /* Ordem = ordem das seções na página */
 export const SCENES: SceneDef[] = [
   { id: 'hero',          shape: hero,     params: { link: 2.5, lineA: 0.30, pointA: 0.9,  maxDeg: 6, packets: 0.8, quiet: 0.65 } },
-  { id: 'servicos',      shape: lattice,  params: { link: 1.6, lineA: 0.24, pointA: 0.7, maxDeg: 6, packets: 0.6, quiet: 0.35 } },
-  { id: 'como-funciona', shape: helix,    params: { link: 1.9, lineA: 0.26, pointA: 0.9,  maxDeg: 4, packets: 1.0, quiet: 0.35 } },
-  { id: 'cases',         shape: windows,  params: { link: 1.25, lineA: 0.24, pointA: 0.85, maxDeg: 3, packets: 0.7, quiet: 0.2 } },
-  { id: 'depoimentos',   shape: waves,    params: { link: 1.6, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.7, quiet: 0.35 } },
-  { id: 'faq',           shape: cloud,    params: { link: 2.1, lineA: 0.16, pointA: 0.9,  maxDeg: 4, packets: 0.4, quiet: 0.45 } },
-  { id: 'garantias',     shape: shield,   params: { link: 1.5, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.6, quiet: 0.3 } },
-  { id: 'contato',       shape: converge, params: { link: 2.0, lineA: 0.24, pointA: 0.9,  maxDeg: 5, packets: 0.9, quiet: 0.35 } },
-  { id: 'form-contato',  shape: converge, params: { link: 2.0, lineA: 0.2,  pointA: 0.8,  maxDeg: 5, packets: 0.9, quiet: 0.45 } },
+  { id: 'servicos',      shape: lattice,  params: { link: 1.6, lineA: 0.24, pointA: 0.7, maxDeg: 6, packets: 0.6, quiet: 0.7 } },
+  { id: 'como-funciona', shape: helix,    params: { link: 1.9, lineA: 0.26, pointA: 0.9,  maxDeg: 4, packets: 1.0, quiet: 0.7 } },
+  { id: 'cases',         shape: drift,    params: { link: 1.8, lineA: 0.12, pointA: 0.6,  maxDeg: 3, packets: 0.3, quiet: 0.75 } },
+  { id: 'depoimentos',   shape: waves,    params: { link: 1.6, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.7, quiet: 0.7 } },
+  { id: 'faq',           shape: cloud,    params: { link: 2.1, lineA: 0.16, pointA: 0.9,  maxDeg: 4, packets: 0.4, quiet: 0.75 } },
+  { id: 'garantias',     shape: shield,   params: { link: 1.5, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.6, quiet: 0.65 } },
+  { id: 'contato',       shape: converge, params: { link: 2.0, lineA: 0.24, pointA: 0.9,  maxDeg: 5, packets: 0.9, quiet: 0.7 } },
+  { id: 'form-contato',  shape: converge, params: { link: 2.0, lineA: 0.2,  pointA: 0.8,  maxDeg: 5, packets: 0.9, quiet: 0.8 } },
   { id: 'footer',        shape: dissolve, params: { link: 1.6, lineA: 0.08, pointA: 0.3,  maxDeg: 3, packets: 0.1, quiet: 0 } },
 ]
 

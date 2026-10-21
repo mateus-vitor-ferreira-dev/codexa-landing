@@ -41,8 +41,10 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
 export function Footer() {
   return (
     /* data-origem: cliques no WhatsApp daqui contam como "rodape" */
+    // No celular o padding de baixo é maior: o seletor de cor e o WhatsApp flutuam no canto
     <footer
       data-origem="rodape"
+      className="pb-24 sm:pb-8"
       style={{
         position: 'relative',
         zIndex: 10,
@@ -52,7 +54,7 @@ export function Footer() {
           radial-gradient(1200px 400px at 50% -10%, rgba(var(--accent-rgb),0.06), transparent 70%),
           linear-gradient(180deg, var(--bg) 0%, #07070c 100%)
         `,
-        padding: '88px 0 32px',
+        paddingTop: 88,
       }}
     >
       {/* Subtle grid */}
