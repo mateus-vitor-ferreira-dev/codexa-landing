@@ -153,7 +153,7 @@ export function Footer() {
 
           {/* ── Contato ── */}
           <FooterCol title="Contato" links={[
-            { label: 'WhatsApp', href: 'https://wa.me/5535997460058' },
+            { label: 'WhatsApp', href: 'https://wa.me/5535991722707' },
             { label: 'E-mail',   href: 'mailto:contato@digitalcodexa.com' },
             { label: 'LinkedIn', href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
             { label: 'GitHub',   href: 'https://github.com/mateus-vitor-ferreira-dev' },

@@ -7,13 +7,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const WA_URL = 'https://wa.me/5535997460058?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
+const WA_URL = 'https://wa.me/5535991722707?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
 const CHANNELS = [
   {
     key: 'whatsapp',
     label: 'WhatsApp',
-    value: '+55 35 9 9746-0058',
+    value: '+55 35 9 9172-2707',
     href: WA_URL,
     external: true,
     color: '#25d366',

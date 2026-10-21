@@ -8,7 +8,7 @@ import { useTheme } from '@/context/ThemeContext'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 // Mesmo número usado no botão flutuante e na seção de contato
-const WA_NUMBER = '5535997460058'
+const WA_NUMBER = '5535991722707'
 
 // Monta o link do WhatsApp com o que a pessoa já digitou no formulário
 function waLink(nome: string, mensagem: string) {

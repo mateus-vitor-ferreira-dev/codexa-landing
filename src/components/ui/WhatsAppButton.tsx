@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 
-const WA_URL = 'https://wa.me/5535997460058?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
+const WA_URL = 'https://wa.me/5535991722707?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
 // Com reduced-motion as mudanças acontecem na hora, sem deslocamento nem escala
 const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
