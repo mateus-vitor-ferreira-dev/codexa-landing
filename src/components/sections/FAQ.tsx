@@ -5,6 +5,11 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight } from 'lucide-react'
+import { GlowLayers } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
+import { Magnetic } from '@/components/fx/Magnetic'
+import { useTilt } from '@/lib/fx/useTilt'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -49,12 +54,15 @@ const FAQS = [
 
 /* ── Flip Card ─────────────────────────────────────────────── */
 function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
+  const cardRef   = useRef<HTMLDivElement>(null)
   const innerRef  = useRef<HTMLDivElement>(null)
   const frontRef  = useRef<HTMLDivElement>(null)
   const [flipped, setFlipped] = useState(false)
   const uid = useId()
   const questionId = `${uid}-q`
   const answerId   = `${uid}-a`
+  // Só a luz segue o ponteiro (rotate: false): o transform é do giro do card
+  useTilt(cardRef, { rotate: false })
 
   const toggle = () => {
     const next = !flipped
@@ -92,6 +100,8 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
 
   return (
     <div
+      ref={cardRef}
+      data-glow-card=""
       className="faq-card"
       style={{ perspective: '1100px', position: 'relative', height: '100%' }}
       onMouseEnter={onEnter}
@@ -138,14 +148,12 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
             gap:                '12px',
           }}
         >
-          <span style={{
+          <ScrambleText text={num} style={{
             fontFamily:    'var(--font-mono)',
             fontSize:      '0.75rem',
             color:         'var(--accent)',
             letterSpacing: '0.06em',
-          }}>
-            {num}
-          </span>
+          }} />
           <h3 id={questionId} style={{
             fontFamily:  'var(--font-display)',
             fontSize:    '1rem',
@@ -169,6 +177,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           }}>
             clique para ver <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </span>
+          <GlowLayers ring="1px" />
         </div>
 
         {/* ── Back ── (oculta para leitores de tela enquanto não virada) */}
@@ -208,6 +217,8 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           }}>
             {faq.a}
           </p>
+          {/* Virado, o giro do card (180°) e o da face (180°) se anulam: x local = x da tela */}
+          <GlowLayers ring="1px" />
         </div>
       </div>
 
@@ -218,6 +229,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
         aria-expanded={flipped}
         aria-controls={answerId}
         aria-labelledby={questionId}
+        data-cursor={flipped ? 'voltar' : 'virar'}
         style={{
           position:     'absolute',
           inset:        0,
@@ -297,6 +309,7 @@ export function FAQ() {
           </p>
 
           {/* WhatsApp CTA */}
+          <Magnetic strength={0.3} className="self-start">
           <a
             href="https://w.app/codexa"
             target="_blank"
@@ -324,13 +337,15 @@ export function FAQ() {
             </svg>
             Falar no WhatsApp
           </a>
+          </Magnetic>
 
 
 </div>
 
         {/* Right — flip cards */}
-        <div
+        <SpotlightGroup
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 flex-1"
+          radius={340}
           style={{
             gap:           '14px',
             gridAutoRows:  '1fr',
@@ -341,7 +356,7 @@ export function FAQ() {
           {FAQS.map((faq, i) => (
             <FlipCard key={i} faq={faq} index={i} />
           ))}
-        </div>
+        </SpotlightGroup>
 
       </div>
     </section>

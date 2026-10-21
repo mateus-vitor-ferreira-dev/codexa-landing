@@ -12,6 +12,9 @@ export interface TiltOptions {
   perspective?: number
   /** inclina também pelo giroscópio no celular (padrão true) */
   gyro?: boolean
+  /** false = só acompanha a luz (variáveis CSS), sem mexer no transform —
+      para elementos que já giram por conta própria (ex.: card que vira) */
+  rotate?: boolean
 }
 
 /* Card 3D que inclina seguindo o ponteiro. Além do transform, expõe para o
@@ -21,9 +24,12 @@ export interface TiltOptions {
      background: radial-gradient(400px circle at var(--tilt-x) var(--tilt-y),
                  rgba(var(--accent-rgb),.18), transparent 45%);
      opacity: var(--tilt-active);
+   Também expõe --tilt-nx / --tilt-ny (-1..1, suavizados junto com a
+   inclinação) para camadas internas fazerem parallax sem depender de
+   preserve-3d — overflow:hidden e opacity<1 achatam o 3D dos filhos.
    No toque inclina durante o arrasto; com reduced-motion não faz nada. */
 export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: TiltOptions = {}) {
-  const { max = 10, scale = 1.02, perspective = 900, gyro = true } = opts
+  const { max = 10, scale = 1.02, perspective = 900, gyro = true, rotate = true } = opts
 
   useEffect(() => {
     const el = ref.current
@@ -32,8 +38,12 @@ export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: T
     el.style.setProperty('--tilt-x', '50%')
     el.style.setProperty('--tilt-y', '50%')
     el.style.setProperty('--tilt-active', '0')
-    el.style.transformStyle = 'preserve-3d'
-    el.style.willChange = 'transform'
+    el.style.setProperty('--tilt-nx', '0')
+    el.style.setProperty('--tilt-ny', '0')
+    if (rotate) {
+      el.style.transformStyle = 'preserve-3d'
+      el.style.willChange = 'transform'
+    }
 
     let rx = 0, ry = 0, s = 1          // estado atual
     let tx = 0, ty = 0, ts = 1         // alvo
@@ -42,7 +52,9 @@ export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: T
       rx += (tx - rx) * 0.12
       ry += (ty - ry) * 0.12
       s  += (ts - s)  * 0.12
-      el.style.transform = `perspective(${perspective}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`
+      if (rotate) el.style.transform = `perspective(${perspective}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`
+      el.style.setProperty('--tilt-nx', (ry / max).toFixed(3))
+      el.style.setProperty('--tilt-ny', (-rx / max).toFixed(3))
       if (Math.abs(tx - rx) + Math.abs(ty - ry) + Math.abs(ts - s) > 0.01) raf = requestAnimationFrame(animate)
       else raf = 0
     }
@@ -105,8 +117,10 @@ export function useTilt<T extends HTMLElement>(ref: RefObject<T | null>, opts: T
       el.removeEventListener('pointerup',     onLeave)
       if (onOrient) window.removeEventListener('deviceorientation', onOrient)
       io?.disconnect()
-      el.style.transform = ''
-      el.style.willChange = ''
+      if (rotate) {
+        el.style.transform = ''
+        el.style.willChange = ''
+      }
     }
-  }, [ref, max, scale, perspective, gyro])
+  }, [ref, max, scale, perspective, gyro, rotate])
 }

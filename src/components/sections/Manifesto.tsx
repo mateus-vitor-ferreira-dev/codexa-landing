@@ -1,9 +1,11 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
+import { isFinePointer, prefersReducedMotion } from '@/lib/fx/motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,6 +27,35 @@ export function Manifesto() {
   const line2Ref     = useRef<HTMLSpanElement>(null)
   const underlineRef = useRef<HTMLSpanElement>(null)
   const signRef      = useRef<HTMLDivElement>(null)
+
+  /* Lanterna: com o mouse sobre a seção, uma luz suave na cor do tema segue
+     o cursor por trás da frase e a palavra "código" ganha brilho.
+     Posição em CSS vars, 1 leitura de rect por frame. */
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || prefersReducedMotion() || !isFinePointer()) return
+    let raf = 0, cx = 0, cy = 0
+    const update = () => {
+      raf = 0
+      const r = section.getBoundingClientRect()
+      section.style.setProperty('--mf-x', `${(cx - r.left).toFixed(0)}px`)
+      section.style.setProperty('--mf-y', `${(cy - r.top).toFixed(0)}px`)
+    }
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      cx = e.clientX; cy = e.clientY
+      section.style.setProperty('--mf-on', '1')
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    const onLeave = () => section.style.setProperty('--mf-on', '0')
+    section.addEventListener('pointermove', onMove, { passive: true })
+    section.addEventListener('pointerleave', onLeave)
+    return () => {
+      cancelAnimationFrame(raf)
+      section.removeEventListener('pointermove', onMove)
+      section.removeEventListener('pointerleave', onLeave)
+    }
+  }, [])
 
   useGSAP(() => {
     // Estado inicial (oculto) só é aplicado aqui, com JS e sem reduced-motion:
@@ -96,6 +127,14 @@ export function Manifesto() {
         pointerEvents: 'none', zIndex: 1,
       }} />
 
+      {/* Lanterna que segue o cursor (por cima da vinheta, atrás do texto) */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
+        background: 'radial-gradient(420px circle at var(--mf-x, 50%) var(--mf-y, 50%), rgba(var(--accent-rgb),0.10), transparent 70%)',
+        opacity: 'var(--mf-on, 0)' as unknown as number,
+        transition: 'opacity .6s ease',
+      }} />
+
       {/* Decorative vertical centre line */}
       <div style={{
         position: 'absolute', left: '50%', top: 0, width: '1px', height: '100%',
@@ -116,7 +155,7 @@ export function Manifesto() {
           }}
         >
           <span style={{ width: '40px', height: '1px', background: 'rgba(var(--accent-rgb),0.4)', flexShrink: 0 }} />
-          Nossa filosofia
+          <ScrambleText text="Nossa filosofia" duration={1000} />
           <span style={{ width: '40px', height: '1px', background: 'rgba(var(--accent-rgb),0.4)', flexShrink: 0 }} />
         </div>
 
@@ -130,7 +169,11 @@ export function Manifesto() {
         }}>
           <span ref={line1Ref} style={{ display: 'block' }}>
             Não vendemos{' '}
-            <em style={{ fontStyle: 'italic', color: 'var(--accent)', position: 'relative' }}>
+            <em style={{
+              fontStyle: 'italic', color: 'var(--accent)', position: 'relative',
+              textShadow: '0 0 calc(var(--mf-on, 0) * 32px) rgba(var(--accent-rgb),0.55)',
+              transition: 'text-shadow .6s ease',
+            }}>
               código
               {/* Animated underline */}
               <span
@@ -179,7 +222,7 @@ export function Manifesto() {
             animation: 'manifestoBlink 2s ease-in-out infinite',
             flexShrink: 0,
           }} />
-          Codexa · Lavras, MG
+          <ScrambleText text="Codexa · Lavras, MG" duration={1100} delay={300} />
         </div>
       </div>
 
