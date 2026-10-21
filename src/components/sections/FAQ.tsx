@@ -360,7 +360,7 @@ export function FAQ() {
       <div className="page-container flex flex-col lg:flex-row gap-10 lg:gap-32">
 
         {/* Left — heading + CTA */}
-        <div className="faq-heading flex flex-col gap-6 lg:w-80 flex-shrink-0 self-start">
+        <div className="faq-heading flex flex-col gap-6 lg:w-80 shrink-0 self-start">
 
           <div style={{ width: '32px', height: '2px', background: 'var(--accent)', borderRadius: '2px' }} />
 
