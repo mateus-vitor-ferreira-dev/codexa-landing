@@ -82,7 +82,8 @@ function layoutLeft(el: HTMLElement) {
   return x
 }
 
-const CONTENT = 'h1,h2,h3,h4,h5,p,a,button,img,canvas,li,blockquote,form,input,textarea,[data-glow-card]'
+// [data-orb-avoid]: blocos de conteúdo feitos de <span>/<div> (faixa de promessas, painel de números…)
+const CONTENT = 'h1,h2,h3,h4,h5,p,a,button,img,canvas,li,blockquote,form,input,textarea,[data-glow-card],[data-orb-avoid]'
 const LANE_PAD = 28, MIN_D = 72
 
 /* Maior faixa vertical da viewport sem conteúdo da seção. Como a esfera fica
