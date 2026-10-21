@@ -9,7 +9,7 @@ import { PROJETOS_NO_AR } from '@/lib/numeros'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 // Mesmo número usado no botão flutuante e na seção de contato
-const WA_NUMBER = '5535997460058'
+const WA_NUMBER = '5535991722707'
 
 // Monta o link do WhatsApp com o que a pessoa já digitou no formulário
 function waLink(nome: string, mensagem: string) {
@@ -656,7 +656,7 @@ export function CtaFinal() {
 
             {/* ── Contato ── */}
             <FooterCol title="Contato" links={[
-              { label: 'WhatsApp', href: 'https://wa.me/5535997460058' },
+              { label: 'WhatsApp', href: 'https://wa.me/5535991722707' },
               { label: 'E-mail',   href: 'mailto:contato@digitalcodexa.com' },
               { label: 'LinkedIn', href: 'https://linkedin.com/in/mateus-vitor-ferreira-dev' },
               { label: 'GitHub',   href: 'https://github.com/mateus-vitor-ferreira-dev' },
