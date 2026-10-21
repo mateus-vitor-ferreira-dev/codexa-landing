@@ -1,6 +1,9 @@
 'use client'
 
-import { useState, useSyncExternalStore } from 'react'
+import { forwardRef, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 import {
   Code2, Shield, User, Rocket, Check,
   RefreshCw, Clock, Eye, Handshake, MessageCircle,
@@ -19,6 +22,8 @@ const PROMISES = [
   { icon: MessageCircle,  label: 'Comunicação ativa durante todo o projeto' },
 ]
 
+gsap.registerPlugin(ScrollTrigger)
+
 const REDUCED = '(prefers-reduced-motion: reduce)'
 
 function subscribeReduced(cb: () => void) {
@@ -28,22 +33,21 @@ function subscribeReduced(cb: () => void) {
 }
 
 // Faixa animada é só decorativa: o leitor de tela lê a <ul> abaixo
-function Track() {
+const Track = forwardRef<HTMLDivElement>(function Track(_props, ref) {
   const items = [...PROMISES, ...PROMISES]
   return (
     <div
+      ref={ref}
       aria-hidden="true"
       className="marquee-track"
       style={{
         display:    'flex',
         alignItems: 'center',
         gap:        'clamp(40px, 5vw, 64px)',
+        // o gap também entra depois do último item: a 2ª metade começa exatamente em -50%
+        paddingRight: 'clamp(40px, 5vw, 64px)',
+        width:      'max-content',
         willChange: 'transform',
-        // Longhands (sem o atalho animation) para o play-state continuar vindo do CSS: pausa/hover
-        animationName:           'marqueeScroll',
-        animationDuration:       '50s',
-        animationTimingFunction: 'linear',
-        animationIterationCount: 'infinite',
       }}
     >
       {items.map((p, i) => {
@@ -91,13 +95,64 @@ function Track() {
       })}
     </div>
   )
-}
+})
 
 export function PromisesMarquee() {
   const reduced = useSyncExternalStore(subscribeReduced, () => window.matchMedia(REDUCED).matches, () => false)
   // null = visitante não mexeu; aí vale o reduced-motion
   const [userPaused, setUserPaused] = useState<boolean | null>(null)
   const paused = userPaused ?? reduced
+  const trackRef = useRef<HTMLDivElement>(null)
+  const rootRef  = useRef<HTMLDivElement>(null)
+  const loopRef  = useRef<gsap.core.Tween | null>(null)
+
+  /* Faixa movida pelo GSAP (não CSS) para a velocidade poder reagir à
+     rolagem: rolar rápido acelera a faixa, rolar para cima inverte o
+     sentido por um instante, e tudo volta suave à velocidade base.
+     Mouse em cima desacelera até parar (em vez de travar seco). */
+  useEffect(() => {
+    const track = trackRef.current, root = rootRef.current
+    if (!track || !root) return
+    const loop = gsap.fromTo(track, { xPercent: 0 }, { xPercent: -50, duration: 50, ease: 'none', repeat: -1 })
+    loopRef.current = loop
+
+    let dir = 1, boost = 0, hover = 1, speed = 1
+    // Com reduced-motion a faixa só anda se o visitante pedir, e sem o efeito da rolagem
+    const calm = window.matchMedia(REDUCED).matches
+    const st = ScrollTrigger.create({
+      onUpdate: (self) => {
+        if (calm) return
+        const v = self.getVelocity()            // px/s, com sinal
+        if (Math.abs(v) > 30) dir = v < 0 ? -1 : 1
+        boost = Math.max(boost, Math.min(Math.abs(v) / 260, 7))
+      },
+    })
+    const tick = () => {
+      boost *= 0.92
+      const want = dir * (1 + boost) * hover
+      speed += (want - speed) * 0.08
+      loop.timeScale(speed)
+    }
+    const onEnter = () => { hover = 0 }
+    const onLeave = () => { hover = 1 }
+    root.addEventListener('pointerenter', onEnter)
+    root.addEventListener('pointerleave', onLeave)
+    gsap.ticker.add(tick)
+    return () => {
+      gsap.ticker.remove(tick)
+      st.kill(); loop.kill(); loopRef.current = null
+      root.removeEventListener('pointerenter', onEnter)
+      root.removeEventListener('pointerleave', onLeave)
+      gsap.set(track, { clearProps: 'transform' })
+    }
+  }, [])
+
+  useEffect(() => {
+    const loop = loopRef.current
+    if (!loop) return
+    if (paused) loop.pause()
+    else loop.play()
+  }, [paused])
 
   return (
     <section
@@ -122,7 +177,7 @@ export function PromisesMarquee() {
           marginBottom:  'clamp(20px, 3vw, 32px)',
         }}
       >
-        O que você leva ao trabalhar conosco
+        <ScrambleText text="O que você leva ao trabalhar conosco" duration={1200} />
       </p>
 
       {/* Lista real para leitores de tela */}
@@ -132,14 +187,15 @@ export function PromisesMarquee() {
 
       {/* Marquee wrapper */}
       <div
+        ref={rootRef}
         style={{
           position:   'relative',
           maskImage:  'linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)',
         }}
-        className={`promises-marquee-root${paused ? ' marquee-paused' : ''}${userPaused === false ? ' marquee-playing' : ''}`}
+        className="promises-marquee-root"
       >
-        <Track />
+        <Track ref={trackRef} />
       </div>
 
       {/* Pausar/retomar — alvo de 44px, visual discreto */}
@@ -167,18 +223,6 @@ export function PromisesMarquee() {
       </div>
 
       <style>{`
-        @keyframes marqueeScroll {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .promises-marquee-root:not(.marquee-playing) .marquee-track {
-            animation-play-state: paused;
-          }
-        }
-        .promises-marquee-root:hover .marquee-track {
-          animation-play-state: paused;
-        }
         .promises-marquee-toggle:hover,
         .promises-marquee-toggle:focus-visible { color: var(--text); }
       `}</style>

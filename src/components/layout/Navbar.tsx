@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap } from 'gsap'
+import { Magnetic } from '@/components/fx/Magnetic'
+import { prefersReducedMotion } from '@/lib/fx/motion'
 
 const NavOrb = dynamic(
   () => import('@/components/ui/NavOrb').then(m => m.NavOrb),
@@ -38,6 +40,48 @@ export function Navbar() {
   const linesRef = useRef<HTMLDivElement>(null)
   const navRef   = useRef<HTMLElement>(null)
   const btnRef   = useRef<HTMLButtonElement>(null)
+  const deskRef  = useRef<HTMLElement>(null)
+  const barRef   = useRef<HTMLSpanElement>(null)
+  const pillRef  = useRef<HTMLSpanElement>(null)
+  const [active, setActive] = useState<string | null>(null)
+
+  // Seção atual: a que cruza o meio da tela marca o link (aria-current + barra)
+  useEffect(() => {
+    const els = LINKS
+      .map(l => document.querySelector<HTMLElement>(l.href))
+      .filter((el): el is HTMLElement => el !== null)
+    const seen = new Map<Element, boolean>()
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => seen.set(e.target, e.isIntersecting))
+      const hit = els.find(el => seen.get(el))
+      setActive(hit ? `#${hit.id}` : null)
+    }, { rootMargin: '-45% 0px -50% 0px' })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  /* Indicador deslizante: a barra fica sob o link ativo e corre até o link
+     com hover/foco; a pílula de fundo só aparece no hover. Medidas via
+     offsetLeft/offsetWidth só nos eventos, nunca em loop. */
+  const slide = (target: HTMLElement | null, hover: boolean) => {
+    const bar = barRef.current, pill = pillRef.current
+    if (!bar || !pill) return
+    const set = prefersReducedMotion()
+      ? (el: HTMLElement, v: gsap.TweenVars) => gsap.set(el, v)
+      : (el: HTMLElement, v: gsap.TweenVars) => gsap.to(el, { duration: 0.5, ease: 'power3.out', overwrite: 'auto', ...v })
+    if (!target) {
+      set(bar, { opacity: 0 })
+      set(pill, { opacity: 0 })
+      return
+    }
+    const x = target.offsetLeft, w = target.offsetWidth
+    set(bar,  { x, width: w, opacity: 1 })
+    set(pill, { x: x - 12, width: w + 24, opacity: hover ? 1 : 0 })
+  }
+  const linkEl = (href: string | null) =>
+    href ? deskRef.current?.querySelector<HTMLElement>(`a[href="${href}"]`) ?? null : null
+
+  useEffect(() => { slide(linkEl(active), false) }, [active])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -170,34 +214,63 @@ export function Navbar() {
           </a>
 
           {/* Desktop links */}
-          <nav aria-label="Principal" className="hidden md:flex items-center gap-7">
-            {LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="relative group py-1"
-                style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.9rem',
-                  fontWeight:    450,
-                  color:         'var(--text-muted)',
-                  letterSpacing: '0.01em',
-                  transition:    'color 0.2s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-              >
-                {link.label}
-                <span
-                  className="absolute bottom-0 left-0 h-px w-full scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                  style={{ background: 'var(--accent)' }}
-                />
-              </a>
-            ))}
+          <nav
+            ref={deskRef}
+            aria-label="Principal"
+            className="relative hidden md:flex items-center gap-7"
+            onMouseLeave={() => slide(linkEl(active), false)}
+          >
+            {/* Pílula (hover) e barra (ativo/hover) que deslizam entre os links */}
+            <span
+              ref={pillRef}
+              aria-hidden="true"
+              className="absolute left-0 pointer-events-none rounded-full"
+              style={{
+                top: -6, bottom: -6, width: 0, opacity: 0,
+                background: 'rgba(var(--accent-rgb),0.08)',
+                border: '1px solid rgba(var(--accent-rgb),0.18)',
+              }}
+            />
+            <span
+              ref={barRef}
+              aria-hidden="true"
+              className="absolute left-0 pointer-events-none"
+              style={{
+                bottom: -2, height: 2, width: 0, opacity: 0, borderRadius: 2,
+                background: 'var(--accent)',
+                boxShadow: '0 0 10px rgba(var(--accent-rgb),0.8), 0 0 22px rgba(var(--accent-rgb),0.35)',
+              }}
+            />
+            {LINKS.map((link) => {
+              const isActive = active === link.href
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive ? 'location' : undefined}
+                  className="relative py-1"
+                  style={{
+                    fontFamily:    'var(--font-body)',
+                    fontSize:      '0.9rem',
+                    fontWeight:    450,
+                    color:         isActive ? 'var(--text)' : 'var(--text-muted)',
+                    letterSpacing: '0.01em',
+                    transition:    'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; slide(e.currentTarget, true) }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = isActive ? 'var(--text)' : 'var(--text-muted)' }}
+                  onFocus={(e) => slide(e.currentTarget, true)}
+                  onBlur={() => slide(linkEl(active), false)}
+                >
+                  {link.label}
+                </a>
+              )
+            })}
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
+            <Magnetic strength={0.35} radius={36}>
             <a
               href="#contato"
               onClick={(e) => { e.preventDefault(); document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' }) }}
@@ -225,6 +298,7 @@ export function Navbar() {
             >
               Fale conosco
             </a>
+            </Magnetic>
           </div>
 
           {/* Mobile hamburger */}

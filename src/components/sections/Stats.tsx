@@ -5,6 +5,10 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PROJETOS_NO_AR } from '@/lib/numeros'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
+import { prefersReducedMotion } from '@/lib/fx/motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,10 +18,74 @@ const STATS = [
   { value: 24,             suffix: 'h', label: 'Tempo de resposta', sub: 'Garantido'        },
 ]
 
+/* O número "re-conta" com glitch — dígitos embaralhados, separação RGB,
+   tremida — e solta faíscas na cor do tema. Fora do componente: só roda em
+   eventos (Math.random é impuro e não pode morar no corpo do render). */
+function glitchRecount(el: HTMLElement, card: HTMLElement, stat: typeof STATS[0], done: () => void) {
+  const final = String(stat.value)
+  const proxy = { v: 0 }
+
+  gsap.to(proxy, {
+    v: stat.value, duration: 1.1, ease: 'power3.out',
+    onUpdate() {
+      const p = this.progress()
+      el.textContent = p < 0.35
+        ? final.replace(/[0-9]/g, () => String((Math.random() * 10) | 0)) + stat.suffix
+        : Math.round(proxy.v) + stat.suffix
+    },
+    onComplete() {
+      el.textContent = final + stat.suffix
+      done()
+    },
+  })
+  gsap.fromTo(el,
+    { textShadow: '3px 0 rgba(255,0,90,.75), -3px 0 rgba(0,255,240,.75)' },
+    { textShadow: '0px 0 rgba(255,0,90,0), 0px 0 rgba(0,255,240,0)', duration: 0.7, ease: 'power2.out' })
+  gsap.fromTo(el, { x: -4, skewX: -8 }, { x: 0, skewX: 0, duration: 0.5, ease: 'elastic.out(1.2, 0.3)' })
+
+  // Faíscas: nascem no centro do número e se espalham (o card tem overflow hidden)
+  const cr = card.getBoundingClientRect()
+  const nr = el.getBoundingClientRect()
+  const ox = nr.left - cr.left + nr.width / 2
+  const oy = nr.top  - cr.top  + nr.height / 2
+  for (let k = 0; k < 16; k++) {
+    const dot  = document.createElement('span')
+    const size = 2 + Math.random() * 4
+    dot.setAttribute('aria-hidden', 'true')
+    Object.assign(dot.style, {
+      position: 'absolute', left: `${ox}px`, top: `${oy}px`,
+      width: `${size}px`, height: `${size}px`, marginLeft: `${-size / 2}px`, marginTop: `${-size / 2}px`,
+      borderRadius: '50%', pointerEvents: 'none', zIndex: '4',
+      background: k % 4 === 0 ? '#fff' : 'var(--accent)',
+      boxShadow: '0 0 10px rgba(var(--accent-rgb),.9)',
+    })
+    card.appendChild(dot)
+    const a = Math.random() * Math.PI * 2
+    const d = 50 + Math.random() * 90
+    gsap.fromTo(dot,
+      { x: 0, y: 0, opacity: 1, scale: 1 },
+      {
+        x: Math.cos(a) * d, y: Math.sin(a) * d * 0.7,
+        opacity: 0, scale: 0.2,
+        duration: 0.7 + Math.random() * 0.5, ease: 'power3.out',
+        onComplete: () => dot.remove(),
+      })
+  }
+}
+
 export function Stats() {
 
   const sectionRef  = useRef<HTMLElement>(null)
   const counterRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const busy        = useRef<boolean[]>([])
+
+  // Hover (ou toque): re-conta com glitch; trava para não empilhar replays
+  const replay = (i: number, card: HTMLElement) => {
+    const el = counterRefs.current[i]
+    if (!el || busy.current[i] || prefersReducedMotion()) return
+    busy.current[i] = true
+    glitchRecount(el, card, STATS[i], () => { busy.current[i] = false })
+  }
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -89,7 +157,8 @@ export function Stats() {
           <div>
             <p className="text-xs tracking-[0.22em] uppercase mb-3"
               style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-              Em números
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="Em números" />
             </p>
             <h2 className="font-bold leading-tight"
               style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', color: 'var(--text)' }}>
@@ -104,11 +173,14 @@ export function Stats() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <SpotlightGroup className="grid grid-cols-1 sm:grid-cols-3 gap-4" radius={360}>
           {STATS.map((stat, i) => (
+            // Tilt no wrapper; a entrada do GSAP (y/scale) fica no .stat-card
+            <GlowCard key={i} className="h-full rounded-2xl" tilt={{ max: 12 }}>
             <div
-              key={i}
-              className="stat-card flex flex-col rounded-2xl relative overflow-hidden justify-center items-center text-center"
+              onPointerEnter={(e) => { if (e.pointerType === 'mouse') replay(i, e.currentTarget) }}
+              onPointerDown={(e) => { if (e.pointerType !== 'mouse') replay(i, e.currentTarget) }}
+              className="stat-card h-full flex flex-col rounded-2xl relative overflow-hidden justify-center items-center text-center"
               style={{
                 background:  'linear-gradient(160deg, #101016 0%, #0b0b10 55%, #08080c 100%)',
                 border:      '1px solid rgba(255,255,255,0.08)',
@@ -124,9 +196,14 @@ export function Stats() {
                 pointerEvents: 'none',
               }} />
 
+              {/* Leitor de tela lê o valor final; o número animado é só visual */}
+              <span className="sr-only">{stat.value}{stat.suffix}</span>
+              <Depth z={70}>
               <span
                 ref={el => { counterRefs.current[i] = el }}
+                aria-hidden="true"
                 style={{
+                  display:            'inline-block',
                   fontFamily:         'var(--font-body)',
                   fontSize:           'clamp(2.4rem, 4vw, 3.4rem)',
                   fontWeight:         700,
@@ -139,6 +216,7 @@ export function Stats() {
               >
                 {stat.value}{stat.suffix}
               </span>
+              </Depth>
 
               <div className="flex flex-col gap-1">
                 <span style={{
@@ -149,14 +227,12 @@ export function Stats() {
                 }}>
                   {stat.label}
                 </span>
-                <span style={{
+                <ScrambleText text={stat.sub} style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.7rem',
                   color: 'var(--text-faint)',
                   letterSpacing: '0.06em',
-                }}>
-                  {stat.sub}
-                </span>
+                }} />
               </div>
 
               {/* Bottom accent line */}
@@ -165,9 +241,11 @@ export function Stats() {
                 height: '1px',
                 background: 'linear-gradient(to right, transparent, rgba(var(--accent-rgb),0.35), transparent)',
               }} />
+              <GlowLayers />
             </div>
+            </GlowCard>
           ))}
-        </div>
+        </SpotlightGroup>
       </div>
     </section>
   )

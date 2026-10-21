@@ -4,6 +4,9 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -76,7 +79,8 @@ export function Testimonials() {
           <div>
             <p className="text-xs tracking-[0.22em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-              Depoimentos
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="Depoimentos" />
             </p>
             <h2 className="font-bold leading-tight"
               style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
@@ -92,11 +96,11 @@ export function Testimonials() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <SpotlightGroup className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {TESTIMONIALS.map((t, i) => (
             <TestimonialCard key={i} testimonial={t} />
           ))}
-        </div>
+        </SpotlightGroup>
 
       </div>
     </section>
@@ -132,9 +136,11 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
   }
 
   return (
+    // Tilt no wrapper; entrada (y/scale) e lift do GSAP ficam no card
+    <GlowCard className="h-full" style={{ borderRadius: 20 }}>
     <div
       ref={wrapRef}
-      className="testimonial-card flex flex-col gap-6"
+      className="testimonial-card h-full flex flex-col gap-6"
       style={{
         background: 'linear-gradient(145deg, #1e1e26 0%, #141418 60%, #0e0e13 100%)',
         border: '1px solid rgba(255,255,255,0.09)',
@@ -171,14 +177,16 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
         ))}
       </div>
 
-      {/* Quote mark */}
-      <svg aria-hidden="true" width="32" height="24" viewBox="0 0 32 24" fill="none" style={{ flexShrink: 0 }}>
+      {/* Quote mark — a camada mais "alta" do card */}
+      <Depth z={70} style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
+      <svg aria-hidden="true" width="32" height="24" viewBox="0 0 32 24" fill="none" style={{ display: 'block' }}>
         <path
           d="M0 24V14.4C0 6.4 4.8 1.6 14.4 0L16 3.2C11.2 4.267 8.533 7.2 8 12H14.4V24H0ZM17.6 24V14.4C17.6 6.4 22.4 1.6 32 0L33.6 3.2C28.8 4.267 26.133 7.2 25.6 12H32V24H17.6Z"
           fill={t.accent}
           fillOpacity="0.5"
         />
       </svg>
+      </Depth>
 
       {/* Quote text — flex-1 empurra o author para o fundo */}
       <p style={{
@@ -200,6 +208,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
         borderTop: '1px solid rgba(255,255,255,0.07)',
         marginTop: 'auto',
       }}>
+        <Depth z={40} style={{ flexShrink: 0 }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '50%',
           background: `${t.accent}20`,
@@ -214,6 +223,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
             {t.initials}
           </span>
         </div>
+        </Depth>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{
@@ -231,6 +241,8 @@ function TestimonialCard({ testimonial: t }: { testimonial: typeof TESTIMONIALS[
           </span>
         </div>
       </div>
+      <GlowLayers color={t.accent} />
     </div>
+    </GlowCard>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
+import { Magnetic } from '@/components/fx/Magnetic'
 
 const WA_URL = 'https://wa.me/5535991722707?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
@@ -53,6 +54,11 @@ export function WhatsAppButton() {
   }
 
   return (
+    /* Camadas: .wa-float posiciona (fixed), Magnetic leva o x/y do ímã e o link
+       fica com autoAlpha/y/scale do GSAP — cada transform num elemento.
+       pointer-events: só o link recebe o mouse (oculto, visibility:hidden o tira) */
+    <div className="wa-float" style={{ position: 'fixed', zIndex: 999, pointerEvents: 'none' }}>
+    <Magnetic display="block" strength={0.45} radius={60} style={{ pointerEvents: 'none' }}>
     <a
       ref={btnRef}
       href={WA_URL}
@@ -64,10 +70,8 @@ export function WhatsAppButton() {
       onFocus={onEnter}
       onBlur={onLeave}
       aria-label="Falar no WhatsApp"
-      className="wa-float"
       style={{
-        position: 'fixed',
-        zIndex: 999,
+        pointerEvents: 'auto',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
@@ -115,5 +119,7 @@ export function WhatsAppButton() {
         @media (max-width: 359px) { .wa-float { bottom: 80px; right: 16px; } }
       `}</style>
     </a>
+    </Magnetic>
+    </div>
   )
 }

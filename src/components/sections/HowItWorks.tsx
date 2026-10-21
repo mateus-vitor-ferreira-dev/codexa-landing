@@ -4,6 +4,9 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { GlowCard, GlowLayers, Depth } from '@/components/fx/GlowCard'
+import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -127,7 +130,8 @@ export function HowItWorks() {
               className="text-xs tracking-[0.2em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}
             >
-              Processo
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="Processo" />
             </p>
             <h2
               className="font-bold leading-tight"
@@ -185,12 +189,12 @@ export function HowItWorks() {
                       boxShadow:  '0 0 20px rgba(var(--accent-rgb),0.15)',
                     }}
                   >
-                    <span
+                    <ScrambleText
+                      text={step.number}
                       className="text-xs font-bold"
                       style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}
-                    >
-                      {step.number}
-                    </span>
+                      duration={700}
+                    />
                     {/* Pulse no último step */}
                     {step.number === '05' && (
                       <span
@@ -204,11 +208,11 @@ export function HowItWorks() {
             </div>
 
             {/* Cards abaixo da linha */}
-            <div className="flex justify-between gap-4">
+            <SpotlightGroup className="flex justify-between gap-4" halo={false} radius={360}>
               {STEPS.map((step) => (
                 <StepCard key={step.number} step={step} />
               ))}
-            </div>
+            </SpotlightGroup>
           </div>
         </div>
 
@@ -337,9 +341,11 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
   }
 
   return (
+    // Tilt no wrapper (ocupa a coluna); entrada e lift do GSAP ficam no card
+    <GlowCard className="flex-1 rounded-2xl" style={{ minWidth: 0 }} tilt={{ max: 10 }}>
     <div
       ref={cardRef}
-      className="step-card flex-1 rounded-2xl flex flex-col gap-4 cursor-default overflow-hidden"
+      className="step-card h-full rounded-2xl flex flex-col gap-4 cursor-default overflow-hidden"
       style={{
         background: 'linear-gradient(145deg, #1e1e26 0%, #141418 60%, #0e0e13 100%)',
         border:     '1px solid rgba(255,255,255,0.12)',
@@ -357,7 +363,8 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
         transform: 'translateX(-100%)',
       }} />
 
-      {/* Badge de tempo */}
+      {/* Badge de tempo — flutua acima do card */}
+      <Depth z={60} style={{ alignSelf: 'flex-start' }}>
       <span style={{
         display: 'inline-flex', justifyContent: 'center',
         minWidth: '92px', padding: '7px 16px', borderRadius: '100px',
@@ -368,11 +375,14 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
       }}>
         {step.badge}
       </span>
+      </Depth>
 
       {/* Title */}
+      <Depth z={30}>
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 800, color: '#f0f0f6' }}>
         {step.title}
       </h3>
+      </Depth>
 
       {/* Desc */}
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: '#b8b8cc', lineHeight: 1.72 }}>
@@ -386,6 +396,8 @@ function StepCard({ step }: { step: typeof STEPS[0] }) {
       }}>
         {step.detail}
       </p>
+      <GlowLayers />
     </div>
+    </GlowCard>
   )
 }
