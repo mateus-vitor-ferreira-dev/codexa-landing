@@ -5,6 +5,9 @@ import { gsap } from 'gsap'
 
 const WA_URL = 'https://wa.me/5535997460058?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20um%20projeto!'
 
+// Com reduced-motion as mudanças acontecem na hora, sem deslocamento nem escala
+const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 export function WhatsAppButton() {
   const btnRef    = useRef<HTMLAnchorElement>(null)
   const labelRef  = useRef<HTMLSpanElement>(null)
@@ -17,32 +20,35 @@ export function WhatsAppButton() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Fade in/out ao mudar visibilidade
+  // Fade in/out ao mudar visibilidade — autoAlpha põe visibility:hidden no fim,
+  // então oculto o botão também sai do Tab e do leitor de tela
   useEffect(() => {
     const el = btnRef.current
     if (!el) return
+    const reduced = prefersReduced()
     gsap.to(el, {
-      opacity: visible ? 1 : 0,
-      y: visible ? 0 : 16,
-      pointerEvents: visible ? 'auto' : 'none',
-      duration: 0.35,
+      autoAlpha: visible ? 1 : 0,
+      y: visible || reduced ? 0 : 16,
+      duration: reduced ? 0 : 0.35,
       ease: 'power2.out',
     })
   }, [visible])
 
   const onEnter = () => {
-    gsap.to(btnRef.current, { scale: 1.08, duration: 0.2, ease: 'power2.out' })
+    const reduced = prefersReduced()
+    if (!reduced) gsap.to(btnRef.current, { scale: 1.08, duration: 0.2, ease: 'power2.out' })
     gsap.to(labelRef.current, {
       opacity: 1, x: 0, width: 'auto', paddingLeft: 10, paddingRight: 14,
-      duration: 0.25, ease: 'power2.out',
+      duration: reduced ? 0 : 0.25, ease: 'power2.out',
     })
   }
 
   const onLeave = () => {
-    gsap.to(btnRef.current, { scale: 1, duration: 0.22, ease: 'power2.out' })
+    const reduced = prefersReduced()
+    if (!reduced) gsap.to(btnRef.current, { scale: 1, duration: 0.22, ease: 'power2.out' })
     gsap.to(labelRef.current, {
       opacity: 0, x: 8, width: 0, paddingLeft: 0, paddingRight: 0,
-      duration: 0.2, ease: 'power2.in',
+      duration: reduced ? 0 : 0.2, ease: 'power2.in',
     })
   }
 
@@ -55,11 +61,12 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      onFocus={onEnter}
+      onBlur={onLeave}
       aria-label="Falar no WhatsApp"
+      className="wa-float"
       style={{
         position: 'fixed',
-        bottom: 28,
-        right: 28,
         zIndex: 999,
         display: 'flex',
         alignItems: 'center',
@@ -69,9 +76,8 @@ export function WhatsAppButton() {
         background: '#25d366',
         boxShadow: '0 4px 24px rgba(37,211,102,0.4), 0 2px 8px rgba(0,0,0,0.3)',
         opacity: 0,
+        visibility: 'hidden',
         transform: 'translateY(16px)',
-        pointerEvents: 'none',
-        cursor: 'none',
         textDecoration: 'none',
       }}
     >
@@ -92,7 +98,7 @@ export function WhatsAppButton() {
           fontFamily: 'var(--font-display)',
           fontSize: '0.9rem',
           fontWeight: 700,
-          color: '#fff',
+          color: '#06060c', // escuro sobre o verde: branco dava contraste 1,98:1
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           width: 0,
@@ -102,6 +108,12 @@ export function WhatsAppButton() {
       >
         Falar no WhatsApp
       </span>
+
+      {/* Abaixo de 360px o seletor de cor ocupa a largura toda: o botão sobe para não ficar por baixo dele */}
+      <style>{`
+        .wa-float { bottom: 28px; right: 28px; }
+        @media (max-width: 359px) { .wa-float { bottom: 80px; right: 16px; } }
+      `}</style>
     </a>
   )
 }

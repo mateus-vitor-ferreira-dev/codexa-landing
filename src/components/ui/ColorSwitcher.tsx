@@ -71,8 +71,6 @@ export function ColorSwitcher() {
       className="color-dock"
       style={{
         position:  'fixed',
-        left:      20,
-        bottom:    26,
         zIndex:    1000,
         opacity:   0,
         transform: 'translateY(14px)',
@@ -86,7 +84,9 @@ export function ColorSwitcher() {
           position:      'absolute',
           bottom:        'calc(100% + 12px)',
           left:          4,
-          whiteSpace:    'nowrap',
+          width:         'max-content',
+          maxWidth:      'calc(100vw - 40px)',
+          boxSizing:     'border-box',
           fontFamily:    'var(--font-mono)',
           fontSize:      '0.7rem',
           letterSpacing: '0.06em',
@@ -116,14 +116,14 @@ export function ColorSwitcher() {
         }} />
       </div>
 
+      {/* gap e padding ficam no <style> abaixo: compensam a área de toque maior dos botões */}
       <div
+        className="color-dock-bar"
         style={{
           position:       'relative',
           display:        'flex',
           alignItems:     'center',
-          gap:            14,
-          padding:        '10px 16px 10px 14px',
-          background:     'rgba(10,10,14,0.72)',
+          background:    'rgba(10,10,14,0.72)',
           backdropFilter: 'blur(14px)',
           borderRadius:   999,
           border:         '1px solid rgba(255,255,255,0.1)',
@@ -149,9 +149,7 @@ export function ColorSwitcher() {
           style={{
             display:       'flex',
             alignItems:    'center',
-            gap:           7,
             fontFamily:    'var(--font-mono)',
-            fontSize:      '0.62rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color:         'var(--text-faint)',
@@ -170,13 +168,15 @@ export function ColorSwitcher() {
           Cor do site
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           {THEMES.map((t) => {
             const active = theme.id === t.id
             return (
+              // Botão = área de toque (44px mobile / 32px desktop); o anel de 22px e a bolinha são o visual
               <button
                 key={t.id}
                 type="button"
+                className="color-dock-btn"
                 aria-label={`Aplicar tema ${t.label}`}
                 aria-pressed={active}
                 title={t.label}
@@ -185,27 +185,38 @@ export function ColorSwitcher() {
                 onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1, duration: 0.18 })}
                 style={{
                   position:       'relative',
-                  width:          22,
-                  height:         22,
                   padding:        0,
-                  borderRadius:   '50%',
                   background:     'transparent',
-                  border:         `1.5px solid ${active ? t.accent : 'transparent'}`,
+                  border:         'none',
                   display:        'flex',
                   alignItems:     'center',
                   justifyContent: 'center',
-                  cursor:         'none',
-                  transition:     'border-color 0.2s',
+                  flexShrink:     0,
                 }}
               >
-                <span style={{
-                  width:        active ? 12 : 13,
-                  height:       active ? 12 : 13,
-                  borderRadius: '50%',
-                  background:   t.accent,
-                  boxShadow:    active ? `0 0 12px ${t.accent}` : `0 0 6px ${t.accent}55`,
-                  transition:   'width 0.2s, height 0.2s, box-shadow 0.2s',
-                }} />
+                <span
+                  className="color-dock-ring"
+                  style={{
+                    width:          22,
+                    height:         22,
+                    borderRadius:   '50%',
+                    border:         `1.5px solid ${active ? t.accent : 'transparent'}`,
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'center',
+                    transition:     'border-color 0.2s',
+                  }}
+                >
+                  <span style={{
+                    width:        13,
+                    height:       13,
+                    borderRadius: '50%',
+                    background:   t.accent,
+                    boxShadow:    active ? `0 0 12px ${t.accent}` : `0 0 6px ${t.accent}55`,
+                    transform:    `scale(${active ? 12 / 13 : 1})`,
+                    transition:   'transform 0.2s, box-shadow 0.2s',
+                  }} />
+                </span>
               </button>
             )
           })}
@@ -213,8 +224,19 @@ export function ColorSwitcher() {
       </div>
 
       <style>{`
+        /* Posição e label ficam aqui (não inline) para o media query mobile conseguir sobrescrever */
+        .color-dock { left: 20px; bottom: 26px; }
+        .color-dock-label { gap: 7px; font-size: 0.62rem; }
+        /* Desktop: alvo de 32px; margem negativa mantém a altura do dock */
+        .color-dock-bar { gap: 9px; padding: 10px 11px 10px 14px; }
+        .color-dock-btn { width: 32px; height: 32px; margin: -5px 0; }
+        .color-dock-btn:focus-visible { outline: none; }
+        .color-dock-btn:focus-visible .color-dock-ring { outline: 2px solid var(--accent); outline-offset: 2px; }
         @media (max-width: 640px) {
           .color-dock { left: 12px; bottom: 16px; }
+          /* Mobile: alvo de 44px — dock fica ~260px de largura */
+          .color-dock-bar { gap: 3px; padding: 10px 5px 10px 14px; }
+          .color-dock-btn { width: 44px; height: 44px; margin: -11px 0; }
           .color-dock-label span,
           .color-dock-label { font-size: 0; gap: 0; }
           .color-dock-label svg { width: 16px; height: 16px; }

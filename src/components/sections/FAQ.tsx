@@ -1,9 +1,10 @@
 'use client'
 
-import { useRef } from 'react'
+import { useId, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ArrowRight } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -50,20 +51,25 @@ const FAQS = [
 function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   const innerRef  = useRef<HTMLDivElement>(null)
   const frontRef  = useRef<HTMLDivElement>(null)
-  const flippedRef = useRef(false)
+  const [flipped, setFlipped] = useState(false)
+  const uid = useId()
+  const questionId = `${uid}-q`
+  const answerId   = `${uid}-a`
 
   const toggle = () => {
-    const next = !flippedRef.current
-    flippedRef.current = next
+    const next = !flipped
+    setFlipped(next)
+    // Com reduced-motion o giro é instantâneo
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     gsap.to(innerRef.current, {
       rotateY: next ? 180 : 0,
-      duration: 0.62,
+      duration: reduce ? 0 : 0.62,
       ease: 'power2.inOut',
     })
   }
 
   const onEnter = () => {
-    if (flippedRef.current) return
+    if (flipped) return
     gsap.to(frontRef.current, {
       borderColor: 'rgba(255,255,255,0.22)',
       y: -4,
@@ -73,7 +79,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   }
 
   const onLeave = () => {
-    if (flippedRef.current) return
+    if (flipped) return
     gsap.to(frontRef.current, {
       borderColor: 'rgba(255,255,255,0.09)',
       y: 0,
@@ -87,8 +93,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
   return (
     <div
       className="faq-card"
-      style={{ perspective: '1100px', cursor: 'none', position: 'relative', height: '100%' }}
-      onClick={toggle}
+      style={{ perspective: '1100px', position: 'relative', height: '100%' }}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -102,7 +107,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
         gap:           '10px',
         minHeight:     '250px',
       }}>
-        <span style={{ fontSize: '0.62rem', lineHeight: 1 }}>{num}</span>
+        <span style={{ fontSize: '0.75rem', lineHeight: 1 }}>{num}</span>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', lineHeight: 1.7 }}>{faq.a}</p>
       </div>
 
@@ -115,9 +120,10 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* ── Front ── */}
+        {/* ── Front ── (oculta para leitores de tela quando virada) */}
         <div
           ref={frontRef}
+          aria-hidden={flipped}
           style={{
             position:           'absolute',
             inset:              0,
@@ -134,13 +140,13 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
         >
           <span style={{
             fontFamily:    'var(--font-mono)',
-            fontSize:      '0.62rem',
+            fontSize:      '0.75rem',
             color:         'var(--accent)',
             letterSpacing: '0.06em',
           }}>
             {num}
           </span>
-          <p style={{
+          <h3 id={questionId} style={{
             fontFamily:  'var(--font-display)',
             fontSize:    '1rem',
             fontWeight:  700,
@@ -151,19 +157,24 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
             alignItems:  'center',
           }}>
             {faq.q}
-          </p>
-          <span style={{
+          </h3>
+          <span aria-hidden style={{
             fontFamily:    'var(--font-mono)',
-            fontSize:      '0.6rem',
+            fontSize:      '0.75rem',
             color:         'var(--text-faint)',
             letterSpacing: '0.08em',
+            display:       'inline-flex',
+            alignItems:    'center',
+            gap:           '4px',
           }}>
-            clique para ver →
+            clique para ver <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </span>
         </div>
 
-        {/* ── Back ── */}
+        {/* ── Back ── (oculta para leitores de tela enquanto não virada) */}
         <div
+          id={answerId}
+          aria-hidden={!flipped}
           style={{
             position:           'absolute',
             inset:              0,
@@ -182,7 +193,7 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
         >
           <span style={{
             fontFamily:    'var(--font-mono)',
-            fontSize:      '0.62rem',
+            fontSize:      '0.75rem',
             color:         'var(--accent)',
             letterSpacing: '0.06em',
           }}>
@@ -199,6 +210,24 @@ function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
           </p>
         </div>
       </div>
+
+      {/* Botão sobre o card inteiro — foco por teclado, Enter/Espaço e estado para leitores de tela */}
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={flipped}
+        aria-controls={answerId}
+        aria-labelledby={questionId}
+        style={{
+          position:     'absolute',
+          inset:        0,
+          zIndex:       2,
+          background:   'transparent',
+          border:       'none',
+          borderRadius: '16px',
+          padding:      0,
+        }}
+      />
     </div>
   )
 }
@@ -208,30 +237,35 @@ export function FAQ() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    gsap.fromTo('.faq-heading',
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
+    const mm = gsap.matchMedia()
+    // Com reduced-motion: sem entrada, conteúdo já no estado final
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.fromTo('.faq-heading',
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 82%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
 
-    gsap.fromTo('.faq-card',
-      { opacity: 0, y: 28, scale: 0.97 },
-      {
-        opacity: 1, y: 0, scale: 1,
-        duration: 0.55, stagger: 0.07, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 76%',
-          toggleActions: 'play reverse play reverse',
-        },
-      }
-    )
+      gsap.fromTo('.faq-card',
+        { opacity: 0, y: 28, scale: 0.97 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.55, stagger: 0.07, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 76%',
+            toggleActions: 'play reverse play reverse',
+          },
+        }
+      )
+    })
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
@@ -275,7 +309,6 @@ export function FAQ() {
               color:      '#fff',
               background: 'rgba(255,255,255,0.05)',
               border:     '1px solid rgba(255,255,255,0.12)',
-              cursor:     'none',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.28)'

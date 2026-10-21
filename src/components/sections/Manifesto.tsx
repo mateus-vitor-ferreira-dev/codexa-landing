@@ -27,47 +27,51 @@ export function Manifesto() {
   const signRef      = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Estado inicial (oculto) só é aplicado aqui, com JS e sem reduced-motion:
+    // no SSR e com reduce o texto já sai visível. useGSAP roda em layout effect,
+    // então o set acontece antes do paint e não pisca.
+    const mm = gsap.matchMedia()
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.set(eyebrowRef.current, { opacity: 0, y: 20 })
+      gsap.set(signRef.current, { opacity: 0, y: 16 })
+      gsap.set([line1Ref.current, line2Ref.current], { opacity: 0, y: 44 })
+      gsap.set(underlineRef.current, { scaleX: 0, transformOrigin: 'left' })
 
-    if (reduced) {
-      gsap.set([eyebrowRef.current, line1Ref.current, line2Ref.current, signRef.current], { opacity: 1, y: 0 })
-      gsap.set(underlineRef.current, { scaleX: 1 })
-      return
-    }
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 72%',
+          toggleActions: 'play none none none',
+        },
+      })
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 72%',
-        toggleActions: 'play none none none',
-      },
-    })
-
-    tl.fromTo(eyebrowRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: CONFIG.DURATION_FADE, ease: CONFIG.EASE },
-      CONFIG.EYEBROW_DELAY,
-    )
-    .fromTo(line1Ref.current,
-      { opacity: 0, y: 44 },
-      { opacity: 1, y: 0, duration: CONFIG.DURATION_TEXT, ease: CONFIG.EASE },
-      CONFIG.LINE1_DELAY,
-    )
-    .fromTo(line2Ref.current,
-      { opacity: 0, y: 44 },
-      { opacity: 1, y: 0, duration: CONFIG.DURATION_TEXT, ease: CONFIG.EASE },
-      CONFIG.LINE2_DELAY,
-    )
-    .fromTo(underlineRef.current,
-      { scaleX: 0 },
-      { scaleX: 1, duration: 1.6, ease: 'power3.inOut', transformOrigin: 'left' },
-      CONFIG.UNDERLINE_DELAY,
-    )
-    .fromTo(signRef.current,
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: CONFIG.DURATION_FADE, ease: CONFIG.EASE },
-      CONFIG.SIGN_DELAY,
-    )
+      tl.fromTo(eyebrowRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: CONFIG.DURATION_FADE, ease: CONFIG.EASE },
+        CONFIG.EYEBROW_DELAY,
+      )
+      .fromTo(line1Ref.current,
+        { opacity: 0, y: 44 },
+        { opacity: 1, y: 0, duration: CONFIG.DURATION_TEXT, ease: CONFIG.EASE },
+        CONFIG.LINE1_DELAY,
+      )
+      .fromTo(line2Ref.current,
+        { opacity: 0, y: 44 },
+        { opacity: 1, y: 0, duration: CONFIG.DURATION_TEXT, ease: CONFIG.EASE },
+        CONFIG.LINE2_DELAY,
+      )
+      .fromTo(underlineRef.current,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.6, ease: 'power3.inOut', transformOrigin: 'left' },
+        CONFIG.UNDERLINE_DELAY,
+      )
+      .fromTo(signRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: CONFIG.DURATION_FADE, ease: CONFIG.EASE },
+        CONFIG.SIGN_DELAY,
+      )
+    }, sectionRef.current ?? undefined)
+    return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
@@ -109,7 +113,6 @@ export function Manifesto() {
             fontFamily: 'var(--font-mono)', fontSize: '11px',
             letterSpacing: '4px', color: 'var(--text-muted)',
             textTransform: 'uppercase', marginBottom: '48px',
-            opacity: 0,
           }}
         >
           <span style={{ width: '40px', height: '1px', background: 'rgba(var(--accent-rgb),0.4)', flexShrink: 0 }} />
@@ -125,7 +128,7 @@ export function Manifesto() {
           lineHeight:    1.15,
           letterSpacing: '-0.02em',
         }}>
-          <span ref={line1Ref} style={{ display: 'block', opacity: 0 }}>
+          <span ref={line1Ref} style={{ display: 'block' }}>
             Não vendemos{' '}
             <em style={{ fontStyle: 'italic', color: 'var(--accent)', position: 'relative' }}>
               código
@@ -142,13 +145,12 @@ export function Manifesto() {
                   background:      'var(--accent)',
                   display:         'block',
                   transformOrigin: 'left',
-                  transform:       'scaleX(0)',
                 }}
               />
             </em>
             .
           </span>
-          <span ref={line2Ref} style={{ display: 'block', opacity: 0, marginTop: '0.15em' }}>
+          <span ref={line2Ref} style={{ display: 'block', marginTop: '0.15em' }}>
             <span style={{ color: 'var(--text-muted)' }}>Entregamos</span>{' '}
             negócios funcionando.
           </span>
@@ -164,7 +166,6 @@ export function Manifesto() {
             letterSpacing: '3px',
             color:       'var(--text-faint)',
             textTransform: 'uppercase',
-            opacity:     0,
             display:     'flex',
             alignItems:  'center',
             justifyContent: 'center',

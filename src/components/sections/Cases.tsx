@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Moon, Sun } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -137,7 +138,6 @@ function BrowserMockup({ project }: { project: Project }) {
   const img2Ref    = useRef<HTMLDivElement>(null)
   const overRef    = useRef<HTMLDivElement>(null)
   const btnRef     = useRef<HTMLSpanElement>(null)
-  const themeRef   = useRef<HTMLSpanElement>(null)
   const [showAlt, setShowAlt] = useState(false)
   const hasDual    = !!project.preview2
   const isLive     = !!project.liveUrl
@@ -168,11 +168,9 @@ function BrowserMockup({ project }: { project: Project }) {
     if (showAlt) {
       gsap.to(img1Ref.current, { opacity: 0, duration: 0.7, ease: 'power2.inOut' })
       gsap.to(img2Ref.current, { opacity: 1, duration: 0.7, ease: 'power2.inOut' })
-      if (themeRef.current) themeRef.current.textContent = '◑ Tema escuro'
     } else {
       gsap.to(img1Ref.current, { opacity: 1, duration: 0.7, ease: 'power2.inOut' })
       gsap.to(img2Ref.current, { opacity: 0, duration: 0.7, ease: 'power2.inOut' })
-      if (themeRef.current) themeRef.current.textContent = '◐ Tema claro'
     }
   }, [showAlt, hasDual])
 
@@ -199,7 +197,6 @@ function BrowserMockup({ project }: { project: Project }) {
       style={{
         border:    '1px solid rgba(255,255,255,0.13)',
         boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(0,0,0,0.6), 0 0 50px ${project.accent}18`,
-        cursor:    'none',
       }}
       onMouseEnter={isLive ? onEnter : undefined}
       onMouseLeave={isLive ? onLeave : undefined}
@@ -210,8 +207,9 @@ function BrowserMockup({ project }: { project: Project }) {
         <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f57' }} />
         <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#febc2e' }} />
         <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#28c840' }} />
+        {/* minWidth 0: sem isso o flex-1 não encolhe e o ellipsis da URL não funciona */}
         <div className="flex items-center gap-1.5 flex-1 h-5 rounded-md ml-2 px-2.5"
-          style={{ background: 'rgba(255,255,255,0.07)', maxWidth: '260px' }}>
+          style={{ background: 'rgba(255,255,255,0.07)', maxWidth: '260px', minWidth: 0 }}>
           <svg width="7" height="8" viewBox="0 0 8 9" fill="none" style={{ color: project.accent, flexShrink: 0 }}>
             <rect x="1" y="4" width="6" height="5" rx="0.8" stroke="currentColor" strokeWidth="0.9"/>
             <path d="M2.5 4V2.5a1.5 1.5 0 0 1 3 0V4" stroke="currentColor" strokeWidth="0.9"/>
@@ -223,14 +221,16 @@ function BrowserMockup({ project }: { project: Project }) {
         {/* Indicador de tema (só para projetos com dual preview) */}
         {hasDual && (
           <span
-            ref={themeRef}
+            className="flex items-center gap-1"
             style={{
-              fontFamily: 'var(--font-mono)', fontSize: '8px',
+              fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
               color: project.accent, opacity: 0.8,
-              marginLeft: 'auto', whiteSpace: 'nowrap', paddingRight: '4px',
+              marginLeft: 'auto', whiteSpace: 'nowrap', paddingRight: '4px', flexShrink: 0,
             }}
           >
-            ◐ Tema claro
+            {showAlt
+              ? <><Moon size={12} aria-hidden="true" /> Tema escuro</>
+              : <><Sun size={12} aria-hidden="true" /> Tema claro</>}
           </span>
         )}
       </div>
@@ -273,7 +273,8 @@ function BrowserMockup({ project }: { project: Project }) {
             className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold"
             style={{
               fontFamily: 'var(--font-display)', fontSize: '0.95rem',
-              color: '#fff', background: project.accent,
+              // Texto escuro: branco sobre os accents não passa no contraste
+              color: '#06060c', background: project.accent,
               opacity: 0, transform: 'translateY(10px)',
             }}
           >
@@ -308,11 +309,12 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
       <div className={`flex flex-col gap-6 ${flip ? 'lg:order-1' : 'lg:order-2'}`}>
 
         {/* Counter + type */}
-        <div className="flex items-center gap-4">
+        {/* flex-wrap: com fontes de 12px a linha não cabe em telas de 320px */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span
             style={{
               fontFamily:    'var(--font-mono)',
-              fontSize:      '0.65rem',
+              fontSize:      '0.75rem',
               letterSpacing: '0.18em',
               color:         project.accent,
               opacity:       0.7,
@@ -321,7 +323,7 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
             {project.id}/{String(total).padStart(2, '0')}
           </span>
           <span
-            className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider"
+            className="px-2.5 py-1 rounded-full text-xs uppercase tracking-wider"
             style={{
               fontFamily: 'var(--font-mono)',
               color:      project.accent,
@@ -333,7 +335,7 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.accent }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--text-faint)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-faint)' }}>
               {project.status}
             </span>
           </span>
@@ -371,11 +373,11 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
           href={project.liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start flex items-center gap-2 text-sm font-semibold transition-all"
+          className="self-start flex items-center gap-2 text-sm font-semibold"
           style={{
             fontFamily: 'var(--font-display)',
+            minHeight:  44, // alvo de toque mínimo; o x fica só por conta do gsap
             color:      project.accent,
-            cursor:     'none',
           }}
           onMouseEnter={(e) => gsap.to(e.currentTarget, { x: 4, duration: 0.2 })}
           onMouseLeave={(e) => gsap.to(e.currentTarget, { x: 0, duration: 0.2 })}
