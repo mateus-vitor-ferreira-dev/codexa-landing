@@ -63,7 +63,7 @@ function poseFor(key: string, W: number, H: number, mobile: boolean): Pose {
     case 'numeros':       return { op: 0.75, energy: 0.7, expand: 0.4 }
     case 'servicos':      return { op: 0.75, expand: 1, energy: 0.75, spin: 0.1 }
     case 'como-funciona': return { op: 0.75, wire: 1, energy: 0.6, spin: 0.2 }
-    case 'cases':         return { op: 0.8, ring: 1, energy: 0.9, spin: 0.35 }
+    case 'portfolio':     return { op: 0.8, ring: 1, energy: 0.9, spin: 0.35 }
     case 'depoimentos':   return { op: 0.7, noise: 1, energy: 0.5, spin: -0.1 }
     case 'faq':           return { op: 0.65, energy: 0.45 }
     case 'garantias':     return { op: 0.7, wire: 0.8, energy: 0.6 }
@@ -82,7 +82,8 @@ function layoutLeft(el: HTMLElement) {
   return x
 }
 
-const CONTENT = 'h1,h2,h3,h4,h5,p,a,button,img,canvas,li,blockquote,form,input,textarea,[data-glow-card]'
+// [data-orb-avoid]: blocos de conteúdo feitos de <span>/<div> (faixa de promessas, painel de números…)
+const CONTENT = 'h1,h2,h3,h4,h5,p,a,button,img,canvas,li,blockquote,form,input,textarea,[data-glow-card],[data-orb-avoid]'
 const LANE_PAD = 28, MIN_D = 72
 
 /* Maior faixa vertical da viewport sem conteúdo da seção. Como a esfera fica

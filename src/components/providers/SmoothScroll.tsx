@@ -8,6 +8,24 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
+  /* O ScrollTrigger só recalcula as posições no load e no resize da janela.
+     Se a página muda de altura depois (aba com texto maior, imagem tardia,
+     Fast Refresh), as entradas e o pin do CTA final ficam fora do lugar e
+     sobram telas vazias. Recalcula sempre que a altura do body muda. */
+  useEffect(() => {
+    let last = document.body.offsetHeight
+    let timer = 0
+    const ro = new ResizeObserver(() => {
+      const h = document.body.offsetHeight
+      if (h === last) return
+      last = h
+      clearTimeout(timer)
+      timer = window.setTimeout(() => ScrollTrigger.refresh(), 150)
+    })
+    ro.observe(document.body)
+    return () => { ro.disconnect(); clearTimeout(timer) }
+  }, [])
+
   useEffect(() => {
     // Smooth scroll só em desktop com mouse — mobile/tablet usam scroll nativo.
     // Com reduced-motion também fica o scroll nativo, sem inércia

@@ -9,130 +9,9 @@ import { prefersReducedMotion } from '@/lib/fx/motion'
 import { useTilt } from '@/lib/fx/useTilt'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 import { DistortImage } from '@/components/fx/DistortImage'
+import { PROJECTS, type Project } from '@/lib/projetos'
 
 gsap.registerPlugin(ScrollTrigger)
-
-/* ── Data ───────────────────────────────────────────────── */
-interface Project {
-  id:         string
-  title:      string
-  subtitle:   string
-  type:       string
-  desc:       string
-  tags:       string[]
-  accent:     string
-  preview:    string
-  preview2?:  string   // segunda imagem para alternância de tema
-  liveUrl?:   string   // sem URL: projeto entregue que não está mais no ar
-  displayUrl: string
-  status:     string
-}
-
-const PROJECTS: Project[] = [
-  {
-    id:         '01',
-    title:      'M.O.B Burger',
-    subtitle:   'Web App',
-    type:       'Sistema de Pedidos',
-    desc:       'O M.O.B deixou de depender de apps de delivery e passou a receber pedidos direto — sem pagar comissão. Sistema com PIX, cartão e painel em tempo real para a cozinha.',
-    tags:       ['Next.js', 'Stripe', 'PostgreSQL', 'Railway'],
-    accent:     '#FF4500',
-    preview:    '/cases/mob-burger-web/preview.webp',
-    liveUrl:    'https://mob-burger-web.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-web.desenvolvedoracodexa.workers.dev',
-    status:     'Em produção',
-  },
-  {
-    id:         '02',
-    title:      'M.O.B Burger',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Uma página que vende antes mesmo do cliente terminar de rolar. Animações, galeria de produtos e CTA direto para o pedido — tudo pensado para converter visitante em cliente.',
-    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Cloudflare'],
-    accent:     '#FFB000',
-    preview:    '/cases/mob-burger-landing/preview.webp',
-    liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-landing.desenvolvedoracodexa.workers.dev',
-    status:     'No ar',
-  },
-  {
-    id:         '03',
-    title:      'Recanto Vila Rica',
-    subtitle:   'Sistema Web',
-    type:       'SaaS — Reservas',
-    desc:       'O Recanto eliminou planilhas e o vai-e-vem de mensagens. Hoje reservas, pagamentos e confirmações acontecem no sistema — o dono acompanha tudo num único painel.',
-    tags:       ['React', 'Node.js', 'PostgreSQL', 'Stripe'],
-    accent:     '#c9a84c',
-    preview:    '/cases/recanto-web/preview-light.webp',
-    preview2:   '/cases/recanto-web/preview-dark.webp',
-    displayUrl: 'recantovilarica.com.br',
-    status:     'Entregue',
-  },
-  {
-    id:         '04',
-    title:      'Recanto Vila Rica',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Clientes chegam ao site, veem o espaço, consultam preços e já reservam — sem precisar ligar. A landing reduziu o atrito entre o interesse e a reserva confirmada.',
-    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
-    accent:     '#c9a84c',
-    preview:    '/cases/recanto-landing/preview.webp',
-    displayUrl: 'recantovilarica.com.br',
-    status:     'Entregue',
-  },
-  {
-    id:         '05',
-    title:      'Só+1',
-    subtitle:   'Plataforma',
-    type:       'SaaS — Esporte',
-    desc:       'Achar jogo deixou de depender do grupo do WhatsApp. O jogador entra em uma partida aberta com um clique, vê vagas, local e valor na hora — em 12 modalidades diferentes.',
-    tags:       ['React + Vite', 'Login com Google', 'Painel do jogador', 'Vercel'],
-    accent:     '#22c55e',
-    preview:    '/cases/somaisum-app/preview.webp',
-    liveUrl:    'https://app.so-mais-um.com',
-    displayUrl: 'app.so-mais-um.com',
-    status:     'Em produção',
-  },
-  {
-    id:         '06',
-    title:      'Só+1',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'A página explica o produto em segundos e leva o jogador direto para o cadastro. Base de usuários construída antes mesmo da plataforma abrir oficialmente.',
-    tags:       ['Next.js', 'Tailwind', 'SEO', 'Vercel'],
-    accent:     '#22c55e',
-    preview:    '/cases/somaisum-landing/preview.webp',
-    liveUrl:    'https://so-mais-um.com',
-    displayUrl: 'so-mais-um.com',
-    status:     'No ar',
-  },
-  {
-    id:         '07',
-    title:      'MDMJ Transportes',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Quem compra em BH descobre em segundos que a MDMJ busca a carga e entrega em Lavras. O orçamento sai direto no WhatsApp, e páginas por cidade capturam quem procura frete no Google.',
-    tags:       ['Next.js', 'SEO local', 'WhatsApp', 'Vercel'],
-    accent:     '#f97316',
-    preview:    '/cases/mdmj-landing/preview.webp',
-    liveUrl:    'https://mdmjtransportes.com.br',
-    displayUrl: 'mdmjtransportes.com.br',
-    status:     'No ar',
-  },
-  {
-    id:         '08',
-    title:      'MDMJ Transportes',
-    subtitle:   'Portal do Cliente',
-    type:       'Sistema Web',
-    desc:       'Painel de gestão da transportadora com acompanhamento de pedidos pelo cliente. Quem despachou consulta o status do frete sem precisar ligar para a empresa.',
-    tags:       ['Next.js', 'Login com Google', 'Painel de gestão', 'Vercel'],
-    accent:     '#f97316',
-    preview:    '/cases/mdmj-app/preview.webp',
-    liveUrl:    'https://app.mdmjtransportes.com.br',
-    displayUrl: 'app.mdmjtransportes.com.br',
-    status:     'Em produção',
-  },
-]
 
 /* ── URL digitada ───────────────────────────────────────── */
 /* A barra de endereço "digita" a URL quando o card entra, com caret de
@@ -355,146 +234,144 @@ function BrowserMockup({ project }: { project: Project }) {
   )
 }
 
-/* ── Project Card ───────────────────────────────────────── */
-function ProjectCard({ project, index, total }: { project: Project; index: number; total: number }) {
+/* ── Capítulos por cliente ──────────────────────────────────
+   No lugar de oito cards em sequência: um capítulo por cliente, com o
+   nome em tipografia grande e as entregas como abas. A aba ativa troca o
+   print, a descrição e a stack. A cor do cliente fica só na janela do
+   navegador; o resto da seção usa a cor do tema. */
+interface Client { name: string; projects: Project[] }
+
+const CLIENTS: Client[] = PROJECTS.reduce<Client[]>((acc, p) => {
+  const last = acc[acc.length - 1]
+  if (last && last.name === p.title) last.projects.push(p)
+  else acc.push({ name: p.title, projects: [p] })
+  return acc
+}, [])
+
+const CSS = `
+.case-chapter { border-top: 1px solid rgba(255,255,255,0.08); padding: 4rem 0; position: relative; }
+.case-chapter:last-child { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.case-num {
+  position: absolute; right: 0; top: 1.5rem; font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(7rem, 14vw, 12rem); line-height: 1; letter-spacing: -0.06em; color: transparent;
+  -webkit-text-stroke: 1px rgba(var(--accent-rgb),0.12); pointer-events: none; user-select: none;
+}
+.case-kicker { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 .9rem; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.case-kicker b { color: var(--accent); font-weight: 400; }
+.case-name {
+  margin: 0 0 1.75rem; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.045em; line-height: .95;
+  font-size: clamp(2.5rem, 5.2vw, 4.4rem); color: var(--text); position: relative;
+}
+.case-tabs { display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.75rem; }
+.case-tab {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 1rem; padding: .85rem 0; min-height: 44px;
+  background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; color: inherit; position: relative;
+}
+.case-tab::before {
+  content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%;
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb),0) 70%);
+  transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.case-tab[aria-pressed="true"]::before { transform: scaleX(1); }
+.case-tab-name { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 1.45rem; line-height: 1.15; color: var(--text-faint); transition: color .35s, transform .5s cubic-bezier(.2,.8,.2,1); }
+.case-tab-type { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-faint); }
+.case-tab:hover .case-tab-name { color: var(--text-muted); }
+.case-tab[aria-pressed="true"] .case-tab-name { color: var(--text); transform: translateX(10px); }
+.case-tab[aria-pressed="true"] .case-tab-type { color: var(--accent); }
+.case-tab:only-child { pointer-events: none; }
+.case-tab:only-child .case-tab-name { color: var(--text); transform: none; }
+
+.case-status { display: inline-flex; align-items: center; gap: .45rem; }
+.case-status i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb),.9); animation: case-pulse 2.2s ease-in-out infinite; }
+.case-desc { font-size: 1.02rem; line-height: 1.8; color: var(--text-muted); max-width: 46ch; margin: 0 0 1.25rem; }
+.case-stack { list-style: none; margin: 0 0 1.75rem; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem 0; font-family: var(--font-mono); font-size: .74rem; color: var(--text-faint); }
+.case-stack li + li::before { content: '·'; margin: 0 .6rem; color: var(--accent); }
+.case-cta {
+  display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-family: var(--font-mono); font-size: .8rem;
+  color: var(--accent); border-bottom: 1px solid rgba(var(--accent-rgb),.35); transition: gap .3s, border-color .3s;
+}
+.case-cta:hover { gap: .9rem; border-color: var(--accent); }
+.case-offline { font-family: var(--font-mono); font-size: .74rem; color: var(--text-faint); margin: 0; }
+
+@keyframes case-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@media (prefers-reduced-motion: reduce) {
+  .case-status i { animation: none; }
+  .case-tab-name, .case-tab::before { transition: none; }
+}
+`
+
+function Chapter({ client, index }: { client: Client; index: number }) {
+  const ref  = useRef<HTMLElement>(null)
+  const [sel, setSel] = useState(0)
+  const project = client.projects[sel]
   const flip = index % 2 === 1
-  const totalStr = String(total).padStart(2, '0')
+  const num  = String(index + 1).padStart(2, '0')
+  const tabsId = `case-${index}`
+
+  // Troca de entrega: print e texto sobem em cascata (o primeiro render fica com a entrada da seção)
+  const prevSel = useRef(sel)
+  useGSAP(() => {
+    if (prevSel.current === sel) return
+    prevSel.current = sel
+    if (prefersReducedMotion()) return
+    gsap.fromTo(ref.current!.querySelectorAll('.case-anim'),
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out', overwrite: true })
+  }, { dependencies: [sel], scope: ref })
 
   return (
-    <div
-      className="project-card grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center py-20"
-      style={{
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-      }}
-    >
-      {/* Browser mockup — inverte ordem no flip */}
-      <div className={flip ? 'lg:order-2' : 'lg:order-1'} style={{ minWidth: 0 }}>
-        <BrowserMockup project={project} />
-      </div>
+    <article ref={ref} className="case-chapter grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-10 lg:gap-20 items-center">
+      <span className="case-num" aria-hidden="true">{num}</span>
 
       {/* Info */}
-      <div className={`flex flex-col gap-6 ${flip ? 'lg:order-1' : 'lg:order-2'}`}>
-
-        {/* Counter + type */}
-        {/* flex-wrap: com fontes de 12px a linha não cabe em telas de 320px */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="flex items-center gap-3">
-            <ScrambleText
-              text={`${project.id}/${totalStr}`}
-              style={{
-                fontFamily:    'var(--font-mono)',
-                fontSize:      '0.75rem',
-                letterSpacing: '0.18em',
-                color:         project.accent,
-                opacity:       0.7,
-              }}
-            />
-            {/* Progresso na série: um traço por case, aceso até o atual */}
-            <span className="flex items-center gap-[3px]" aria-hidden="true">
-              {Array.from({ length: total }, (_, i) => (
-                <span
-                  key={i}
-                  className={`case-tick${i <= index ? ' is-on' : ''}`}
-                  style={{
-                    display: 'block', width: 8, height: 2, borderRadius: 1, transformOrigin: 'left center',
-                    background: i <= index ? project.accent : 'rgba(255,255,255,0.12)',
-                    opacity: i === index ? 1 : i < index ? 0.45 : 1,
-                  }}
-                />
-              ))}
-            </span>
-          </span>
-          <ScrambleText
-            text={project.type}
-            className="px-2.5 py-1 rounded-full text-xs uppercase tracking-wider"
-            delay={120}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              color:      project.accent,
-              background: `${project.accent}12`,
-              border:     `1px solid ${project.accent}28`,
-            }}
-          />
-          <span className="flex items-center gap-1.5">
-            <span className="case-status-dot w-1.5 h-1.5 rounded-full" style={{ background: project.accent, boxShadow: `0 0 8px ${project.accent}` }} />
-            <ScrambleText
-              text={project.status}
-              delay={240}
-              style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-faint)' }}
-            />
-          </span>
-        </div>
-
-        {/* Title */}
-        <div>
-          <ScrambleText
-            as="p"
-            text={project.subtitle}
-            delay={180}
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', letterSpacing: '0.15em', color: 'var(--text-faint)', textTransform: 'uppercase', marginBottom: '6px' }}
-          />
-          <h3
-            className="font-bold leading-[1.08]"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize:   'clamp(1.9rem, 3vw, 2.6rem)',
-              fontWeight: 800,
-              color:      '#f0f0f6',
-            }}
-          >
-            {project.title}
-          </h3>
-        </div>
-
-        {/* Description */}
-        <p
-          className="leading-relaxed"
-          style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '440px' }}
-        >
-          {project.desc}
+      <div className={flip ? 'lg:order-2' : ''} style={{ minWidth: 0 }}>
+        <p className="case-kicker">
+          <span><b>{num}</b> / {String(CLIENTS.length).padStart(2, '0')}</span>
+          <span className="case-anim case-status"><i aria-hidden="true" />{project.status}</span>
         </p>
+        <h3 className="case-name">{client.name}</h3>
 
-        {/* Stack: chips que entram em sequência */}
-        <ul className="flex flex-wrap gap-2" aria-label="Tecnologias">
-          {project.tags.map((tag) => (
-            <li
-              key={tag}
-              className="case-tag px-2.5 py-1 rounded-md"
-              style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.7rem', letterSpacing: '0.04em',
-                color: 'var(--text-muted)',
-                background: 'rgba(255,255,255,0.035)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
+        <div className="case-tabs" role="group" aria-label={`Entregas para ${client.name}`}>
+          {client.projects.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              className="case-tab"
+              aria-pressed={i === sel}
+              aria-controls={tabsId}
+              onClick={() => setSel(i)}
             >
-              {tag}
-            </li>
+              <span className="case-tab-name">{p.subtitle}</span>
+              <span className="case-tab-type">{p.type}</span>
+            </button>
           ))}
-        </ul>
+        </div>
 
-        {/* CTA */}
-        {project.liveUrl && (
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="self-start flex items-center gap-2 text-sm font-semibold"
-          style={{
-            fontFamily: 'var(--font-display)',
-            minHeight:  44, // alvo de toque mínimo; o x fica só por conta do gsap
-            color:      project.accent,
-          }}
-          onMouseEnter={(e) => gsap.to(e.currentTarget, { x: 4, duration: 0.2 })}
-          onMouseLeave={(e) => gsap.to(e.currentTarget, { x: 0, duration: 0.2 })}
-        >
-          Visitar projeto ao vivo
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </a>
-        )}
+        <div id={tabsId} className="case-body" aria-live="polite">
+          <p className="case-anim case-desc">{project.desc}</p>
+          <ul className="case-anim case-stack" aria-label="Tecnologias">
+            {project.tags.map(tag => <li key={tag}>{tag}</li>)}
+          </ul>
+          <div className="case-anim">
+            {project.liveUrl ? (
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="case-cta">
+                Visitar {project.displayUrl}
+                <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+              </a>
+            ) : (
+              <p className="case-offline">Projeto entregue · não está mais no ar</p>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Print: remonta a cada troca para a URL digitar de novo */}
+      <div className={`case-anim ${flip ? 'lg:order-1' : ''}`} style={{ minWidth: 0 }}>
+        <BrowserMockup key={project.id} project={project} />
+      </div>
+    </article>
   )
 }
 
@@ -503,85 +380,80 @@ export function Cases() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    // Só anima sem reduced-motion; com ele os cards já ficam visíveis
+    // Só anima sem reduced-motion; com ele os capítulos já ficam visíveis
     const mm = gsap.matchMedia()
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      // Heading
-      gsap.fromTo('.cases-heading',
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+      gsap.fromTo('.cases-h2-line',
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
+      )
+      gsap.fromTo('.cases-sub',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
           scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
       )
 
-      // Desfoque → nítido — bidirecional
-      gsap.utils.toArray<HTMLElement>('.project-card').forEach((card) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 44, filter: 'blur(6px)' },
-          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
-            scrollTrigger: { trigger: card, start: 'top 83%', toggleActions: 'play reverse play reverse' } }
+      gsap.utils.toArray<HTMLElement>('.case-chapter').forEach((chapter) => {
+        // Nome do cliente, abas e texto sobem em cascata; o print entra desfocado
+        gsap.fromTo(chapter.querySelectorAll('.case-kicker, .case-name, .case-tab, .case-body'),
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.7, stagger: 0.07, ease: 'power3.out',
+            scrollTrigger: { trigger: chapter, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
+        )
+        gsap.fromTo(chapter.querySelector('.case-num'),
+          { yPercent: 30 },
+          { yPercent: -30, ease: 'none',
+            scrollTrigger: { trigger: chapter, start: 'top bottom', end: 'bottom top', scrub: 0.6 } }
         )
 
-        // Progresso da série e chips da stack entram em sequência junto com o card
-        const trig = { trigger: card, start: 'top 75%', toggleActions: 'play none none reverse' }
-        gsap.fromTo(card.querySelectorAll('.case-tick'),
-          { scaleX: 0 },
-          { scaleX: 1, duration: 0.45, ease: 'power2.out', stagger: 0.04, delay: 0.2, scrollTrigger: trig })
-        gsap.fromTo(card.querySelectorAll('.case-tag'),
-          { opacity: 0, y: 8 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.06, delay: 0.35, scrollTrigger: trig })
-
-        // Ponto de status "respira" (pulso discreto, só enquanto há movimento permitido)
-        gsap.to(card.querySelector('.case-status-dot'), {
-          opacity: 0.35, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: -1,
+        // Parallax interno: o print rola dentro da moldura, como se o site descesse.
+        // Busca a camada a cada quadro porque a troca de aba remonta o mockup
+        ScrollTrigger.create({
+          trigger: chapter, start: 'top bottom', end: 'bottom top',
+          onUpdate: (self) => {
+            const layer = chapter.querySelector('.case-parallax')
+            if (layer) gsap.set(layer, { y: -PARALLAX * self.progress })
+          },
         })
-
-        // Parallax interno: o print rola dentro da moldura, como se o site descesse
-        const layer = card.querySelector('.case-parallax')
-        if (layer) {
-          gsap.fromTo(layer, { y: 0 }, {
-            y: -PARALLAX, ease: 'none',
-            scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
-          })
-        }
       })
     }, sectionRef.current ?? undefined)
     return () => mm.revert()
   }, { scope: sectionRef })
 
   return (
-    <section ref={sectionRef} id="cases" className="py-36" style={{ background: 'transparent' }}>
+    <section ref={sectionRef} id="portfolio" className="py-24 lg:py-36" style={{ background: 'transparent' }}>
+      <style>{CSS}</style>
       <div className="page-container">
 
         {/* Heading */}
-        <div className="cases-heading mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] mb-4"
-            style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-            Portfólio
-          </p>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h2
-              className="font-bold leading-[1.05]"
-              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem, 6vw, 4rem)', color: 'var(--text)' }}
-            >
-              Conheça nosso<br />trabalho.
-            </h2>
-            <p className="leading-relaxed max-w-xs"
-              style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-muted)' }}>
-              Projetos reais, em produção,<br />
-              acessíveis agora mesmo — clique para visitar.
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-14 lg:mb-20">
+          <div>
+            <p className="text-xs tracking-[0.22em] uppercase mb-4"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="Portfólio" />
             </p>
+            <h2 className="font-bold leading-tight"
+              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
+              <span className="block overflow-hidden pb-1">
+                <span className="cases-h2-line block">Conheça nosso</span>
+              </span>
+              <span className="block overflow-hidden pb-1">
+                <span className="cases-h2-line block" style={{ color: 'var(--accent)' }}>trabalho.</span>
+              </span>
+            </h2>
           </div>
+          <p className="cases-sub leading-relaxed max-w-sm"
+            style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-muted)' }}>
+            {CLIENTS.length} clientes, {PROJECTS.length} entregas reais — a maioria no ar agora mesmo.
+            Escolha a entrega e clique para visitar.
+          </p>
         </div>
 
-        {/* Project cards — vertical carousel */}
         <div>
-          {PROJECTS.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              total={PROJECTS.length}
-            />
+          {CLIENTS.map((client, i) => (
+            <Chapter key={client.name} client={client} index={i} />
           ))}
         </div>
 

@@ -267,8 +267,8 @@ export function Hero() {
             </span>
             <span ref={ghostRef} className="inline-flex">
             <a
-              href="#cases"
-              onClick={(e) => { e.preventDefault(); document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' }) }}
+              href="#portfolio"
+              onClick={(e) => { e.preventDefault(); document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' }) }}
               className="btn-ghost hero-cta"
               style={{ minHeight: 44 }} // alvo de toque mínimo sem mudar o visual
             >

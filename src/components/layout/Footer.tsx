@@ -142,8 +142,9 @@ export function Footer() {
           {/* ── Navegação ── */}
           <FooterCol title="Navegação" links={[
             { label: 'Serviços',      href: '#servicos' },
-            { label: 'Como funciona', href: '#como-funciona' },
-            { label: 'Cases',         href: '#cases' },
+            { label: 'Processo',      href: '#como-funciona' },
+            { label: 'Portfólio',     href: '#portfolio' },
+            { label: 'FAQ',           href: '#faq' },
             { label: 'Contato',       href: '#contato' },
           ]} />
 
@@ -152,6 +153,7 @@ export function Footer() {
             { label: 'Sites & Landing', href: '#servicos' },
             { label: 'Apps Mobile',     href: '#servicos' },
             { label: 'Sistemas Web',    href: '#servicos' },
+            { label: 'Cardápios Digitais', href: '#servicos' },
             { label: 'IA & Automação',  href: '#servicos' },
           ]} />
 
