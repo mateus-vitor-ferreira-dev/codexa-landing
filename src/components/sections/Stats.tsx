@@ -11,9 +11,9 @@ import { prefersReducedMotion } from '@/lib/fx/motion'
 gsap.registerPlugin(ScrollTrigger)
 
 const STATS = [
-  { value: PROJETOS_NO_AR, suffix: '',  label: 'Projetos no ar',    sub: 'Em produção hoje', cmd: 'status --online' },
-  { value: 30,             suffix: 'd', label: 'Suporte incluso',   sub: 'Pós-entrega',      cmd: 'suporte --dias'  },
-  { value: 24,             suffix: 'h', label: 'Tempo de resposta', sub: 'Garantido',        cmd: 'sla --resposta'  },
+  { value: PROJETOS_NO_AR, suffix: '',  label: 'Projetos no ar',    sub: 'Em produção hoje', kicker: 'Online agora' },
+  { value: 30,             suffix: 'd', label: 'Suporte incluso',   sub: 'Pós-entrega',      kicker: 'Depois da entrega' },
+  { value: 24,             suffix: 'h', label: 'Tempo de resposta', sub: 'Garantido',        kicker: 'Para te responder' },
 ]
 
 /* O número "re-conta" com glitch — dígitos embaralhados, separação RGB,
@@ -120,8 +120,7 @@ const CSS = `
 }
 .st-col:hover::after { opacity: 1; }
 .st-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 32px; }
-.st-cmd { white-space: nowrap; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; color: var(--text-faint); }
-.st-cmd b { color: var(--accent); font-weight: 400; }
+.st-kicker { white-space: nowrap; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
 .st-num {
   display: flex; align-items: baseline; line-height: .9; color: var(--text);
   font-family: var(--font-display); font-weight: 700; letter-spacing: -0.05em;
@@ -251,7 +250,7 @@ export function Stats() {
               onPointerDown={(e) => { if (e.pointerType !== 'mouse') replay(i, e.currentTarget) }}
             >
               <div className="st-head">
-                <span className="st-cmd" aria-hidden="true"><b>$</b> {stat.cmd}</span>
+                <span className="st-kicker">{stat.kicker}</span>
                 <Gauge i={i} />
               </div>
 
