@@ -24,8 +24,8 @@ export const PROJECTS: Project[] = [
     tags:       ['Next.js', 'Stripe', 'PostgreSQL', 'Railway'],
     accent:     '#FF4500',
     preview:    '/cases/mob-burger-web/preview.webp',
-    liveUrl:    'https://mob-burger-web.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-web.desenvolvedoracodexa.workers.dev',
+    liveUrl:    'https://pedidos.mobburger.digitalcodexa.com',
+    displayUrl: 'pedidos.mobburger.digitalcodexa.com',
     status:     'Em produção',
   },
   {
@@ -37,8 +37,8 @@ export const PROJECTS: Project[] = [
     tags:       ['Next.js', 'GSAP', 'Tailwind', 'Cloudflare'],
     accent:     '#FFB000',
     preview:    '/cases/mob-burger-landing/preview.webp',
-    liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-landing.desenvolvedoracodexa.workers.dev',
+    liveUrl:    'https://mobburger.digitalcodexa.com',
+    displayUrl: 'mobburger.digitalcodexa.com',
     status:     'No ar',
   },
   {
