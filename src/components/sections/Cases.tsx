@@ -9,130 +9,9 @@ import { prefersReducedMotion } from '@/lib/fx/motion'
 import { useTilt } from '@/lib/fx/useTilt'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 import { DistortImage } from '@/components/fx/DistortImage'
+import { PROJECTS, type Project } from '@/lib/projetos'
 
 gsap.registerPlugin(ScrollTrigger)
-
-/* ── Data ───────────────────────────────────────────────── */
-interface Project {
-  id:         string
-  title:      string
-  subtitle:   string
-  type:       string
-  desc:       string
-  tags:       string[]
-  accent:     string
-  preview:    string
-  preview2?:  string   // segunda imagem para alternância de tema
-  liveUrl?:   string   // sem URL: projeto entregue que não está mais no ar
-  displayUrl: string
-  status:     string
-}
-
-const PROJECTS: Project[] = [
-  {
-    id:         '01',
-    title:      'M.O.B Burger',
-    subtitle:   'Web App',
-    type:       'Sistema de Pedidos',
-    desc:       'O M.O.B deixou de depender de apps de delivery e passou a receber pedidos direto — sem pagar comissão. Sistema com PIX, cartão e painel em tempo real para a cozinha.',
-    tags:       ['Next.js', 'Stripe', 'PostgreSQL', 'Railway'],
-    accent:     '#FF4500',
-    preview:    '/cases/mob-burger-web/preview.webp',
-    liveUrl:    'https://mob-burger-web.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-web.desenvolvedoracodexa.workers.dev',
-    status:     'Em produção',
-  },
-  {
-    id:         '02',
-    title:      'M.O.B Burger',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Uma página que vende antes mesmo do cliente terminar de rolar. Animações, galeria de produtos e CTA direto para o pedido — tudo pensado para converter visitante em cliente.',
-    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Cloudflare'],
-    accent:     '#FFB000',
-    preview:    '/cases/mob-burger-landing/preview.webp',
-    liveUrl:    'https://mob-burger-landing.desenvolvedoracodexa.workers.dev',
-    displayUrl: 'mob-burger-landing.desenvolvedoracodexa.workers.dev',
-    status:     'No ar',
-  },
-  {
-    id:         '03',
-    title:      'Recanto Vila Rica',
-    subtitle:   'Sistema Web',
-    type:       'SaaS — Reservas',
-    desc:       'O Recanto eliminou planilhas e o vai-e-vem de mensagens. Hoje reservas, pagamentos e confirmações acontecem no sistema — o dono acompanha tudo num único painel.',
-    tags:       ['React', 'Node.js', 'PostgreSQL', 'Stripe'],
-    accent:     '#c9a84c',
-    preview:    '/cases/recanto-web/preview-light.webp',
-    preview2:   '/cases/recanto-web/preview-dark.webp',
-    displayUrl: 'recantovilarica.com.br',
-    status:     'Entregue',
-  },
-  {
-    id:         '04',
-    title:      'Recanto Vila Rica',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Clientes chegam ao site, veem o espaço, consultam preços e já reservam — sem precisar ligar. A landing reduziu o atrito entre o interesse e a reserva confirmada.',
-    tags:       ['Next.js', 'GSAP', 'Tailwind', 'Vercel'],
-    accent:     '#c9a84c',
-    preview:    '/cases/recanto-landing/preview.webp',
-    displayUrl: 'recantovilarica.com.br',
-    status:     'Entregue',
-  },
-  {
-    id:         '05',
-    title:      'Só+1',
-    subtitle:   'Plataforma',
-    type:       'SaaS — Esporte',
-    desc:       'Achar jogo deixou de depender do grupo do WhatsApp. O jogador entra em uma partida aberta com um clique, vê vagas, local e valor na hora — em 12 modalidades diferentes.',
-    tags:       ['React + Vite', 'Login com Google', 'Painel do jogador', 'Vercel'],
-    accent:     '#22c55e',
-    preview:    '/cases/somaisum-app/preview.webp',
-    liveUrl:    'https://app.so-mais-um.com',
-    displayUrl: 'app.so-mais-um.com',
-    status:     'Em produção',
-  },
-  {
-    id:         '06',
-    title:      'Só+1',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'A página explica o produto em segundos e leva o jogador direto para o cadastro. Base de usuários construída antes mesmo da plataforma abrir oficialmente.',
-    tags:       ['Next.js', 'Tailwind', 'SEO', 'Vercel'],
-    accent:     '#22c55e',
-    preview:    '/cases/somaisum-landing/preview.webp',
-    liveUrl:    'https://so-mais-um.com',
-    displayUrl: 'so-mais-um.com',
-    status:     'No ar',
-  },
-  {
-    id:         '07',
-    title:      'MDMJ Transportes',
-    subtitle:   'Landing Page',
-    type:       'Landing Page',
-    desc:       'Quem compra em BH descobre em segundos que a MDMJ busca a carga e entrega em Lavras. O orçamento sai direto no WhatsApp, e páginas por cidade capturam quem procura frete no Google.',
-    tags:       ['Next.js', 'SEO local', 'WhatsApp', 'Vercel'],
-    accent:     '#f97316',
-    preview:    '/cases/mdmj-landing/preview.webp',
-    liveUrl:    'https://mdmjtransportes.com.br',
-    displayUrl: 'mdmjtransportes.com.br',
-    status:     'No ar',
-  },
-  {
-    id:         '08',
-    title:      'MDMJ Transportes',
-    subtitle:   'Portal do Cliente',
-    type:       'Sistema Web',
-    desc:       'Painel de gestão da transportadora com acompanhamento de pedidos pelo cliente. Quem despachou consulta o status do frete sem precisar ligar para a empresa.',
-    tags:       ['Next.js', 'Login com Google', 'Painel de gestão', 'Vercel'],
-    accent:     '#f97316',
-    preview:    '/cases/mdmj-app/preview.webp',
-    liveUrl:    'https://app.mdmjtransportes.com.br',
-    displayUrl: 'app.mdmjtransportes.com.br',
-    status:     'Em produção',
-  },
-]
 
 /* ── URL digitada ───────────────────────────────────────── */
 /* A barra de endereço "digita" a URL quando o card entra, com caret de
@@ -543,7 +422,7 @@ export function Cases() {
   }, { scope: sectionRef })
 
   return (
-    <section ref={sectionRef} id="cases" className="py-24 lg:py-36" style={{ background: 'transparent' }}>
+    <section ref={sectionRef} id="portfolio" className="py-24 lg:py-36" style={{ background: 'transparent' }}>
       <style>{CSS}</style>
       <div className="page-container">
 

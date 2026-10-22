@@ -24,6 +24,11 @@ const IconLayout = ({ size = 36 }: { size?: number }) => (
     <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
   </svg>
 )
+const IconMenu = ({ size = 36 }: { size?: number }) => (
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 2h12a1 1 0 0 1 1 1v18l-3-2-2 2-2-2-2 2-2-2-3 2V3a1 1 0 0 1 1-1z"/><path d="M9 7h6M9 11h6M9 15h3"/>
+  </svg>
+)
 const IconCpu = ({ size = 36 }: { size?: number }) => (
   <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
     <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/>
@@ -52,35 +57,42 @@ const SERVICES = [
     icon: IconGlobe, badge: null,
   },
   {
-    id: '02', category: 'Mobile',
+    id: '02', category: 'Food service',
+    title: 'Cardápios Digitais',
+    desc: 'Seu cardápio no celular do cliente, sem app para baixar. Ele monta o pedido e você recebe tudo pronto no WhatsApp — sem pagar comissão para plataforma de delivery.',
+    tags: ['Pedido no WhatsApp', 'QR Code na mesa', 'Painel de preços', 'Sem comissão'],
+    icon: IconMenu, badge: 'Novo',
+  },
+  {
+    id: '03', category: 'Mobile',
     title: 'Aplicativos Mobile',
     desc: 'iOS e Android com uma única base de código. Do MVP ao produto final com UX impecável.',
     tags: ['React Native + Expo', 'OTA updates', 'APIs nativas', 'Push notifications'],
     icon: IconPhone, badge: null,
   },
   {
-    id: '03', category: 'SaaS',
+    id: '04', category: 'SaaS',
     title: 'Sistemas Web',
     desc: 'SaaS, plataformas e sistemas internos construídos para escalar. Multi-tenant, painel admin, relatórios em tempo real.',
     tags: ['Multi-tenancy', 'Painel admin', 'Dashboards', 'Relatórios'],
     icon: IconLayout, badge: null,
   },
   {
-    id: '04', category: 'IA · Automação',
+    id: '05', category: 'IA · Automação',
     title: 'Automações com IA',
     desc: 'Processos que rodam sozinhos. Agentes inteligentes que economizam horas por semana do seu time.',
     tags: ['Claude + n8n', 'WhatsApp & email', 'Workflows', 'LLMs'],
     icon: IconCpu, badge: 'Em alta',
   },
   {
-    id: '05', category: 'Backend',
+    id: '06', category: 'Backend',
     title: 'APIs & Integrações',
     desc: 'Conectamos sistemas que precisam conversar. REST, GraphQL, webhooks — Stripe, PIX, ERPs e tudo mais.',
     tags: ['Stripe · PIX · Woovi', 'WhatsApp · SMS', 'ERPs legados', 'GraphQL'],
     icon: IconCode, badge: null,
   },
   {
-    id: '06', category: 'DevOps',
+    id: '07', category: 'DevOps',
     title: 'Infraestrutura & Deploy',
     desc: 'Do código ao ar em minutos. CI/CD, monitoramento e escala automática quando você precisar.',
     tags: ['Railway + Vercel', 'PostgreSQL + Redis', 'Logs & alertas', 'CI/CD'],

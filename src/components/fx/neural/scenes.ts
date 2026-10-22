@@ -256,7 +256,7 @@ export const SCENES: SceneDef[] = [
   { id: 'hero',          shape: hero,     params: { link: 2.5, lineA: 0.30, pointA: 0.9,  maxDeg: 6, packets: 0.8, quiet: 0.65 } },
   { id: 'servicos',      shape: lattice,  params: { link: 1.6, lineA: 0.24, pointA: 0.7, maxDeg: 6, packets: 0.6, quiet: 0.7 } },
   { id: 'como-funciona', shape: helix,    params: { link: 1.9, lineA: 0.26, pointA: 0.9,  maxDeg: 4, packets: 1.0, quiet: 0.7 } },
-  { id: 'cases',         shape: drift,    params: { link: 1.8, lineA: 0.12, pointA: 0.6,  maxDeg: 3, packets: 0.3, quiet: 0.75 } },
+  { id: 'portfolio',     shape: drift,    params: { link: 1.8, lineA: 0.12, pointA: 0.6,  maxDeg: 3, packets: 0.3, quiet: 0.75 } },
   { id: 'depoimentos',   shape: waves,    params: { link: 1.6, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.7, quiet: 0.7 } },
   { id: 'faq',           shape: cloud,    params: { link: 2.1, lineA: 0.16, pointA: 0.9,  maxDeg: 4, packets: 0.4, quiet: 0.75 } },
   { id: 'garantias',     shape: shield,   params: { link: 1.5, lineA: 0.24, pointA: 0.85, maxDeg: 4, packets: 0.6, quiet: 0.65 } },

@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { PROJETOS_NO_AR } from '@/lib/numeros'
+import { NO_AR, PROJETOS_NO_AR } from '@/lib/numeros'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 import { prefersReducedMotion } from '@/lib/fx/motion'
 
@@ -103,22 +103,48 @@ function Gauge({ i }: { i: number }) {
 }
 
 const CSS = `
-.st-panel { border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.st-panel { border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); display: grid; }
 .st-col {
   position: relative; overflow: hidden; padding: 2.25rem 0 2.5rem;
   display: flex; flex-direction: column; gap: 1.1rem;
 }
-.st-col + .st-col { border-top: 1px solid rgba(255,255,255,0.08); }
+.st-side { display: grid; border-top: 1px solid rgba(255,255,255,0.08); }
+.st-side .st-col + .st-col { border-top: 1px solid rgba(255,255,255,0.08); }
 @media (min-width: 640px) {
-  .st-col { padding: 2.5rem clamp(1.25rem, 3vw, 2.75rem) 2.75rem; }
-  .st-col:first-child { padding-left: 0; }
-  .st-col + .st-col { border-top: 0; border-left: 1px solid rgba(255,255,255,0.08); }
+  .st-side { grid-template-columns: 1fr 1fr; }
+  .st-side .st-col + .st-col { border-top: 0; border-left: 1px solid rgba(255,255,255,0.08); padding-left: clamp(1.25rem, 3vw, 2.75rem); }
+}
+@media (min-width: 1024px) {
+  .st-panel { grid-template-columns: 1.35fr 1fr; }
+  .st-main { padding-right: clamp(2rem, 4vw, 4rem); }
+  .st-side { grid-template-columns: 1fr; border-top: 0; border-left: 1px solid rgba(255,255,255,0.08); }
+  .st-side .st-col { padding-left: clamp(2rem, 4vw, 4rem); }
+  .st-side .st-col + .st-col { border-left: 0; border-top: 1px solid rgba(255,255,255,0.08); }
 }
 .st-col::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s;
   background: radial-gradient(420px circle at 30% 70%, rgba(var(--accent-rgb),0.09), transparent 65%);
 }
 .st-col:hover::after { opacity: 1; }
+.st-main .st-num { font-size: clamp(6rem, 13vw, 11rem); }
+.st-main-row { display: flex; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap; }
+.st-main-row .st-label { font-size: 1.35rem; }
+
+/* Quadro de status: cada projeto no ar, com o endereço de verdade */
+.st-live { list-style: none; margin: .5rem 0 0; padding: 0; border-top: 1px solid rgba(255,255,255,0.08); position: relative; z-index: 1; }
+.st-live li { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.st-live li:last-child { border-bottom: 0; }
+.st-live a {
+  display: grid; grid-template-columns: 10px 1fr auto; align-items: baseline; gap: .9rem; padding: .7rem 0; min-height: 44px;
+  color: inherit; transition: padding .35s cubic-bezier(.2,.8,.2,1);
+}
+.st-live a:hover { padding-left: .5rem; }
+.st-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,.9); align-self: center; animation: st-led 2.4s ease-in-out infinite; }
+.st-live-name { font-family: var(--font-display); font-weight: 600; font-size: .98rem; color: var(--text); }
+.st-live-name em { font-family: var(--font-serif); font-style: italic; font-weight: 500; color: var(--text-muted); margin-left: .45rem; }
+.st-live-url { font-family: var(--font-mono); font-size: .7rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 22ch; transition: color .3s; }
+.st-live a:hover .st-live-url { color: var(--accent); }
+@media (max-width: 639px) { .st-live-url { display: none; } }
 .st-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 32px; }
 .st-kicker { white-space: nowrap; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
 .st-num {
@@ -152,7 +178,7 @@ const CSS = `
 @keyframes st-sweep { to { transform: rotate(360deg) } }
 
 @media (prefers-reduced-motion: reduce) {
-  .st-leds i, .st-dial-hand { animation: none; }
+  .st-leds i, .st-dial-hand, .st-live-dot { animation: none; }
 }
 `
 
@@ -161,6 +187,8 @@ export function Stats() {
   const sectionRef  = useRef<HTMLElement>(null)
   const counterRefs = useRef<(HTMLSpanElement | null)[]>([])
   const busy        = useRef<boolean[]>([])
+
+  const setCounter = (i: number, el: HTMLSpanElement | null) => { counterRefs.current[i] = el }
 
   // Hover (ou toque): re-conta com glitch; trava para não empilhar replays
   const replay = (i: number, col: HTMLElement) => {
@@ -236,41 +264,69 @@ export function Stats() {
           </div>
           <p className="max-w-xs leading-relaxed"
             style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-            Cada número abaixo representa um compromisso real com o cliente.
+            Nada de número inventado: cada projeto da lista está no ar agora — clique e confira.
           </p>
         </div>
 
-        {/* Painel de leitura */}
-        <div className="st-panel grid grid-cols-1 sm:grid-cols-3" data-orb-avoid="">
-          {STATS.map((stat, i) => (
-            <div
-              key={i}
-              className="st-col"
-              onPointerEnter={(e) => { if (e.pointerType === 'mouse') replay(i, e.currentTarget) }}
-              onPointerDown={(e) => { if (e.pointerType !== 'mouse') replay(i, e.currentTarget) }}
-            >
-              <div className="st-head">
-                <span className="st-kicker">{stat.kicker}</span>
-                <Gauge i={i} />
-              </div>
-
-              {/* Leitor de tela lê o valor final; o número animado é só visual */}
-              <span className="sr-only">{stat.value}{stat.suffix}</span>
-              <span className="st-num" aria-hidden="true">
-                <span ref={el => { counterRefs.current[i] = el }} style={{ display: 'inline-block' }}>
-                  {stat.value}
-                </span>
-                {stat.suffix && <em>{stat.suffix}</em>}
-              </span>
-
-              <div className="flex flex-col gap-1.5">
-                <span className="st-label">{stat.label}</span>
-                <ScrambleText text={stat.sub} className="st-sub" />
-              </div>
-            </div>
-          ))}
+        {/* Painel: projetos no ar (com a lista real) + suporte e resposta */}
+        <div className="st-panel" data-orb-avoid="">
+          <StatCol i={0} className="st-main" setCounter={setCounter} replay={replay}>
+            <ul className="st-live" aria-label="Projetos no ar agora">
+              {NO_AR.map(p => (
+                <li key={p.id}>
+                  <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" data-cursor="ver">
+                    <span className="st-live-dot" aria-hidden="true" />
+                    <span className="st-live-name">{p.title}<em>{p.subtitle}</em></span>
+                    <span className="st-live-url">{p.displayUrl}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </StatCol>
+          <div className="st-side">
+            <StatCol i={1} setCounter={setCounter} replay={replay} />
+            <StatCol i={2} setCounter={setCounter} replay={replay} />
+          </div>
         </div>
       </div>
     </section>
+  )
+}
+
+function StatCol({ i, className = '', setCounter, replay, children }: {
+  i: number
+  className?: string
+  setCounter: (i: number, el: HTMLSpanElement | null) => void
+  replay: (i: number, col: HTMLElement) => void
+  children?: React.ReactNode
+}) {
+  const stat = STATS[i]
+  return (
+    <div
+      className={`st-col ${className}`}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') replay(i, e.currentTarget) }}
+      onPointerDown={(e) => { if (e.pointerType !== 'mouse') replay(i, e.currentTarget) }}
+    >
+      <div className="st-head">
+        <span className="st-kicker">{stat.kicker}</span>
+        <Gauge i={i} />
+      </div>
+
+      {/* Leitor de tela lê o valor final; o número animado é só visual */}
+      <div className="st-main-row">
+        <span className="sr-only">{stat.value}{stat.suffix}</span>
+        <span className="st-num" aria-hidden="true">
+          <span ref={el => setCounter(i, el)} style={{ display: 'inline-block' }}>
+            {stat.value}
+          </span>
+          {stat.suffix && <em>{stat.suffix}</em>}
+        </span>
+        <div className="flex flex-col gap-1.5 pb-2">
+          <span className="st-label">{stat.label}</span>
+          <ScrambleText text={stat.sub} className="st-sub" />
+        </div>
+      </div>
+      {children}
+    </div>
   )
 }
