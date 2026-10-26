@@ -153,6 +153,9 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
     let W = window.innerWidth, H = window.innerHeight
     const cur = new Float32Array(NF)
     let curKey = 'hero'
+    // Proteção: seções em que a esfera nunca pode ficar por cima de conteúdo
+    let guardSecs: HTMLElement[] = []
+    let cover = 0, coverT = 0, lastGuard = 0
     // estado da interação / loop (declarado antes do rebuild e do onScene, que já usam)
     let hover = 0, flash = 0
     let ex = 0, exV = 0
@@ -202,6 +205,8 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
       // Seções de primeiro nível do <main> (as aninhadas não contam)
       const secs = Array.from(main.querySelectorAll<HTMLElement>('section'))
         .filter(s => s.parentElement?.closest('section') === null && s.closest('#hero') === null && !s.contains(slot))
+      // O CTA pinado fica de fora: lá o brilho atrás do título é proposital
+      guardSecs = secs.filter(s => sectionKey(s) !== 'cta')
       for (const sec of secs) {
         const key = sectionKey(sec)
         // seção pinada: mede o pin-spacer, que inclui o trecho preso
@@ -316,6 +321,23 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
     }
     window.addEventListener('pointerdown', onDown, { passive: true })
 
+    // Círculo (centro x,y e raio r, em px da tela) encosta em conteúdo das seções visíveis?
+    const touchesContent = (x: number, y: number, r: number) => {
+      for (const sec of guardSecs) {
+        const sr = sec.getBoundingClientRect()
+        if (sr.bottom < 0 || sr.top > H) continue
+        for (const el of sec.querySelectorAll<HTMLElement>(CONTENT)) {
+          if (el.closest('[aria-hidden="true"]')) continue
+          const b = el.getBoundingClientRect()
+          if (!b.width || !b.height) continue
+          const nx = Math.max(b.left, Math.min(x, b.right)) - x
+          const ny = Math.max(b.top, Math.min(y, b.bottom)) - y
+          if (nx * nx + ny * ny < r * r) return true
+        }
+      }
+      return false
+    }
+
     // ── Loop
     const stopLoop = rafLoop((t, dt) => {
       if (!kfs.length) return
@@ -343,7 +365,18 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
       offX += (tx - offX) * (1 - Math.exp(-dt * 4))
       offY += (ty - offY) * (1 - Math.exp(-dt * 4))
       hover += (hoverT - hover) * k
-      posX = cur[X] + offX; posY = cur[Y] + offY; visibleOp = op
+      posX = cur[X] + offX; posY = cur[Y] + offY
+
+      // A faixa livre é calculada antes; a conferência aqui cobre o que ela não prevê
+      // (trecho de transição entre seções, conteúdo que mudou de lugar, zoom). A cada
+      // ~100ms vê se o círculo encosta em algum bloco das seções na tela e, se sim, apaga
+      if (t - lastGuard > 100) {
+        lastGuard = t
+        coverT = op > 0.05 && curKey !== 'hero' && curKey !== 'hero-in' && touchesContent(posX, posY, radius * 1.05) ? 1 : 0
+      }
+      cover += (coverT - cover) * (1 - Math.exp(-dt * 12))
+      const shownOp = op * (1 - cover)
+      visibleOp = shownOp
 
       // giro: base da seção + velocidade da rolagem (com sinal)
       velTarget *= Math.exp(-dt * 3)
@@ -374,7 +407,7 @@ export default function TravelingOrb({ slotRef, onStatus }: Props) {
       st.sizeBoost = Math.min(2.2, Math.max(1, Math.pow(0.55 / Math.max(scale, 0.05), 0.45)))
       const tf = `translate3d(${(posX - boxBase / 2).toFixed(1)}px,${(posY - boxBase / 2).toFixed(1)}px,0) scale(${scale.toFixed(4)})`
       if (tf !== lastT) { wrap.style.transform = tf; lastT = tf }
-      const o = Math.round(op * 100) / 100
+      const o = Math.round(shownOp * 100) / 100
       if (o !== lastO) { wrap.style.opacity = String(o); wrap.style.visibility = o < 0.01 ? 'hidden' : 'visible'; lastO = o }
 
       // fora da tela ou invisível: não desenha
