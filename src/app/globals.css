@@ -192,12 +192,6 @@ textarea:focus-visible {
   pointer-events: none;
 }
 
-/* ── Terminal decorativo ────────────────────────────────── */
-/* Em telas pequenas dá lugar ao seletor de cor, que fica no mesmo canto */
-@media (max-width: 640px) {
-  .bg-terminal { display: none; }
-}
-
 /* ── Preloader ──────────────────────────────────────────── */
 .pre-letter,
 .pre-bar,
