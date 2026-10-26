@@ -26,6 +26,18 @@ export function ColorSwitcher() {
     if (!dock) return
 
     let hintTimer: ReturnType<typeof setTimeout>
+    const hintSeen = () => {
+      try { return sessionStorage.getItem(HINT_KEY) === '1' } catch { return false }
+    }
+    // A dica espera a primeira rolagem: na abertura ela cobria o fim do Hero no celular
+    const onScroll = () => {
+      if (window.scrollY < window.innerHeight * 0.6) return
+      window.removeEventListener('scroll', onScroll)
+      // quem já abriu a paleta antes de rolar não precisa da dica
+      if (hintSeen() || !hintRef.current) return
+      gsap.to(hintRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.3 })
+      hintTimer = setTimeout(() => dismissHint(), 6000)
+    }
     const reveal = () => {
       gsap.to(dock, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
 
@@ -37,12 +49,10 @@ export function ColorSwitcher() {
         )
       }
 
-      // Balão de dica — só na primeira visita da sessão
-      let seen = true
-      try { seen = sessionStorage.getItem(HINT_KEY) === '1' } catch { seen = false }
-      if (!seen && hintRef.current) {
-        gsap.to(hintRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 1.1 })
-        hintTimer = setTimeout(() => dismissHint(), 8000)
+      // Balão de dica — só na primeira visita da sessão, depois da primeira rolagem
+      if (!hintSeen()) {
+        window.addEventListener('scroll', onScroll, { passive: true })
+        onScroll()
       }
     }
 
@@ -54,6 +64,7 @@ export function ColorSwitcher() {
       clearTimeout(fallback)
       clearTimeout(hintTimer)
       window.removeEventListener('lenis-start', onReady)
+      window.removeEventListener('scroll', onScroll)
     }
   }, [])
 

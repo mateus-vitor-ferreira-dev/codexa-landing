@@ -1,6 +1,5 @@
 'use client'
 
-import { PROJETOS_NO_AR } from '@/lib/numeros'
 import { Magnetic } from '@/components/fx/Magnetic'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 
@@ -13,7 +12,8 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
   return (
     <div>
       {/* marginBottom menor compensa o respiro interno do primeiro link (alvo de 44px) */}
-      <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 9 }}>
+      <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 9, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
         <ScrambleText text={title} />
       </h3>
       <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column' }}>
@@ -23,10 +23,10 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
               href={link.href}
               target={link.href.startsWith('http') ? '_blank' : undefined}
               rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-              style={{ ...LINK_ALVO, color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.88rem', fontFamily: 'var(--font-body)', transition: 'color 0.25s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+              className="footer-link"
+              style={LINK_ALVO}
             >
+              <span className="footer-link-arrow" aria-hidden="true">→</span>
               {link.label}
             </a>
           </li>
@@ -74,17 +74,6 @@ export function Footer() {
         boxShadow: '0 0 24px 2px rgba(var(--accent-rgb),0.4)',
       }} />
 
-      {/* Ghost watermark */}
-      <div aria-hidden="true" style={{
-        position: 'absolute', left: '50%', bottom: '-8%', transform: 'translateX(-50%)',
-        fontFamily: 'var(--font-display)', fontWeight: 800,
-        fontSize: 'clamp(120px, 22vw, 300px)',
-        color: 'rgba(255,255,255,0.018)', letterSpacing: '-0.04em', lineHeight: 1,
-        pointerEvents: 'none', userSelect: 'none', whiteSpace: 'nowrap',
-      }}>
-        CODEXA
-      </div>
-
       <div className="page-container" style={{ position: 'relative' }}>
 
         {/* Nav grid: brand col + 3 link cols */}
@@ -95,32 +84,6 @@ export function Footer() {
 
           {/* ── Brand column (linha inteira no celular) ── */}
           <div className="col-span-2 lg:col-span-1">
-            {/* Mini terminal */}
-            <div style={{
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.02)',
-              maxWidth: 280,
-              marginBottom: 28,
-              boxShadow: '0 24px 60px -30px rgba(0,0,0,0.8)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 13px', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-                {(['#ff5f57','#febc2e','#28c840'] as const).map(c => (
-                  <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, flexShrink: 0 }} />
-                ))}
-                <span style={{ marginLeft: 6, color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 11 }}>codexa@deploy</span>
-              </div>
-              <div style={{ padding: '14px 13px', fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.75 }}>
-                <div><span style={{ color: 'var(--accent)' }}>$</span> <ScrambleText text="status --prod" duration={700} /></div>
-                <div style={{ color: 'var(--text-muted)' }}>› <ScrambleText text={`${PROJETOS_NO_AR} projetos no ar · 100% uptime`} delay={500} duration={1100} /></div>
-                <div>
-                  <span style={{ color: 'var(--accent)' }}>$</span>
-                  <span style={{ display: 'inline-block', width: 7, height: 14, background: 'var(--accent)', verticalAlign: '-2px', marginLeft: 4, animation: 'footerCursorBlink 1.1s steps(1) infinite' }} />
-                </div>
-              </div>
-            </div>
-
             {/* Logo mark (alt vazio: o nome já vem no texto ao lado) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -129,7 +92,7 @@ export function Footer() {
             </div>
 
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.7, maxWidth: '28ch', marginBottom: 14 }}>
-              Soluções digitais sob medida.<br />Lavras, MG — Brasil.
+              Soluções digitais <em style={{ fontFamily: 'var(--font-serif)', color: 'var(--text)' }}>sob medida.</em><br />Lavras, MG — Brasil.
             </p>
 
             {/* Status */}
@@ -142,17 +105,19 @@ export function Footer() {
           {/* ── Navegação ── */}
           <FooterCol title="Navegação" links={[
             { label: 'Serviços',      href: '#servicos' },
-            { label: 'Como funciona', href: '#como-funciona' },
-            { label: 'Cases',         href: '#cases' },
+            { label: 'Processo',      href: '#como-funciona' },
+            { label: 'Portfólio',     href: '#portfolio' },
+            { label: 'FAQ',           href: '#faq' },
             { label: 'Contato',       href: '#contato' },
           ]} />
 
           {/* ── Serviços ── */}
           <FooterCol title="Serviços" links={[
-            { label: 'Sites & Landing', href: '#servicos' },
-            { label: 'Apps Mobile',     href: '#servicos' },
-            { label: 'Sistemas Web',    href: '#servicos' },
-            { label: 'IA & Automação',  href: '#servicos' },
+            { label: 'Sites & Landing Pages', href: '#servicos' },
+            { label: 'Cardápios Digitais',    href: '#servicos' },
+            { label: 'Aplicativos Mobile',    href: '#servicos' },
+            { label: 'Sistemas Web',          href: '#servicos' },
+            { label: 'Automações com IA',     href: '#servicos' },
           ]} />
 
           {/* ── Contato ── */}
@@ -197,8 +162,33 @@ export function Footer() {
         </div>
       </div>
 
+      {/* Letreiro vazado no fim da página: mesmo traço dos numerais grandes das seções */}
+      <div aria-hidden="true" style={{
+        marginTop: 40, marginBottom: '-0.2em', textAlign: 'center',
+        fontFamily: 'var(--font-display)', fontWeight: 800,
+        fontSize: 'min(14vw, 240px)',
+        color: 'transparent', WebkitTextStroke: '1px rgba(var(--accent-rgb),0.16)',
+        letterSpacing: '-0.05em', lineHeight: 1,
+        pointerEvents: 'none', userSelect: 'none', whiteSpace: 'nowrap',
+      }}>
+        CODEXA
+      </div>
+
       <style>{`
-        @keyframes footerCursorBlink { 50% { opacity: 0 } }
+        .footer-link {
+          gap: 0; color: var(--text-muted); text-decoration: none;
+          font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em;
+          transition: color .25s, gap .35s cubic-bezier(.2,.8,.2,1);
+        }
+        .footer-link-arrow {
+          display: inline-block; width: 0; overflow: hidden; color: var(--accent); font-family: var(--font-mono); font-size: .8rem;
+          opacity: 0; transition: width .35s cubic-bezier(.2,.8,.2,1), opacity .3s;
+        }
+        .footer-link:hover, .footer-link:focus-visible { color: var(--text); gap: .5rem; }
+        .footer-link:hover .footer-link-arrow, .footer-link:focus-visible .footer-link-arrow { width: 1em; opacity: 1; }
+        @media (prefers-reduced-motion: reduce) {
+          .footer-link, .footer-link-arrow { transition: none; }
+        }
         @keyframes footerStatusPulse {
           0%   { box-shadow: 0 0 0 0 rgba(40,200,64,0.5) }
           70%  { box-shadow: 0 0 0 8px rgba(40,200,64,0) }

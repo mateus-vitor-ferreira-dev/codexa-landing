@@ -1,17 +1,16 @@
 'use client'
 
-import { useId, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, Plus } from 'lucide-react'
-import { GlowLayers } from '@/components/fx/GlowCard'
-import { SpotlightGroup } from '@/components/fx/SpotlightGroup'
 import { Magnetic } from '@/components/fx/Magnetic'
-import { useTilt } from '@/lib/fx/useTilt'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// wa.me (e não o encurtador w.app): só os links wa.me entram na contagem de cliques
+const WA_URL = 'https://wa.me/5535991722707?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20um%20projeto.'
 
 const FAQS = [
   {
@@ -52,299 +51,130 @@ const FAQS = [
   },
 ]
 
-/* ── Flip Card ─────────────────────────────────────────────── */
-function FlipCard({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
-  const cardRef   = useRef<HTMLDivElement>(null)
-  const innerRef  = useRef<HTMLDivElement>(null)
-  const frontRef  = useRef<HTMLDivElement>(null)
-  const [flipped, setFlipped] = useState(false)
-  const uid = useId()
-  const questionId = `${uid}-q`
-  const answerId   = `${uid}-a`
-  // Só a luz segue o ponteiro (rotate: false): o transform é do giro do card
-  useTilt(cardRef, { rotate: false })
-
-  const toggle = () => {
-    const next = !flipped
-    setFlipped(next)
-    // Com reduced-motion o giro é instantâneo
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    gsap.to(innerRef.current, {
-      rotateY: next ? 180 : 0,
-      duration: reduce ? 0 : 0.62,
-      ease: 'power2.inOut',
-    })
-  }
-
-  const onEnter = () => {
-    if (flipped) return
-    gsap.to(frontRef.current, {
-      borderColor: 'rgba(255,255,255,0.22)',
-      y: -4,
-      duration: 0.22,
-      ease: 'power2.out',
-    })
-  }
-
-  const onLeave = () => {
-    if (flipped) return
-    gsap.to(frontRef.current, {
-      borderColor: 'rgba(255,255,255,0.09)',
-      y: 0,
-      duration: 0.28,
-      ease: 'power2.out',
-    })
-  }
-
+/* ── Índice ─────────────────────────────────────────────────
+   No lugar dos cards de giro: um índice editorial de perguntas. Cada
+   linha abre a resposta no próprio lugar; no desktop a lista "acende"
+   a linha sob o ponteiro e apaga as demais, como em Serviços. */
+function Row({ faq, index, open, onToggle }: {
+  faq: typeof FAQS[0]; index: number; open: boolean; onToggle: () => void
+}) {
   const num = String(index + 1).padStart(2, '0')
+  const answerId = `faq-resposta-${num}`
 
   return (
-    <div
-      ref={cardRef}
-      data-glow-card=""
-      className="faq-card"
-      style={{ perspective: '1100px', position: 'relative', height: '100%' }}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      {/* Ghost — dimensiona o card com a altura do conteúdo mais longo (a resposta) */}
-      <div aria-hidden style={{
-        visibility:    'hidden',
-        pointerEvents: 'none',
-        padding:       '28px',
-        display:       'flex',
-        flexDirection: 'column',
-        gap:           '10px',
-        minHeight:     '250px',
-      }}>
-        <span style={{ fontSize: '0.75rem', lineHeight: 1 }}>{num}</span>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', lineHeight: 1.7 }}>{faq.a}</p>
-      </div>
-
-      {/* Inner — rotates (absolute sobre o ghost) */}
-      <div
-        ref={innerRef}
-        style={{
-          position:       'absolute',
-          inset:          0,
-          transformStyle: 'preserve-3d',
-        }}
-      >
-        {/* ── Front ── (oculta para leitores de tela quando virada) */}
-        <div
-          ref={frontRef}
-          aria-hidden={flipped}
-          style={{
-            position:           'absolute',
-            inset:              0,
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            background:         'var(--bg-elevated)',
-            border:             '1px solid rgba(255,255,255,0.09)',
-            borderRadius:       '16px',
-            padding:            '28px',
-            display:            'flex',
-            flexDirection:      'column',
-            gap:                '12px',
-          }}
-        >
-          <ScrambleText text={num} style={{
-            fontFamily:    'var(--font-mono)',
-            fontSize:      '0.75rem',
-            color:         'var(--accent)',
-            letterSpacing: '0.06em',
-          }} />
-          <h3 id={questionId} style={{
-            fontFamily:  'var(--font-display)',
-            fontSize:    '1rem',
-            fontWeight:  700,
-            color:       '#f0f0f6',
-            lineHeight:  1.45,
-            flex:        1,
-            display:     'flex',
-            alignItems:  'center',
-          }}>
-            {faq.q}
-          </h3>
-          <span aria-hidden style={{
-            fontFamily:    'var(--font-mono)',
-            fontSize:      '0.75rem',
-            color:         'var(--text-faint)',
-            letterSpacing: '0.08em',
-            display:       'inline-flex',
-            alignItems:    'center',
-            gap:           '4px',
-          }}>
-            clique para ver <ArrowRight size={12} strokeWidth={2} aria-hidden />
-          </span>
-          <GlowLayers ring="1px" />
-        </div>
-
-        {/* ── Back ── (oculta para leitores de tela enquanto não virada) */}
-        <div
-          id={answerId}
-          aria-hidden={!flipped}
-          style={{
-            position:           'absolute',
-            inset:              0,
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            transform:          'rotateY(180deg)',
-            background:         'linear-gradient(145deg, rgba(var(--accent-rgb),0.07) 0%, var(--bg-elevated) 55%)',
-            border:             '1px solid rgba(var(--accent-rgb),0.25)',
-            borderRadius:       '16px',
-            padding:            '24px',
-            display:            'flex',
-            flexDirection:      'column',
-            gap:                '10px',
-            overflow:           'auto',
-          }}
-        >
-          <span style={{
-            fontFamily:    'var(--font-mono)',
-            fontSize:      '0.75rem',
-            color:         'var(--accent)',
-            letterSpacing: '0.06em',
-          }}>
-            {num}
-          </span>
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize:   '0.85rem',
-            color:      'var(--text-muted)',
-            lineHeight: 1.7,
-            flex:       1,
-          }}>
-            {faq.a}
-          </p>
-          {/* Virado, o giro do card (180°) e o da face (180°) se anulam: x local = x da tela */}
-          <GlowLayers ring="1px" />
-        </div>
-      </div>
-
-      {/* Botão sobre o card inteiro — foco por teclado, Enter/Espaço e estado para leitores de tela */}
-      <button
-        type="button"
-        onClick={toggle}
-        aria-expanded={flipped}
-        aria-controls={answerId}
-        aria-labelledby={questionId}
-        data-cursor={flipped ? 'voltar' : 'virar'}
-        style={{
-          position:     'absolute',
-          inset:        0,
-          zIndex:       2,
-          background:   'transparent',
-          border:       'none',
-          borderRadius: '16px',
-          padding:      0,
-        }}
-      />
-    </div>
-  )
-}
-
-/* ── Acordeão (celular) ────────────────────────────────────── */
-// No celular os cards de giro viravam uma coluna de blocos altos e quase
-// vazios; aqui a pergunta fica numa linha e a resposta abre embaixo.
-function AccordionItem({ faq, index }: { faq: typeof FAQS[0]; index: number }) {
-  const [open, setOpen] = useState(false)
-  const uid = useId()
-  const answerId = `${uid}-a`
-  const num = String(index + 1).padStart(2, '0')
-
-  return (
-    <div
-      className="faq-item"
-      style={{
-        background:   'var(--bg-elevated)',
-        border:       `1px solid ${open ? 'rgba(var(--accent-rgb),0.25)' : 'rgba(255,255,255,0.09)'}`,
-        borderRadius: '14px',
-        transition:   'border-color 0.25s',
-      }}
-    >
-      <h3 style={{ margin: 0 }}>
+    <li className="faq-row" data-open={open ? '' : undefined}>
+      <h3 className="faq-row-h">
         <button
           type="button"
-          onClick={() => setOpen(o => !o)}
+          className="faq-row-btn"
           aria-expanded={open}
           aria-controls={answerId}
-          className="w-full flex items-center gap-3 text-left"
-          style={{
-            padding:    '16px 18px',
-            background: 'transparent',
-            border:     'none',
-            color:      '#f0f0f6',
-            fontFamily: 'var(--font-display)',
-            fontSize:   '0.95rem',
-            fontWeight: 700,
-            lineHeight: 1.4,
-          }}
+          onClick={onToggle}
+          data-cursor={open ? 'fechar' : 'abrir'}
         >
-          <span aria-hidden style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--accent)' }}>{num}</span>
-          <span style={{ flex: 1 }}>{faq.q}</span>
-          <Plus
-            size={18}
-            strokeWidth={2}
-            aria-hidden
-            style={{ flexShrink: 0, color: 'var(--accent)', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.25s' }}
-          />
+          <span className="faq-row-id" aria-hidden="true">{num}</span>
+          <span className="faq-row-q">{faq.q}</span>
+          <span className="faq-row-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+          </span>
         </button>
       </h3>
-      <div
-        id={answerId}
-        role="region"
-        aria-hidden={!open}
-        style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows 0.3s ease' }}
-      >
-        <p style={{
-          overflow:   'hidden',
-          margin:     0,
-          padding:    open ? '0 18px 18px 46px' : '0 18px 0 46px',
-          fontFamily: 'var(--font-body)',
-          fontSize:   '0.88rem',
-          color:      'var(--text-muted)',
-          lineHeight: 1.7,
-          transition: 'padding 0.3s ease',
-        }}>
-          {faq.a}
-        </p>
+      {/* grid-template-rows 0fr → 1fr anima a altura sem medir o conteúdo */}
+      <div id={answerId} role="region" aria-label={faq.q} className="faq-row-a" aria-hidden={!open}>
+        <div className="faq-row-a-inner">
+          <p>{faq.a}</p>
+        </div>
       </div>
-    </div>
+    </li>
   )
 }
+
+const CSS = `
+.faq-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(255,255,255,0.08); }
+.faq-row { border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; }
+.faq-row::before {
+  content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%;
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb),0) 70%);
+  transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.faq-row[data-open]::before { transform: scaleX(1); }
+.faq-row-h { margin: 0; font: inherit; }
+.faq-row-btn {
+  width: 100%; display: grid; grid-template-columns: 2.75rem 1fr 1.5rem; align-items: baseline;
+  gap: 0 1rem; padding: 1.35rem 0; background: none; border: 0; text-align: left; color: inherit;
+}
+.faq-row-id { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; color: var(--text-faint); transition: color .3s; }
+.faq-row-q {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.25;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem); color: var(--text);
+  transition: color .35s, transform .5s cubic-bezier(.2,.8,.2,1), opacity .35s;
+}
+.faq-row-icon { align-self: center; display: flex; justify-content: flex-end; color: var(--accent); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.faq-row[data-open] .faq-row-icon { transform: rotate(45deg); }
+.faq-row[data-open] .faq-row-id { color: var(--accent); }
+.faq-row-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2,.8,.2,1); }
+.faq-row[data-open] .faq-row-a { grid-template-rows: 1fr; }
+.faq-row-a-inner { overflow: hidden; min-height: 0; }
+.faq-row-a p {
+  margin: 0; padding: 0 2.5rem 1.6rem 3.75rem; max-width: 62ch;
+  font-family: var(--font-body); font-size: .98rem; line-height: 1.8; color: var(--text-muted);
+}
+
+@media (min-width: 1024px) {
+  .faq-row-btn { padding: 1.55rem 0; }
+  /* lista "acende" a linha sob o ponteiro e apaga as outras */
+  .faq-list:hover .faq-row:not(:hover):not([data-open]) .faq-row-q { opacity: .32; }
+  .faq-row:hover .faq-row-q, .faq-row[data-open] .faq-row-q { transform: translateX(12px); }
+  .faq-row:hover .faq-row-id { color: var(--accent); }
+}
+@media (max-width: 639px) {
+  .faq-row-btn { grid-template-columns: 2.25rem 1fr 1.25rem; gap: 0 .75rem; }
+  .faq-row-a p { padding: 0 0 1.4rem 3rem; }
+}
+
+.faq-wa {
+  display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .8rem;
+  color: var(--text); border-bottom: 1px solid rgba(var(--accent-rgb),.35); padding: 6px 0;
+  transition: gap .3s, border-color .3s, color .3s;
+}
+.faq-wa:hover { gap: .9rem; border-color: var(--accent); color: var(--accent); }
+
+.faq-num {
+  position: absolute; left: -0.4rem; bottom: -3rem; font-family: var(--font-display); font-weight: 800;
+  font-size: 11rem; line-height: 1; letter-spacing: -0.06em; color: transparent;
+  -webkit-text-stroke: 1px rgba(var(--accent-rgb),0.12); pointer-events: none; user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-row-a, .faq-row-q, .faq-row-icon, .faq-row::before { transition: none; }
+}
+`
 
 /* ── Section ───────────────────────────────────────────────── */
 export function FAQ() {
   const sectionRef = useRef<HTMLElement>(null)
+  const [open, setOpen] = useState<number | null>(null)
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
     // Com reduced-motion: sem entrada, conteúdo já no estado final
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo('.faq-heading',
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1, y: 0, duration: 0.65, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 82%',
-            toggleActions: 'play reverse play reverse',
-          },
-        }
+      gsap.fromTo('.faq-h2-line',
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
       )
-
-      gsap.fromTo('.faq-card, .faq-item',
-        { opacity: 0, y: 28, scale: 0.97 },
-        {
-          opacity: 1, y: 0, scale: 1,
-          duration: 0.55, stagger: 0.07, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 76%',
-            toggleActions: 'play reverse play reverse',
-          },
-        }
+      gsap.fromTo('.faq-side',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', toggleActions: 'play reverse play reverse' } }
+      )
+      // Linhas do índice sobem em cascata
+      gsap.fromTo('.faq-row',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.06, ease: 'power3.out',
+          scrollTrigger: { trigger: '.faq-list', start: 'top 82%', toggleActions: 'play reverse play reverse' } }
       )
     })
     return () => mm.revert()
@@ -354,86 +184,64 @@ export function FAQ() {
     <section
       ref={sectionRef}
       id="faq"
-      className="pt-24 pb-20 lg:pt-40 lg:pb-32"
+      className="py-24 lg:py-36"
       style={{ background: 'transparent', position: 'relative', zIndex: 0 }}
     >
-      <div className="page-container flex flex-col lg:flex-row gap-10 lg:gap-32">
+      <style>{CSS}</style>
+      <div className="page-container grid grid-cols-1 lg:grid-cols-[0.8fr_1.4fr] gap-12 lg:gap-20 items-start">
 
-        {/* Left — heading + CTA */}
-        <div className="faq-heading flex flex-col gap-6 lg:w-80 flex-shrink-0 self-start">
+        {/* Esquerda — título + CTA (fixa no desktop enquanto a lista rola) */}
+        <div className="relative lg:sticky lg:top-32 flex flex-col gap-6">
+          <div>
+            <p className="text-xs tracking-[0.22em] uppercase mb-4"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
+              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <ScrambleText text="Dúvidas" />
+            </p>
+            <h2 className="font-bold leading-tight"
+              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
+              <span className="block overflow-hidden pb-1">
+                <span className="faq-h2-line block">Perguntas</span>
+              </span>
+              <span className="block overflow-hidden pb-1">
+                <span className="faq-h2-line block" style={{ color: 'var(--accent)' }}>frequentes.</span>
+              </span>
+            </h2>
+          </div>
 
-          <div style={{ width: '32px', height: '2px', background: 'var(--accent)', borderRadius: '2px' }} />
+          <div className="faq-side flex flex-col gap-6">
+            <p className="leading-relaxed max-w-xs"
+              style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-muted)' }}>
+              Não encontrou o que precisa? Fale{' '}
+              <em style={{ fontFamily: 'var(--font-serif)', color: 'var(--text)' }}>direto</em>{' '}
+              com a gente pelo WhatsApp.
+            </p>
 
-          <h2
-            className="font-bold leading-tight"
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text)' }}
-          >
-            Perguntas<br />
-            <span style={{ color: 'var(--accent)' }}>frequentes.</span>
-          </h2>
+            <Magnetic strength={0.3} className="self-start">
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="faq-wa" data-origem="faq">
+                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#25d366', flexShrink: 0 }}>
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Falar no WhatsApp
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
+            </Magnetic>
+          </div>
 
-          <p
-            className="leading-relaxed"
-            style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text-muted)' }}
-          >
-            Não encontrou o que precisa?<br />Fale diretamente pelo WhatsApp.
-          </p>
-
-          {/* WhatsApp CTA */}
-          <Magnetic strength={0.3} className="self-start">
-          <a
-            href="https://w.app/codexa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="self-start flex items-center gap-3 px-5 py-3 rounded-xl"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize:   '0.9rem',
-              fontWeight: 700,
-              color:      '#fff',
-              background: 'rgba(255,255,255,0.05)',
-              border:     '1px solid rgba(255,255,255,0.12)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.28)'
-              e.currentTarget.style.background   = 'rgba(255,255,255,0.08)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
-              e.currentTarget.style.background   = 'rgba(255,255,255,0.05)'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#25d366', flexShrink: 0 }}>
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-            </svg>
-            Falar no WhatsApp
-          </a>
-          </Magnetic>
-
-
-</div>
-
-        {/* Celular — acordeão */}
-        <div className="flex flex-col gap-2.5 sm:hidden">
-          {FAQS.map((faq, i) => (
-            <AccordionItem key={i} faq={faq} index={i} />
-          ))}
+          {/* Numeral vazado: total de perguntas, só decoração no desktop */}
+          <span className="faq-num hidden lg:block" aria-hidden="true">
+            {String(FAQS.length).padStart(2, '0')}
+          </span>
         </div>
 
-        {/* Right — flip cards */}
-        <SpotlightGroup
-          className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 flex-1 lg:mt-14"
-          radius={340}
-          style={{
-            gap:           '14px',
-            gridAutoRows:  '1fr',
-            alignItems:    'stretch',
-          }}
-        >
+        {/* Direita — índice de perguntas */}
+        <ul className="faq-list" data-orb-avoid="">
           {FAQS.map((faq, i) => (
-            <FlipCard key={i} faq={faq} index={i} />
+            <Row key={i} faq={faq} index={i} open={open === i} onToggle={() => setOpen(o => (o === i ? null : i))} />
           ))}
-        </SpotlightGroup>
+        </ul>
 
       </div>
     </section>

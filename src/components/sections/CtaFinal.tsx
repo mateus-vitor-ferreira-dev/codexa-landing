@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from '@/context/ThemeContext'
 import { Magnetic } from '@/components/fx/Magnetic'
+import { ScrambleText } from '@/lib/fx/ScrambleText'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.digitalcodexa.com'
 // Mesmo número usado no botão flutuante e na seção de contato
@@ -39,11 +40,61 @@ async function mensagemDeErro(res: Response) {
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Rótulos do formulário: branco a 60% dá ~7:1 sobre o fundo (antes 35%, ~2,9:1)
-const LABEL_STYLE: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em',
-  textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)',
+// Formulário no padrão das seções editoriais: campos em linha (só a borda de baixo),
+// rótulos mono numerados e acento só na cor do tema. Rótulos a 60% de branco (~7:1)
+const FORM_CSS = `
+.form-steps { list-style: none; margin: .5rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid rgba(255,255,255,0.08); display: grid; gap: .7rem; }
+.form-steps li { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); display: flex; gap: .6rem; }
+.form-steps li > span:first-child { color: var(--accent); }
+.form-steps em { font-family: var(--font-serif); font-size: 1rem; color: var(--text); line-height: 1; }
+.form-ed { display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.08); }
+.form-row-2 { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .form-row-2 { grid-template-columns: 1fr 1fr; column-gap: 2rem; } }
+.form-field { display: flex; flex-direction: column; gap: .35rem; padding-top: 1.5rem; position: relative; }
+.form-field label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.6); display: flex; gap: .75rem;
 }
+.form-field label span { color: var(--text-faint); transition: color .3s; }
+.form-field:focus-within label span { color: var(--accent); }
+.form-field input, .form-field textarea {
+  width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgba(255,255,255,0.14);
+  border-radius: 0; padding: .7rem 0 .8rem; color: var(--text); cursor: auto;
+  font-family: var(--font-display); font-size: clamp(1.05rem, 1.4vw, 1.25rem); font-weight: 500; letter-spacing: -0.01em;
+  transition: border-color .3s;
+}
+.form-field textarea { resize: vertical; min-height: 5.5rem; font-family: var(--font-body); font-size: 1rem; line-height: 1.7; }
+.form-field input::placeholder, .form-field textarea::placeholder { color: rgba(255,255,255,0.28); }
+/* Foco: sublinhado do tema mais grosso no lugar da caixa do outline global */
+.form-field input:focus-visible, .form-field textarea:focus-visible { outline: none; border-bottom-color: var(--accent); box-shadow: 0 1px 0 0 var(--accent); }
+.form-field[data-error] input { border-bottom-color: #ef4444; }
+.form-err { font-family: var(--font-body); font-size: .75rem; color: #ef4444; min-height: 1.25rem; }
+.form-fail { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; padding-top: 1.5rem; }
+.form-fail p { margin: 0; font-family: var(--font-body); font-size: .85rem; color: #ef4444; }
+.form-fail a {
+  display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .8rem;
+  color: #25d366; border-bottom: 1px solid rgba(37,211,102,.4); padding: 6px 0; transition: gap .3s;
+}
+.form-fail a:hover { gap: .85rem; }
+.form-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; padding-top: 2.25rem; }
+.form-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 34px; border-radius: 100px; border: none;
+  background: var(--accent); color: #06060c;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 800; letter-spacing: -0.01em;
+  transition: opacity .2s;
+}
+.form-submit:disabled { opacity: .7; cursor: wait; }
+.form-note { flex: 1 1 16rem; margin: 0; font-family: var(--font-mono); font-size: .72rem; line-height: 1.6; color: rgba(255,255,255,0.55); }
+.form-note a { color: rgba(255,255,255,0.8); text-decoration: underline; }
+.form-ok { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2.5rem; }
+.form-ok-mark {
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 1.5rem;
+  color: var(--accent); border: 1px solid rgba(var(--accent-rgb),.35);
+}
+.form-ok-title { font-family: var(--font-serif); font-style: italic; font-size: clamp(2rem, 3.5vw, 2.6rem); line-height: 1.05; color: var(--text); margin: 0 0 .9rem; }
+.form-ok-text { font-family: var(--font-body); font-size: 1rem; line-height: 1.8; color: var(--text-muted); max-width: 44ch; margin: 0; }
+`
 
 const LINE1 = ['Tem', 'uma', 'ideia?']
 const LINE2 = ['Vamos', 'transformar', 'em', 'realidade.']
@@ -163,6 +214,12 @@ export function CtaFinal() {
       wordsTl
         .fromTo(words, { opacity: 0.07 }, { opacity: 1, stagger: { each: 0.3 } })
         .fromTo('.cta-buttons', { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.3 }, '>')
+
+      gsap.fromTo('.form-h2-line',
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out',
+          scrollTrigger: { trigger: ctaRef.current, start: 'top 80%', toggleActions: 'play reverse play reverse' } }
+      )
 
       gsap.fromTo('.cta-sub',
         { opacity: 0, y: 18 },
@@ -296,13 +353,14 @@ export function CtaFinal() {
         </div>
       </section>
 
-      {/* SEÇÃO CTA — subtext + formulário */}
+      {/* SEÇÃO CTA — formulário no padrão editorial: título à esquerda, campos em linha à direita */}
       <section
         ref={ctaRef}
         id="form-contato"
-        className="relative overflow-hidden"
-        style={{ background: 'transparent', paddingTop: '5rem', paddingBottom: '8rem' }}
+        className="relative overflow-hidden py-24 lg:py-32"
+        style={{ background: 'transparent' }}
       >
+        <style>{FORM_CSS}</style>
         {/* Glow sutil com parallax */}
         <div
           ref={bgGlowRef}
@@ -313,19 +371,42 @@ export function CtaFinal() {
           }}
         />
 
-        <div className="relative z-10 page-container flex flex-col items-center text-center" style={{ gap: '3rem' }}>
+        <div className="relative z-10 page-container grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-20 items-start">
 
-          {/* Subtext */}
-          <p
-            className="cta-sub leading-relaxed max-w-md"
-            style={{ fontFamily: 'var(--font-body)', fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)' }}
-          >
-            Do briefing ao deploy, com metodologia clara,
-            comunicação constante e tecnologia que funciona de verdade.
-          </p>
+          {/* Esquerda — título, subtexto e o que acontece depois do envio */}
+          <div className="lg:sticky lg:top-32 flex flex-col gap-6">
+            <div>
+              <p className="text-xs tracking-[0.22em] uppercase mb-4"
+                style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
+                <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+                <ScrambleText text="Formulário" />
+              </p>
+              <h2 className="font-bold leading-tight"
+                style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', color: 'var(--text)' }}>
+                <span className="block overflow-hidden pb-1">
+                  <span className="form-h2-line block">Conte a sua</span>
+                </span>
+                <span className="block overflow-hidden pb-1">
+                  <span className="form-h2-line block" style={{ color: 'var(--accent)' }}>ideia.</span>
+                </span>
+              </h2>
+            </div>
 
-          {/* Formulário de contato */}
-          <div style={{ width: '100%', maxWidth: 480, textAlign: 'left' }}>
+            <p className="cta-sub leading-relaxed max-w-sm"
+              style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-muted)' }}>
+              Do briefing ao deploy, com metodologia clara,
+              comunicação constante e tecnologia que funciona de verdade.
+            </p>
+
+            <ul className="cta-sub form-steps">
+              <li><span aria-hidden="true">→</span><span>Retorno em <em>até 24h</em></span></li>
+              <li><span aria-hidden="true">→</span><span>Briefing inicial <em>gratuito</em></span></li>
+              <li><span aria-hidden="true">→</span>Proposta com prazo e valor fechados</li>
+            </ul>
+          </div>
+
+          {/* Direita — formulário */}
+          <div data-orb-avoid="">
             {/* Anuncia o status para leitores de tela; fica sempre no DOM */}
             <p className="sr-only" aria-live="polite">
               {status === 'sending' ? 'Enviando mensagem…'
@@ -334,33 +415,22 @@ export function CtaFinal() {
                 : ''}
             </p>
             {status === 'ok' ? (
-              <div style={{
-                background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
-                borderRadius: 16, padding: '40px 32px', textAlign: 'center',
-              }}>
-                <div style={{
-                  width: 52, height: 52, borderRadius: '50%', margin: '0 auto 16px',
-                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="form-ok">
+                <span className="form-ok-mark" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                </div>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: '#f4f4f5', marginBottom: 8 }}>
-                  Mensagem enviada!
-                </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
+                </span>
+                <p className="form-ok-title">Mensagem enviada.</p>
+                <p className="form-ok-text">
                   Entraremos em contato em breve para dar início ao seu projeto.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 12 }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label htmlFor="contato-nome" style={LABEL_STYLE}>
-                      Nome *
-                    </label>
+              <form onSubmit={handleSubmit} noValidate className="form-ed">
+                <div className="form-row-2">
+                  <div className="form-field" data-error={errors.nome ? '' : undefined}>
+                    <label htmlFor="contato-nome"><span aria-hidden="true">01</span>Nome *</label>
                     <input
                       id="contato-nome"
                       name="nome"
@@ -372,25 +442,11 @@ export function CtaFinal() {
                       onChange={e => { setForm(f => ({ ...f, nome: e.target.value })); if (errors.nome) setErrors(p => ({ ...p, nome: undefined })) }}
                       onBlur={() => handleBlur('nome')}
                       placeholder="Seu nome"
-                      style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${errors.nome ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
-                        borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                        fontFamily: 'var(--font-body)', fontSize: '1rem',
-                        width: '100%', cursor: 'auto',
-                      }}
-                      onFocus={e => (e.currentTarget.style.borderColor = errors.nome ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
-                    {errors.nome && (
-                      <span id="contato-nome-erro" style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
-                        {errors.nome}
-                      </span>
-                    )}
+                    {errors.nome && <span id="contato-nome-erro" className="form-err">{errors.nome}</span>}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label htmlFor="contato-email" style={LABEL_STYLE}>
-                      E-mail *
-                    </label>
+                  <div className="form-field" data-error={errors.email ? '' : undefined}>
+                    <label htmlFor="contato-email"><span aria-hidden="true">02</span>E-mail *</label>
                     <input
                       id="contato-email"
                       name="email"
@@ -403,27 +459,13 @@ export function CtaFinal() {
                       onChange={e => { setForm(f => ({ ...f, email: e.target.value })); if (errors.email) setErrors(p => ({ ...p, email: undefined })) }}
                       onBlur={() => handleBlur('email')}
                       placeholder="seu@email.com"
-                      style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${errors.email ? '#ef4444' : 'rgba(255,255,255,0.09)'}`,
-                        borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                        fontFamily: 'var(--font-body)', fontSize: '1rem',
-                        width: '100%', cursor: 'auto',
-                      }}
-                      onFocus={e => (e.currentTarget.style.borderColor = errors.email ? '#ef4444' : `rgba(${theme.rgb},0.35)`)}
                     />
-                    {errors.email && (
-                      <span id="contato-email-erro" style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#ef4444' }}>
-                        {errors.email}
-                      </span>
-                    )}
+                    {errors.email && <span id="contato-email-erro" className="form-err">{errors.email}</span>}
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label htmlFor="contato-whatsapp" style={LABEL_STYLE}>
-                    WhatsApp
-                  </label>
+                <div className="form-field">
+                  <label htmlFor="contato-whatsapp"><span aria-hidden="true">03</span>WhatsApp</label>
                   <input
                     id="contato-whatsapp"
                     name="whatsapp"
@@ -432,104 +474,73 @@ export function CtaFinal() {
                     value={form.whatsapp}
                     onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
                     placeholder="(35) 9 9999-9999"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-                      borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                      fontFamily: 'var(--font-body)', fontSize: '1rem',
-                      width: '100%', cursor: 'auto',
-                    }}
-                    onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
                   />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label htmlFor="contato-mensagem" style={LABEL_STYLE}>
-                    Sobre o projeto
-                  </label>
+                <div className="form-field">
+                  <label htmlFor="contato-mensagem"><span aria-hidden="true">04</span>Sobre o projeto</label>
                   <textarea
                     id="contato-mensagem"
                     name="mensagem"
-                    rows={4}
+                    rows={3}
                     value={form.mensagem}
                     onChange={e => setForm(f => ({ ...f, mensagem: e.target.value }))}
                     placeholder="Descreva brevemente o que você precisa..."
-                    style={{
-                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-                      borderRadius: 10, padding: '12px 14px', color: '#f4f4f5',
-                      fontFamily: 'var(--font-body)', fontSize: '1rem',
-                      resize: 'vertical', width: '100%', cursor: 'auto',
-                    }}
-                    onFocus={e => (e.currentTarget.style.borderColor = `rgba(${theme.rgb},0.35)`)}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)')}
                   />
                 </div>
 
                 {status === 'error' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#ef4444', textAlign: 'center' }}>
-                      {erroEnvio || 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.'}
-                    </p>
+                  <div className="form-fail">
+                    <p>{erroEnvio || 'Algo deu errado. Tente novamente ou fale com a gente pelo WhatsApp.'}</p>
                     {/* Saída alternativa: leva o que já foi digitado para o WhatsApp */}
                     <a
                       href={waLink(form.nome, form.mensagem)}
                       data-origem="formulario-erro"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 8,
-                        padding: '10px 20px', borderRadius: 10,
-                        background: '#25D366', color: '#06060c', textDecoration: 'none',
-                        fontFamily: 'var(--font-display)', fontSize: '0.88rem', fontWeight: 700,
-                      }}
                     >
                       Chamar no WhatsApp
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </a>
                   </div>
                 )}
 
-                {/* Ímã no wrapper; o scale do hover fica no botão */}
-                <Magnetic display="block" strength={0.2} radius={30} max={8} inner=".cta-submit-label" style={{ marginTop: 4 }}>
-                <button
-                  type="submit"
-                  disabled={status === 'sending'}
-                  style={{
-                    width: '100%', padding: '14px 32px', borderRadius: 10, border: 'none',
-                    background: theme.accent, color: '#06060c',
-                    fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 800,
-                    letterSpacing: '-0.01em', cursor: status === 'sending' ? 'wait' : undefined,
-                    opacity: status === 'sending' ? 0.7 : 1,
-                    transition: 'opacity 0.2s',
-                    boxShadow: `0 0 40px rgba(${theme.rgb},0.3)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  }}
-                  onMouseEnter={e => status !== 'sending' && gsap.to(e.currentTarget, { scale: 1.02, duration: 0.18 })}
-                  onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.22 })}
-                >
-                  <span className="cta-submit-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-                  {status === 'sending' ? (
-                    <>
-                      <span style={{ width: 16, height: 16, border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      Enviar mensagem
-                      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 22 22" fill="none">
-                        <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </>
-                  )}
-                  </span>
-                </button>
-                </Magnetic>
-                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
-                  Ao enviar, você concorda com nossa{' '}
-                  <a href="/privacidade" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'underline' }}>
-                    Política de Privacidade
-                  </a>
-                  . Seus dados são usados apenas para retorno do contato.
-                </p>
+                <div className="form-foot">
+                  {/* Ímã no wrapper; o scale do hover fica no botão */}
+                  <Magnetic strength={0.2} radius={30} max={8} inner=".cta-submit-label">
+                  <button
+                    type="submit"
+                    className="form-submit"
+                    disabled={status === 'sending'}
+                    style={{ boxShadow: `0 0 40px rgba(${theme.rgb},0.3)` }}
+                    onMouseEnter={e => status !== 'sending' && gsap.to(e.currentTarget, { scale: 1.03, duration: 0.18 })}
+                    onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.22 })}
+                  >
+                    <span className="cta-submit-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                    {status === 'sending' ? (
+                      <>
+                        <span style={{ width: 16, height: 16, border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        Enviar mensagem
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 22 22" fill="none">
+                          <path d="M4.5 11h13M13 5l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </>
+                    )}
+                    </span>
+                  </button>
+                  </Magnetic>
+                  <p className="form-note">
+                    Ao enviar, você concorda com nossa{' '}
+                    <a href="/privacidade">Política de Privacidade</a>.
+                    Seus dados são usados apenas para retorno do contato.
+                  </p>
+                </div>
               </form>
             )}
           </div>
