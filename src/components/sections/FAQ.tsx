@@ -195,7 +195,7 @@ export function FAQ() {
           <div>
             <p className="text-xs tracking-[0.22em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-              <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+              <span aria-hidden="true" style={{ display: 'inline-block', width: '1.4em', height: 1, background: 'var(--accent)', verticalAlign: 'middle', marginRight: '0.75em' }} />
               <ScrambleText text="Dúvidas" />
             </p>
             <h2 className="font-bold leading-tight"
