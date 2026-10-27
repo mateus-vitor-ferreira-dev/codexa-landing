@@ -2,6 +2,7 @@
 
 import { Magnetic } from '@/components/fx/Magnetic'
 import { ScrambleText } from '@/lib/fx/ScrambleText'
+import { NavOrb } from '@/components/ui/NavOrb'
 
 // Links do rodapé com alvo de 44px de altura (toque); o texto continua igual
 const LINK_ALVO: React.CSSProperties = {
@@ -13,7 +14,7 @@ function FooterCol({ title, links }: { title: string; links: { label: string; hr
     <div>
       {/* marginBottom menor compensa o respiro interno do primeiro link (alvo de 44px) */}
       <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 9, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+        <span aria-hidden="true" style={{ display: 'inline-block', width: '1.4em', height: 1, background: 'var(--accent)', verticalAlign: 'middle', marginRight: '0.75em' }} />
         <ScrambleText text={title} />
       </h3>
       <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column' }}>
@@ -84,10 +85,9 @@ export function Footer() {
 
           {/* ── Brand column (linha inteira no celular) ── */}
           <div className="col-span-2 lg:col-span-1">
-            {/* Logo mark (alt vazio: o nome já vem no texto ao lado) */}
+            {/* Mesma logo da navbar: a esfera acompanha a cor do tema e para fora da tela */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-mark.svg" width={20} height={20} alt="" style={{ display: 'block', flexShrink: 0 }} />
+              <NavOrb />
               <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>Codexa</span>
             </div>
 

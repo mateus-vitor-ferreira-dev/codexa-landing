@@ -160,7 +160,7 @@ export function PromisesMarquee() {
 
       <div className="page-container pm-bar">
         <p className="pm-label">
-          <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+          <span aria-hidden="true" style={{ display: 'inline-block', width: '1.4em', height: 1, background: 'var(--accent)', verticalAlign: 'middle', marginRight: '0.75em' }} />
           <ScrambleText text="O que você leva ao trabalhar conosco" duration={1200} />
         </p>
         {/* Pausar/retomar — alvo de 44px, visual discreto */}

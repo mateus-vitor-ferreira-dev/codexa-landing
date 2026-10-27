@@ -44,18 +44,18 @@ gsap.registerPlugin(ScrollTrigger)
 // rótulos mono numerados e acento só na cor do tema. Rótulos a 60% de branco (~7:1)
 const FORM_CSS = `
 .form-steps { list-style: none; margin: .5rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid rgba(255,255,255,0.08); display: grid; gap: .7rem; }
-.form-steps li { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); display: flex; gap: .6rem; }
+.form-steps li { font-family: var(--font-body); font-size: 1rem; line-height: 1.5; color: #d4d4dc; display: flex; align-items: baseline; gap: .7rem; }
 .form-steps li > span:first-child { color: var(--accent); }
-.form-steps em { font-family: var(--font-serif); font-size: 1rem; color: var(--text); line-height: 1; }
+.form-steps em { font-family: var(--font-serif); font-size: 1.15em; color: var(--text); line-height: 1; }
 .form-ed { display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.08); }
 .form-row-2 { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .form-row-2 { grid-template-columns: 1fr 1fr; column-gap: 2rem; } }
 .form-field { display: flex; flex-direction: column; gap: .35rem; padding-top: 1.5rem; position: relative; }
 .form-field label {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
   color: rgba(255,255,255,0.6); display: flex; gap: .75rem;
 }
-.form-field label span { color: var(--text-faint); transition: color .3s; }
+.form-field label span { color: rgba(255,255,255,0.45); transition: color .3s; }
 .form-field:focus-within label span { color: var(--accent); }
 .form-field input, .form-field textarea {
   width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgba(255,255,255,0.14);
@@ -85,7 +85,7 @@ const FORM_CSS = `
   transition: opacity .2s;
 }
 .form-submit:disabled { opacity: .7; cursor: wait; }
-.form-note { flex: 1 1 16rem; margin: 0; font-family: var(--font-mono); font-size: .72rem; line-height: 1.6; color: rgba(255,255,255,0.55); }
+.form-note { flex: 1 1 16rem; margin: 0; font-family: var(--font-body); font-size: .82rem; line-height: 1.6; color: rgba(255,255,255,0.7); }
 .form-note a { color: rgba(255,255,255,0.8); text-decoration: underline; }
 .form-ok { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2.5rem; }
 .form-ok-mark {
@@ -378,7 +378,7 @@ export function CtaFinal() {
             <div>
               <p className="text-xs tracking-[0.22em] uppercase mb-4"
                 style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>
-                <span aria-hidden="true" style={{ color: 'var(--accent)' }}>{'// '}</span>
+                <span aria-hidden="true" style={{ display: 'inline-block', width: '1.4em', height: 1, background: 'var(--accent)', verticalAlign: 'middle', marginRight: '0.75em' }} />
                 <ScrambleText text="Formulário" />
               </p>
               <h2 className="font-bold leading-tight"

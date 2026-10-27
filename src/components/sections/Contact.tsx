@@ -114,7 +114,7 @@ export function Contact() {
             fontFamily: 'var(--font-mono)', fontSize: '0.72rem', letterSpacing: '0.22em',
             textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 14,
           }}>
-            <span aria-hidden="true">{'// '}</span>
+            <span aria-hidden="true" style={{ display: 'inline-block', width: '1.4em', height: 1, background: 'var(--accent)', verticalAlign: 'middle', marginRight: '0.75em' }} />
             <ScrambleText text="Contato" />
           </p>
           <h2 style={{
