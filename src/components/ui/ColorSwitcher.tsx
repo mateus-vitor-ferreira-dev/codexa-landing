@@ -7,7 +7,7 @@ import { gsap } from 'gsap'
 const HINT_KEY = 'codexa:color-hint-seen'
 
 export function ColorSwitcher() {
-  const { theme, setTheme } = useTheme()
+  const { theme, mode, setTheme, setMode } = useTheme()
   const dockRef  = useRef<HTMLDivElement>(null)
   const ringRef  = useRef<HTMLDivElement>(null)
   const hintRef  = useRef<HTMLDivElement>(null)
@@ -68,14 +68,23 @@ export function ColorSwitcher() {
     }
   }, [])
 
-  const onPick = (t: typeof THEMES[0]) => {
-    setTheme(t)
+  const markTouched = () => {
     if (!touched) {
       setTouched(true)
       if (ringRef.current) gsap.killTweensOf(ringRef.current)
       gsap.set(ringRef.current, { opacity: 0 })
       dismissHint()
     }
+  }
+
+  const onAuto = () => {
+    setMode(mode === 'auto' ? 'manual' : 'auto')
+    markTouched()
+  }
+
+  const onPick = (t: typeof THEMES[0]) => {
+    setTheme(t)
+    markTouched()
     setOpen(false)
   }
 
@@ -127,7 +136,7 @@ export function ColorSwitcher() {
           boxShadow:     '0 12px 32px rgba(0,0,0,0.5)',
         }}
       >
-        Esta página muda de cor — escolha a sua
+        A cor muda a cada seção — ou escolha a sua
         <span style={{
           position:   'absolute',
           left:       22,
@@ -217,10 +226,23 @@ export function ColorSwitcher() {
             <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
           </svg>
-          Cor do site
+          <span>Cor</span>
+          {/* Nome da cor atual (o botão Auto já mostra o modo); largura da mais longa, para o dock não pular */}
+          <span aria-live="polite" style={{ color: 'var(--text)', letterSpacing: '0.08em', minWidth: '9.6em', whiteSpace: 'nowrap' }}>
+            {theme.label}
+          </span>
         </span>
 
         <div className="color-dock-swatches" style={{ alignItems: 'center' }}>
+          <button
+            type="button"
+            className="color-dock-auto"
+            aria-pressed={mode === 'auto'}
+            title={mode === 'auto' ? 'A cor acompanha a seção. Clique para fixar a cor atual' : 'Voltar a trocar a cor a cada seção'}
+            onClick={onAuto}
+          >
+            Auto
+          </button>
           {THEMES.map((t) => {
             const active = theme.id === t.id
             return (
@@ -230,7 +252,7 @@ export function ColorSwitcher() {
                 type="button"
                 className="color-dock-btn"
                 aria-label={`Aplicar tema ${t.label}`}
-                aria-pressed={active}
+                aria-pressed={mode === 'manual' && active}
                 title={t.label}
                 onClick={() => onPick(t)}
                 onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.22, duration: 0.18, ease: 'back.out(2)' })}
@@ -278,10 +300,21 @@ export function ColorSwitcher() {
       <style>{`
         /* Posição e label ficam aqui (não inline) para o media query mobile conseguir sobrescrever */
         .color-dock { left: 20px; bottom: 26px; }
-        .color-dock-label { gap: 7px; font-size: 0.62rem; }
-        /* Desktop: alvo de 32px; margem negativa mantém a altura do dock */
-        .color-dock-bar { gap: 9px; padding: 10px 11px 10px 14px; }
-        .color-dock-btn { width: 32px; height: 32px; margin: -5px 0; }
+        .color-dock-label { gap: 8px; font-size: 0.68rem; }
+        /* Desktop: alvo de 36px; margem negativa mantém a altura do dock */
+        .color-dock-bar { gap: 12px; padding: 11px 12px 11px 16px; }
+        .color-dock-swatches { gap: 2px; }
+        .color-dock-btn { width: 36px; height: 36px; margin: -6px 0; }
+        .color-dock-btn .color-dock-ring { transform: scale(1.15); }
+        .color-dock-auto {
+          font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+          height: 28px; padding: 0 11px; margin-right: 6px; border-radius: 999px; cursor: pointer;
+          color: var(--text-muted); background: transparent; border: 1px solid rgba(255,255,255,0.16);
+          transition: color .25s, background .25s, border-color .25s;
+        }
+        .color-dock-auto[aria-pressed="true"] { color: #06060c; background: var(--accent); border-color: var(--accent); }
+        .color-dock-auto:hover { border-color: var(--accent); }
+        .color-dock-auto:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         .color-dock-btn:focus-visible { outline: none; }
         .color-dock-btn:focus-visible .color-dock-ring { outline: 2px solid var(--accent); outline-offset: 2px; }
         .color-dock-toggle { display: none; }
@@ -294,6 +327,7 @@ export function ColorSwitcher() {
           .color-dock-label { display: none !important; }
           .color-dock-swatches { display: none; }
           .color-dock[data-open] .color-dock-swatches { display: flex; padding-right: 4px; }
+          .color-dock-auto { height: 32px; margin: 0 4px 0 2px; }
           .color-dock-btn { width: 40px; height: 44px; margin: 0; }
         }
       `}</style>
